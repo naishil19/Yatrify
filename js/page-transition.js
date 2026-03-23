@@ -60,43 +60,27 @@
   }
 
   if (modernMode) {
-    var revealed = root.classList.contains("yatrify-page-revealed");
-    var fallbackTimer = null;
+    var revealed = false;
 
-    function revealModern() {
+    function reveal() {
       if (revealed) return;
-      root.classList.add("yatrify-shell-revealing", "yatrify-page-revealed");
+      revealed = true;
+      root.classList.add("yatrify-page-revealed", "yatrify-shell-revealing");
+      root.classList.remove("yatrify-shell-loading", "yatrify-page-loading", "yatrify-nav-loading");
       window.setTimeout(function () {
-        root.classList.remove("yatrify-shell-loading", "yatrify-shell-revealing", "yatrify-page-loading", "yatrify-page-revealing", "yatrify-nav-loading");
-        revealed = true;
-        if (fallbackTimer) {
-          clearTimeout(fallbackTimer);
-          fallbackTimer = null;
-        }
-      }, 240);
+        root.classList.remove("yatrify-shell-revealing");
+      }, 420);
     }
 
-    function revealSoon() {
-      if (revealed) return;
-      if (typeof window.requestAnimationFrame === "function") {
-        window.requestAnimationFrame(revealModern);
-      } else {
-        setTimeout(revealModern, 0);
+    function armReveal() {
+      if (root.classList.contains("yatrify-page-ready")) {
+        reveal();
+        return;
       }
+      root.classList.add("yatrify-shell-loading", "yatrify-page-loading");
     }
 
-    if (root.classList.contains("yatrify-page-ready")) {
-      revealSoon();
-    }
-
-    window.addEventListener("yatrify:page-ready", revealSoon, { once: true });
-    window.addEventListener("pageshow", function () {
-      if (root.classList.contains("yatrify-page-ready")) revealSoon();
-    });
-
-    fallbackTimer = setTimeout(function () {
-      if (!revealed) revealModern();
-    }, 2200);
+    armReveal();
 
     document.addEventListener("click", function (event) {
       var link = event.target && event.target.closest ? event.target.closest("a") : null;
@@ -106,6 +90,18 @@
 
     window.addEventListener("beforeunload", function () {
       root.classList.add("yatrify-nav-loading");
+    });
+
+    window.addEventListener("yatrify:page-ready", reveal, { once: true });
+
+    window.addEventListener("load", function () {
+      if (root.classList.contains("yatrify-page-ready")) reveal();
+    });
+
+    window.addEventListener("pageshow", function () {
+      if (root.classList.contains("yatrify-page-ready")) {
+        reveal();
+      }
     });
 
     setupPrefetch();

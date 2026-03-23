@@ -153,11 +153,6 @@
     finishTimer = setTimeout(function () {
       hide();
     }, 8000);
-    window.addEventListener("yatrify:plan-loaded", function () {
-      markReadyClass("yatrify-page-ready");
-      state.pageReady = true;
-      maybeFinish();
-    }, { once: true });
     window.addEventListener("yatrify:page-ready", function () {
       markReadyClass("yatrify-page-ready");
       state.pageReady = true;

@@ -5,9 +5,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Expense Tracker - Yatrify</title>
-  <link rel="stylesheet" href="css/2a2e7898d4f6aad7.css?v=20260323i" />
+  <link rel="stylesheet" href="css/2a2e7898d4f6aad7.css?v=20260324a" />
   <script>
-    document.documentElement.classList.add("yatrify-page-transition-modern", "yatrify-shell-loading");
+    document.documentElement.classList.add("yatrify-page-transition-modern", "yatrify-shell-loading", "yatrify-header-auth-loading");
   </script>
   <style>
     :root {
@@ -2427,7 +2427,8 @@
   </style>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-  <link rel="preload" as="script" href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js">`r`n</head>
+  <link rel="preload" as="script" href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js">
+</head>
 
 <body class="__className_fff05e">
   <!-- Topbar -->
@@ -2935,7 +2936,7 @@
       renderLucideIcons();
       setupMobileDrawer();
       setupThemeToggle();
-      setupClerkHeaderProfile();
+        await setupClerkHeaderProfile();
       await Promise.all([
         loadState(),
         setupTopbarData(),
@@ -4000,6 +4001,15 @@
 
       /* ── Clerk header profile ── */
       function setupClerkHeaderProfile() {
+        var authReadyResolved = false;
+        var resolveAuthReady = function () {};
+        var authReadyPromise = new Promise(function (resolve) {
+          resolveAuthReady = function () {
+            if (authReadyResolved) return;
+            authReadyResolved = true;
+            resolve();
+          };
+        });
         var signInLink = document.getElementById("header-signin-link");
         var profileWrap = document.getElementById("user-profile");
         var profileBtn = document.getElementById("profile-btn");
@@ -4012,6 +4022,8 @@
         var signOutBtn = document.getElementById("signout-btn");
 
         function markHeaderAuthReady() {
+          document.documentElement.classList.remove("yatrify-header-auth-loading");
+          resolveAuthReady();
         }
 
         function closeProfileMenu() {
@@ -4080,7 +4092,7 @@
           }
         }
 
-        if (!profileBtn || profileBtn.dataset.bound === "true") return;
+        if (!profileBtn || profileBtn.dataset.bound === "true") return Promise.resolve();
         profileBtn.dataset.bound = "true";
         profileBtn.setAttribute("aria-haspopup", "menu");
         profileBtn.setAttribute("aria-expanded", "false");
@@ -4156,12 +4168,12 @@
           }).catch(function () {
             setGuest();
           });
-          return;
+          return authReadyPromise;
         }
 
         if (typeof window.__loadYatrifyClerk !== "function") {
           setGuest();
-          return;
+          return authReadyPromise;
         }
 
         window.__loadYatrifyClerk(false).then(function (clerk) {
@@ -4177,15 +4189,18 @@
         }).catch(function () {
           setGuest();
         });
+        return authReadyPromise;
       }
 
 
     })();
   </script>
-  <script src="/js/page-transition.js?v=20260323i"></script>
+  <script src="/js/page-transition.js?v=20260324a"></script>
 </body>
 
 </html>
+
+
 
 
 
