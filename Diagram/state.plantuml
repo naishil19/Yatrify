@@ -1,0 +1,57 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+
+[*] --> LoggedOut
+
+' ================= AUTH STATES =================
+LoggedOut --> Authenticating : Sign In / Sign Up
+Authenticating --> Dashboard : Success
+Authenticating --> LoggedOut : Failed
+
+Dashboard --> CreatingPlan : Click "Create Travel Plan"
+
+' ================= PLAN CREATION =================
+CreatingPlan --> EnteringDetails : Fill Trip Details
+EnteringDetails --> CheckingCredits : Click Generate Plan
+
+CheckingCredits --> GeneratingAI : Credits Available
+CheckingCredits --> CreditError : Insufficient Credits
+
+CreditError --> Dashboard : Retry / Add Credits
+
+' ================= AI GENERATION =================
+GeneratingAI --> PlanReady : AI Plan Generated
+
+' ================= DASHBOARD =================
+PlanReady --> ViewingPlan : Open Trip Dashboard
+
+' ================= REFINEMENT =================
+ViewingPlan --> RefiningPlan : Modify Plan
+
+RefiningPlan --> CheckingCredits : Re-generate Plan
+
+' ================= COLLABORATION =================
+ViewingPlan --> Collaborating : Invite / Edit / Comment
+Collaborating --> ViewingPlan
+
+' ================= EXPENSE TRACKING =================
+ViewingPlan --> TrackingExpenses : Add Expense
+TrackingExpenses --> ViewingPlan
+
+' ================= PUBLISH FLOW =================
+ViewingPlan --> Publishing : Click Publish
+Publishing --> Published : Confirm
+
+Published --> ViewingCommunity : View in Community
+ViewingCommunity --> Published
+
+' ================= UNPUBLISH =================
+Published --> Unpublishing : Click Unpublish
+Unpublishing --> ViewingPlan
+
+' ================= LOGOUT =================
+Dashboard --> LoggedOut : Sign Out
+ViewingPlan --> LoggedOut : Sign Out
+
+@enduml

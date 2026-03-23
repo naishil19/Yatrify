@@ -1,0 +1,67 @@
+@startuml
+left to right direction
+skinparam monochrome true
+skinparam shadowing false
+
+' ================= ENTITIES =================
+rectangle "User" as User
+rectangle "Collaborator" as Collab
+rectangle "AI Service" as AI
+rectangle "Image API" as Img
+rectangle "Booking API" as Book
+
+' ================= PROCESSES =================
+circle "1.0 Auth" as Auth
+circle "2.0 Plan" as Plan
+circle "3.0 AI Gen" as AIProc
+circle "4.0 Collaboration" as CollabProc
+circle "5.0 Expense" as Expense
+circle "6.0 Publish" as Publish
+
+' ================= DATA STORES =================
+database "User DB" as UDB
+database "Trip DB" as TDB
+database "Expense DB" as EDB
+
+' ================= FLOW =================
+
+' AUTH (Top Left)
+User --> Auth : Login
+Auth --> UDB : Verify User
+UDB --> Auth
+Auth --> User : Status
+
+' PLAN (Center)
+User --> Plan : Trip Details
+Plan --> TDB : Save Trip
+TDB --> Plan : Trip Data
+
+' AI (Right)
+Plan --> AIProc : Trip Input
+AIProc --> AI : Generate Plan
+AI --> AIProc : Data
+AIProc --> TDB : Save Itinerary
+
+AIProc --> Img : Image Request
+Img --> AIProc
+
+AIProc --> Book : Booking Request
+Book --> AIProc
+
+' COLLAB (Bottom Left)
+Collab --> CollabProc : Comments
+CollabProc --> TDB : Update Trip
+CollabProc --> User : Shared Plan
+
+' EXPENSE (Bottom Center)
+User --> Expense : Add Expense
+Expense --> EDB : Store
+EDB --> Expense
+Expense --> User : Total
+
+' PUBLISH (Bottom Right)
+User --> Publish : Publish
+Publish --> TDB : Update Status
+Publish --> User : Confirmation
+
+@enduml

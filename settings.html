@@ -1,0 +1,2188 @@
+<!DOCTYPE html>
+<html lang="en" class="light" style="color-scheme: light;">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Settings - Yatrify</title>
+  <link rel="stylesheet" href="css/2a2e7898d4f6aad7.css?v=20260323g" />
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --panel: #fff;
+      --panel-soft: #f8fafc;
+      --text: #0f172a;
+      --muted: #64748b;
+      --line: #dbe3ef;
+      --line-strong: #c7d2e1;
+      --blue: #3b82f6;
+      
+      --space-1: 8px;
+      --space-2: 16px;
+      --space-3: 24px;
+      --space-4: 32px;
+      --sidebar-width: 300px;
+      --layout-gap: -10px;
+      --section-gap: 24px;
+      --font-page-title: 20px;
+      --font-sidebar-item: 13px;}
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text);
+      background: #ffffff;
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    
+    
+    html.dark body {
+      --bg: #020817;
+      --panel: #0f172a;
+      --panel-soft: #111b2f;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --line: #24324a;
+      --line-strong: #334155;
+      background: #020817;
+    }
+body > footer {
+      width: 100%;
+      margin-top: 28px;
+    }
+
+
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 65px;
+      z-index: 1200;
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in oklab, var(--panel) 72%, transparent);
+      backdrop-filter: blur(14px);
+    }
+
+    html.dark .topbar {
+      background: rgba(2, 8, 23, 0.6);
+    }
+
+    .topbar-inner {
+      width: 100%;
+      margin: 0 auto;
+      height: 100%;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      flex: 1 1 auto;
+      min-width: 0;
+      justify-content: flex-start;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex: 0 0 auto;
+      justify-content: flex-end;
+      margin-left: 20px;
+    }
+
+    .topbar-actions {
+      gap: 16px !important;
+    }
+
+    .logo-wrap {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .logo-wrap img {
+      width: 100px;
+      height: 50px;
+      object-fit: contain;
+    }
+
+    .logo-dark {
+      display: none;
+    }
+
+    html.dark .logo-light {
+      display: none;
+    }
+
+    html.dark .logo-dark {
+      display: block;
+    }
+
+    .topbar-nav {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      align-items: center;
+    }
+
+    .topbar-nav a {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .topbar-nav a:hover {
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+
+    .destination-select-wrap {
+      position: relative;
+      width: 320px;
+    }
+
+    .destination-select {
+      width: 100%;
+      min-height: 44px;
+      border-radius: 8px;
+      border: 1px solid #c8d2e2;
+      background: #f3f6fb;
+      color: #1f2937;
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.4;
+      padding: 8px 34px 8px 14px;
+      appearance: none;
+      -webkit-appearance: none;
+      transition: background-color .2s ease, border-color .2s ease, color .2s ease;
+    }
+
+    html.dark .destination-select {
+      border-color: #3b4f6a;
+      background: #0f1a2d;
+      color: #e2e8f0;
+    }
+
+    .destination-trigger {
+      width: 100%;
+      min-height: 20px;
+      border-radius: 8px;
+      border: 1px solid #c8d2e2;
+      background: #ffffff;
+      color: #1f2937;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 5px 34px 5px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      cursor: pointer;
+      text-align: left;
+      transition: background-color .2s ease, border-color .2s ease, color .2s ease;
+    }
+
+    .destination-trigger:hover,
+    .destination-select-wrap.open .destination-trigger {
+      background: #f1f5f9;
+      border-color: #bcc9db;
+    }
+
+    .destination-trigger .destination-label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    html.dark .destination-trigger {
+      border-color: #1e293b;
+      background: #020817;
+      color: #e2e8f0;
+    }
+
+    html.dark .destination-trigger:hover,
+    html.dark .destination-select-wrap.open .destination-trigger {
+      background: #1e293b;
+      border-color: #1e293b;
+    }
+
+    .destination-trigger i {
+      flex: 0 0 auto;
+    }
+
+    .destination-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      z-index: 1300;
+      border: 1px solid #d7dee9;
+      border-radius: 10px;
+      background: #ffffff;
+      box-shadow: 0 10px 26px rgba(15, 23, 42, 0.14);
+      display: none;
+      overflow: hidden;
+    }
+
+    .destination-select-wrap.open .destination-menu {
+      display: block;
+    }
+
+    .destination-search-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-bottom: 1px solid #e2e8f0;
+      color: #64748b;
+    }
+
+    .destination-search-input {
+      width: 100%;
+      border: 0;
+      outline: none;
+      background: transparent;
+      color: #111827;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .destination-search-input::placeholder {
+      color: #64748b;
+    }
+
+    .destination-options {
+      max-height: 250px;
+      overflow-y: auto;
+    }
+
+    .destination-option {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      text-align: left;
+      padding: 10px 12px;
+      color: #0f172a;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .destination-option:hover,
+    .destination-option.active,
+    .destination-option[aria-selected="true"] {
+      background: #f1f6fb;
+    }
+
+    .destination-empty {
+      margin: 0;
+      padding: 12px;
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    html.dark .destination-menu {
+      border-color: #334155;
+      background: #0f172a;
+      box-shadow: 0 10px 26px rgba(2, 6, 23, 0.5);
+    }
+
+    html.dark .destination-search-row {
+      border-bottom-color: #334155;
+      color: #94a3b8;
+    }
+
+    html.dark .destination-search-input {
+      color: #e2e8f0;
+    }
+
+    html.dark .destination-search-input::placeholder {
+      color: #94a3b8;
+    }
+
+    html.dark .destination-option {
+      color: #e2e8f0;
+    }
+
+    html.dark .destination-option:hover,
+    html.dark .destination-option.active,
+    html.dark .destination-option[aria-selected="true"] {
+      background: #1f314f;
+    }
+
+    html.dark .destination-empty {
+      color: #94a3b8;
+    }
+
+    .destination-trigger-icon {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      opacity: .7;
+    }
+
+    .header-credits {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      white-space: nowrap;
+      text-decoration: none;
+      text-underline-offset: 4px;
+    }
+
+    .header-credits:hover {
+      text-decoration: underline;
+    }
+
+    html.dark .header-credits {
+      color: #e5e7eb;
+    }
+
+    .icon-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 0;
+      background: transparent;
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .theme-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      flex: 0 0 34px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      position: relative;
+      transition: color 0.2s ease, opacity 0.2s ease;
+    }
+
+    .theme-toggle:hover {
+      opacity: .9;
+    }
+    .theme-toggle svg {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 24px;
+      height: 24px;
+      display: block;
+      transform: translate(-50%, -50%);
+      transform-origin: center;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    
+
+    html:not(.dark) .theme-toggle #moon-icon {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    html.dark .theme-toggle #sun-icon {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    html.dark .theme-toggle #moon-icon {
+      opacity: 1;
+    }
+
+    .header-signin {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 34px;
+      padding: 4px 8px;
+      border: 0;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      background: transparent;
+    }
+
+    .profile-pill {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 10002;
+    }
+
+    #profile-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 2px solid var(--line-strong);
+      cursor: pointer;
+      background: #c2185b;
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 500;
+      overflow: hidden;
+      padding: 0;
+    }
+
+    #user-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      object-fit: cover;
+      display: none;
+    }
+
+    #user-avatar-letter {
+      width: 100%;
+      height: 100%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1;
+    }
+
+    #profile-menu {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 46px;
+      min-width: 240px;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      padding: 12px;
+      z-index: 10001;
+      animation: slideDown 0.2s ease;
+    }
+
+    #manage-account,
+    #signout-btn {
+      width: 100%;
+      text-align: left;
+      border: 0;
+      background: transparent;
+      padding: 10px 12px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 400;
+      color: #374151;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+
+    #manage-account:hover {
+      background-color: #f3f4f6;
+    }
+
+    #signout-btn {
+      color: #dc2626;
+      margin-top: 4px;
+    }
+
+    #signout-btn:hover {
+      background-color: #fee2e2;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    
+
+    
+    #mobile-menu-btn {
+      display: none;
+    }
+.page-shell {
+      max-width: 1200px;
+      margin: 0;
+      padding: 0 0 32px;
+      width: 100%;
+      flex: 1 0 auto;
+    }
+
+    .page-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+    }
+
+    .page-card h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .page-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .action-row {
+      margin-top: 18px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      height: 40px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      padding: 0 14px;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      color: var(--text);
+      background: var(--panel);
+    }
+
+    .btn.primary {
+      background: var(--blue);
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .page-shell .grid {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .page-shell .grid h2 {
+      margin: 0 0 10px;
+      font-size: 19px;
+    }
+
+    .page-shell .grid ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    @media (max-width: 1024px) {
+      .topbar-nav {
+        display: none;
+      }
+    }
+
+        @media (max-width: 760px) {
+      .page-shell .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .destination-select-wrap,
+      .header-credits,
+      .icon-btn {
+        display: none;
+      }
+
+      .page-card h1 {
+        font-size: 24px;
+      }
+    }
+    .main-grid {
+      width: 100%;
+      margin: 0;
+      padding: 84px 20px 0;
+      min-height: auto;
+      display: grid;
+      grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+      column-gap: var(--layout-gap);
+      align-items: start;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 88px;
+      width: var(--sidebar-width);
+      max-height: calc(100vh - 104px);
+      overflow: auto;
+      padding-right: 8px;
+    }
+
+    .sidebar-group {
+      border-right: 1px solid var(--line);
+      padding: var(--space-1) var(--space-2) var(--space-1) 0;
+      margin-right: 25px;
+    }
+
+    .sidebar-group+.sidebar-group {
+      margin-top: var(--section-gap);
+    }
+
+    .sidebar-title,
+    .sidebar-subtitle {
+      margin: 0 0 var(--space-2);
+      font-weight: 600;
+      font-size: var(--font-page-title);
+      line-height: 0.25;
+      letter-spacing: -.02em;
+    }
+
+    .sidebar-links {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text);
+      border-radius: 10px;
+      padding: var(--space-1) 10px;
+      border: 1px solid transparent;
+      transition: all .2s ease;
+      font-size: var(--font-sidebar-item);
+      line-height: 1.35;
+    }
+
+    .sidebar-link i {
+      width: 18px;
+      height: 18px;
+      flex: 0 0 auto;
+    }
+
+    .sidebar-link:hover {
+      background: #f1f5f9;
+      border-color: transparent;
+    }
+
+    .sidebar-link.active {
+      background: #f1f5f9;
+      border-color: transparent;
+      color: inherit;
+    }
+
+    .dot {
+      display: none;
+    }
+
+    .sidebar-link.active .dot {
+      display: none;
+    }
+
+    html.dark .sidebar-link:hover {
+      background: #1e293b;
+      border-color: transparent;
+    }
+
+    html.dark .sidebar-link.active {
+      background: #1e293b;
+      border-color: transparent;
+      color: inherit;
+    }
+
+    .lock {
+      margin-left: auto;
+      opacity: .65;
+    }
+
+    .content {
+      width: 100%;
+      max-width: 100%;
+      margin-left: 0;
+      padding: 0;
+      --fixed-step-height: 0px;
+      min-height: auto;
+    }
+
+    .mobile-drawer {
+      position: fixed;
+      top: 0;
+      left: -100%;
+      width: 82%;
+      max-width: 360px;
+      height: 100vh;
+      z-index: 1300;
+      background: var(--panel);
+      border-right: 1px solid var(--line);
+      padding: 16px;
+      transition: left .25s ease;
+      overflow-y: auto;
+    }
+
+    .mobile-drawer.open {
+      left: 0;
+    }
+
+    .mobile-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, .42);
+      z-index: 1280;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s ease;
+    }
+
+    .mobile-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .drawer-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 1280px) {
+      .topbar-nav,
+      .sidebar {
+        display: none;
+      }
+
+      #mobile-menu-btn {
+        display: inline-flex;
+      }
+
+      .content {
+        max-width: 100%;
+        margin-left: 0;
+        padding: 0 20px 12px;
+      }
+
+      .destination-select-wrap {
+        width: 290px;
+      }
+    }
+
+    @media (min-width: 1281px) {
+      .main-grid {
+        padding: 84px 80px 0;
+      }
+
+      .topbar-inner {
+        padding: 0 80px;
+      }
+    }
+
+    /* ── Currency Picker (same as plans-newplan.html) ── */
+    .currency-picker { position: relative; }
+    .currency-picker-trigger { width: 100%; min-height: 44px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: #fff; color: var(--text); font-size: 14px; font-weight: 500; display: flex; align-items: center; justify-content: space-between; gap: 10px; cursor: pointer; text-align: left; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+    .currency-picker-trigger:hover { border-color: #bfdbfe; }
+    .currency-picker.open .currency-picker-trigger { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+    .currency-picker-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .currency-picker-caret { width: 16px; height: 16px; line-height: 0; color: #64748b; display: inline-flex; align-items: center; justify-content: center; }
+    .currency-picker-caret-icon { width: 14px; height: 14px; }
+    .currency-picker-menu { position: absolute; top: calc(100% + 8px); left: 0; right: 0; border: 1px solid #cbd5e1; border-radius: 12px; background: #fff; box-shadow: 0 16px 34px rgba(15,23,42,0.14); overflow: hidden; z-index: 180; }
+    .currency-picker-menu[hidden] { display: none; }
+    .currency-scroll-arrow { width: 100%; height: 28px; border: 0; background: #f8fafc; color: #1e3a8a; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background 0.2s ease, color 0.2s ease; }
+    .currency-scroll-arrow-icon { width: 14px; height: 14px; }
+    .currency-scroll-arrow:hover { background: #e2e8f0; color: #1e40af; }
+    .currency-options { max-height: 260px; overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none; }
+    .currency-options::-webkit-scrollbar { width: 0; height: 0; display: none; }
+    .currency-option { width: 100%; border: 0; background: transparent; padding: 10px 12px; display: flex; align-items: center; gap: 8px; text-align: left; font-size: 14px; color: var(--text); cursor: pointer; }
+    .currency-option:hover { background: #f1f5f9; }
+    .currency-option.selected { background: #dbeafe; }
+    .currency-option.match { background: #eff6ff; }
+    .currency-option-check { width: 16px; height: 16px; display: inline-flex; align-items: center; justify-content: center; color: #2563eb; flex: 0 0 auto; }
+    .currency-option-check-icon { width: 14px; height: 14px; opacity: 0; }
+    .currency-option.selected .currency-option-check-icon { opacity: 1; }
+    .currency-option-label { min-width: 0; }
+    html.dark .currency-picker-trigger { background: #020817; border-color: #334155; color: #e5e7eb; }
+    html.dark .currency-picker-caret { color: #94a3b8; }
+    html.dark .currency-picker.open .currency-picker-trigger { border-color: #60a5fa; box-shadow: 0 0 0 3px rgba(59,130,246,0.25); }
+    html.dark .currency-picker-menu { background: #0b1220; border-color: #334155; box-shadow: 0 20px 40px rgba(0,0,0,0.45); }
+    html.dark .currency-scroll-arrow { background: #020817; color: #93c5fd; }
+    html.dark .currency-scroll-arrow:hover { background: #1e293b; color: #dbeafe; }
+    html.dark .currency-options { scrollbar-width: none; }
+    html.dark .currency-option { color: #e5e7eb; }
+    html.dark .currency-option:hover { background: rgba(51,65,85,0.65); }
+    html.dark .currency-option.selected { background: rgba(59,130,246,0.28); }
+    html.dark .currency-option.match { background: rgba(59,130,246,0.2); }
+    html.dark .currency-option-check { color: #93c5fd; }
+
+    #currency-picker { width: 300px; }
+
+    /* ── Settings Page ── */
+    .settings-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 15px 28px;
+      margin-bottom: 20px;
+      margin-top: 3px;
+
+    }
+    .settings-section-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0 0 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--line);
+    }
+    .settings-section-desc {
+      font-size: 13px;
+      color: var(--muted);
+      margin: 0 0 16px;
+    }
+    .settings-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .settings-select {
+      height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 0 12px;
+      font-size: 13px;
+      color: var(--text);
+      background: var(--panel);
+      cursor: pointer;
+      outline: none;
+    }
+    .settings-select:focus {
+      border-color: var(--blue);
+    }
+    .settings-btn {
+      height: 38px;
+      padding: 0 18px;
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .settings-btn:hover {
+      background: #2563eb;
+    }
+    .settings-note {
+      font-size: 12px;
+      color: var(--blue);
+      margin: 10px 0 0;
+    }
+    .settings-field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .settings-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .settings-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+    }
+    .settings-input {
+      height: 38px;
+      width: 280px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 0 12px;
+      font-size: 13px;
+      color: var(--text);
+      background: var(--panel);
+      outline: none;
+    }
+    .settings-input:focus {
+      border-color: var(--blue);
+    }
+    #save-name-btn {
+      margin-top: 16px;
+    }
+    .settings-danger-card {
+      border-color: #fecaca;
+    }
+    html.dark .settings-danger-card {
+      border-color: rgba(220, 38, 38, 0.5);
+    }
+    .danger-title {
+      color: #dc2626;
+    }
+    .danger-btn {
+      background: #dc2626;
+    }
+    .danger-btn:hover {
+      background: #b91c1c;
+    }
+    #delete-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15,23,42,0.55);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+    #delete-modal.open {
+      display: flex;
+    }
+    .smodal-box {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 28px 28px 24px;
+      width: 100%;
+      max-width: 380px;
+    }
+    .smodal-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      margin: 0 0 8px;
+    }
+    .smodal-desc {
+      font-size: 13px;
+      color: var(--muted);
+      margin: 0 0 16px;
+    }
+    .smodal-input {
+      width: 100%;
+      height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 0 12px;
+      font-size: 13px;
+      color: var(--text);
+      background: var(--panel);
+      outline: none;
+      margin-bottom: 16px;
+    }
+    .smodal-input:focus { border-color: var(--blue); }
+    .smodal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+    .smodal-cancel {
+      height: 36px;
+      padding: 0 16px;
+      background: transparent;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      font-size: 13px;
+      color: var(--text);
+      cursor: pointer;
+    }
+    .smodal-confirm {
+      height: 36px;
+      padding: 0 16px;
+      background: #dc2626;
+      border: none;
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+      cursor: pointer;
+    }
+    .smodal-confirm:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    .settings-toast {
+      position: fixed;
+      bottom: 26px;
+      right: 26px;
+      z-index: 1450;
+      width: min(360px, calc(100vw - 32px));
+      min-width: 240px;
+      max-width: calc(100vw - 32px);
+      border-radius: 12px;
+      border: 1px solid #dbe3ef;
+      background: #fff;
+      box-shadow: 0 12px 28px rgba(15, 23, 42, .24);
+      color: #0f172a;
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: opacity .2s ease, transform .2s ease;
+      overflow: hidden;
+    }
+    html.dark .settings-toast {
+      background: #0f172a;
+      border-color: #334155;
+      color: #e2e8f0;
+    }
+    .settings-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    .settings-toast-inner {
+      padding: 12px 16px 14px;
+      display: grid;
+      gap: 8px;
+    }
+    .settings-toast-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .settings-toast-title {
+      margin: 0;
+      flex: 1 1 auto;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.3;
+      color: inherit;
+    }
+    .settings-toast-message {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.4;
+      color: #334155;
+    }
+    html.dark .settings-toast-message { color: #cbd5e1; }
+    .settings-toast-close {
+      width: 28px;
+      height: 28px;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: #64748b;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      flex: 0 0 auto;
+      transition: background-color .2s ease, color .2s ease;
+    }
+    .settings-toast-close:hover {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+    html.dark .settings-toast-close { color: #94a3b8; }
+    html.dark .settings-toast-close:hover {
+      background: #162033;
+      color: #f8fafc;
+    }
+    .settings-toast-close i,
+    .settings-toast-close svg {
+      width: 16px !important;
+      height: 16px !important;
+      flex: 0 0 auto;
+    }
+</style>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+  <link rel="preload" as="script" href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js">`r`n</head>
+
+<body class="__className_fff05e">
+  <header class="topbar">
+    <nav class="topbar-inner" aria-label="Primary">
+      <div class="topbar-left">
+                <button id="mobile-menu-btn" class="icon-btn" type="button" aria-label="Open side menu">
+          <i data-lucide="menu"></i>
+        </button>        <a class="logo-wrap" href="/">
+          <img class="logo-light" src="/images/image.png" srcset="/images/image_3.png 1x, /images/image.png 2x"
+            alt="Yatrify" />
+          <img class="logo-dark" src="/images/image_2.png" srcset="/images/image_4.png 1x, /images/image_2.png 2x"
+            alt="Yatrify" />
+        </a>
+        <ul class="topbar-nav">
+          <li><a href="/">Home</a></li>
+          <li><a href="/dashboard.html">Dashboard</a></li>
+          <li><a href="/#public-plans">Community Plans</a></li>
+        </ul>
+      </div>
+      <div class="topbar-actions">
+        <div id="header-plan-search" class="destination-select-wrap">
+          <button id="destination-trigger" class="destination-trigger" type="button" aria-haspopup="listbox"
+            aria-expanded="false" aria-controls="destination-options">
+            <span id="destination-selected-label" class="destination-label">Destination</span>
+          </button>
+          <i class="destination-trigger-icon" data-lucide="chevron-down" style="width:16px;height:16px;"></i>
+          <div id="destination-menu" class="destination-menu" role="dialog" aria-label="Select travel plan">
+            <div class="destination-search-row">
+              <i data-lucide="search" style="width:18px;height:18px;"></i>
+              <input id="destination-search-input" class="destination-search-input" type="text"
+                placeholder="Select Travel Plan..." autocomplete="off" />
+            </div>
+            <div id="destination-options" class="destination-options" role="listbox"
+              aria-label="Generated travel plans"></div>
+            <p id="destination-empty" class="destination-empty" style="display:none;">No plans found.</p>
+          </div>
+        </div>
+        <span class="header-credits">Credits <span id="credits-count">2</span></span>
+        <button type="button" class="icon-btn" title="Feedback" aria-label="Feedback">
+          <i data-lucide="message-circle" style="width:18px;height:18px;"></i>
+        </button>
+        <button id="theme-toggle-btn" class="theme-toggle" type="button" title="Toggle theme" aria-label="Toggle theme">
+          <svg id="sun-icon" class="dark:hidden lucide lucide-sun-icon lucide-sun" xmlns="http://www.w3.org/2000/svg"
+            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2" />
+            <path d="M12 20v2" />
+            <path d="m4.93 4.93 1.41 1.41" />
+            <path d="m17.66 17.66 1.41 1.41" />
+            <path d="M2 12h2" />
+            <path d="M20 12h2" />
+            <path d="m6.34 17.66-1.41 1.41" />
+            <path d="m19.07 4.93-1.41 1.41" />
+          </svg><svg id="moon-icon" class="hidden dark:block lucide lucide-moon-icon lucide-moon"
+            xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path
+              d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" />
+          </svg>
+        </button>
+        <a id="header-signin-link" class="header-signin" href="/sign-in/">Sign in</a>
+        <div id="user-profile" class="profile-pill" aria-label="User profile">
+          <button id="profile-btn" type="button" aria-label="Profile">
+            <img id="user-avatar" alt="User avatar" />
+            <span id="user-avatar-letter">N</span>
+          </button>
+          <div id="profile-menu" aria-hidden="true">
+            <div style="padding:12px 14px;border-bottom:1px solid #f3f4f6;margin-bottom:8px;">
+              <div id="profile-name" style="font-weight:700;font-size:15px;letter-spacing:-0.3px;">Traveler</div>
+              <div id="profile-email" style="font-size:12px;color:#6b7280;word-break:break-all;margin-top:4px;">traveler@example.com</div>
+            </div>
+            <button id="manage-account" type="button">&#9881;&#65039; Manage account</button>
+            <button id="signout-btn" type="button">&#128682; Sign out</button>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+      <div id="mobile-overlay" class="mobile-overlay"></div>
+  <aside id="mobile-drawer" class="mobile-drawer" aria-label="Mobile sidebar">
+    <div class="drawer-head">
+      <a class="logo-wrap" href="/">
+        <img class="logo-light" src="/images/image.png" srcset="/images/image_3.png 1x, /images/image.png 2x"
+          alt="Yatrify" />
+        <img class="logo-dark" src="/images/image_2.png" srcset="/images/image_4.png 1x, /images/image_2.png 2x"
+          alt="Yatrify" />
+      </a>
+      <button id="mobile-close-btn" class="icon-btn" type="button" aria-label="Close side menu">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+    <div class="sidebar-group">
+      <h2 class="sidebar-title">Your Plan</h2>
+      <div id="mobile-plan-links" class="sidebar-links">
+<a class="sidebar-link" href="#trip-highlights" data-scroll-link="trip-highlights"><i data-lucide="info" style="width:18px;height:18px;"></i><span>Trip Highlights</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="#weather-analysis" data-scroll-link="weather-analysis"><i data-lucide="cloud-sun" style="width:18px;height:18px;"></i><span>Weather Analysis</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="#itinerary" data-scroll-link="itinerary"><i data-lucide="navigation" style="width:18px;height:18px;"></i><span>Itinerary</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="#budget-range" data-scroll-link="budget-range"><i data-lucide="indian-rupee" style="width:18px;height:18px;"></i><span>Budget Range</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="#packing-checklist" data-scroll-link="packing-checklist"><i data-lucide="briefcase" style="width:18px;height:18px;"></i><span>Packing Checklist</span><span class="dot" aria-hidden="true"></span></a></div>
+    </div>
+    <div class="sidebar-group">
+      <h2 class="sidebar-subtitle">Control Center</h2>
+      <div id="mobile-control-links" class="sidebar-links">
+<a class="sidebar-link" href="/refine-plan.html"><i data-lucide="refresh-cw" style="width:18px;height:18px;"></i><span>Refine Plan</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="/expense-tracker.html"><i data-lucide="wallet" style="width:18px;height:18px;"></i><span>Expense Tracker</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="/collaborate.html"><i data-lucide="users" style="width:18px;height:18px;"></i><span>Collaborate</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="/settings.html"><i data-lucide="settings" style="width:18px;height:18px;"></i><span>Settings</span><span class="dot" aria-hidden="true"></span></a></div>
+    </div>
+  </aside>
+
+  <div class="main-grid">
+    <aside class="sidebar" aria-label="Plan navigation">
+      <div class="sidebar-group">
+        <h2 class="sidebar-title">Your Plan</h2>
+        <div id="desktop-plan-links" class="sidebar-links">
+<a class="sidebar-link" href="#trip-highlights" data-scroll-link="trip-highlights"><i data-lucide="info" style="width:18px;height:18px;"></i><span>Trip Highlights</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="#weather-analysis" data-scroll-link="weather-analysis"><i data-lucide="cloud-sun" style="width:18px;height:18px;"></i><span>Weather Analysis</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="#itinerary" data-scroll-link="itinerary"><i data-lucide="navigation" style="width:18px;height:18px;"></i><span>Itinerary</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="#budget-range" data-scroll-link="budget-range"><i data-lucide="indian-rupee" style="width:18px;height:18px;"></i><span>Budget Range</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="#packing-checklist" data-scroll-link="packing-checklist"><i data-lucide="briefcase" style="width:18px;height:18px;"></i><span>Packing Checklist</span><span class="dot" aria-hidden="true"></span></a></div>
+      </div>
+      <div class="sidebar-group">
+        <h2 class="sidebar-subtitle">Control Center</h2>
+        <div id="desktop-control-links" class="sidebar-links">
+<a class="sidebar-link" href="/refine-plan.html"><i data-lucide="refresh-cw" style="width:18px;height:18px;"></i><span>Refine Plan</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="/expense-tracker.html"><i data-lucide="wallet" style="width:18px;height:18px;"></i><span>Expense Tracker</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="/collaborate.html"><i data-lucide="users" style="width:18px;height:18px;"></i><span>Collaborate</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="/settings.html"><i data-lucide="settings" style="width:18px;height:18px;"></i><span>Settings</span><span class="dot" aria-hidden="true"></span></a></div>
+      </div>
+    </aside>
+
+    <div class="content">
+      <main class="page-shell">
+
+        <!-- Preferred Currency -->
+        <section class="settings-card">
+          <h2 class="settings-section-title">Preffered Currency</h2>
+          <p class="settings-section-desc">Select your preffered currency for this plan which can be used in expenses section.</p>
+          <div class="settings-row">
+            <div class="currency-picker" id="currency-picker">
+              <input type="hidden" id="currency" value="INR" />
+              <button type="button" class="currency-picker-trigger" id="currency-trigger" aria-haspopup="listbox" aria-expanded="false">
+                <span class="currency-picker-label" id="currency-trigger-label">INR - Indian Rupee</span>
+                <span class="currency-picker-caret" aria-hidden="true"><i data-lucide="chevron-down" class="currency-picker-caret-icon"></i></span>
+              </button>
+              <div class="currency-picker-menu" id="currency-menu" hidden>
+                <button type="button" class="currency-scroll-arrow" id="currency-scroll-up" aria-label="Scroll currencies up"><i data-lucide="chevron-up" class="currency-scroll-arrow-icon"></i></button>
+                <div class="currency-options" id="currency-options" role="listbox" aria-label="Currencies"></div>
+                <button type="button" class="currency-scroll-arrow" id="currency-scroll-down" aria-label="Scroll currencies down"><i data-lucide="chevron-down" class="currency-scroll-arrow-icon"></i></button>
+              </div>
+            </div>
+            <button id="save-currency-btn" class="settings-btn" type="button">Save</button>
+          </div>
+          <p class="settings-note">Note: System defaults to INR if no currency is preffered.</p>
+        </section>
+
+        <!-- Display Name -->
+        <section class="settings-card">
+          <h2 class="settings-section-title">Display Name</h2>
+          <p class="settings-section-desc">Set your own display name</p>
+          <div class="settings-field-group">
+            <div class="settings-field">
+              <label class="settings-label" for="first-name">First Name</label>
+              <input id="first-name" class="settings-input" type="text" placeholder="First Name" />
+            </div>
+            <div class="settings-field">
+              <label class="settings-label" for="last-name">Last Name</label>
+              <input id="last-name" class="settings-input" type="text" placeholder="Last Name" />
+            </div>
+          </div>
+          <button id="save-name-btn" class="settings-btn" type="button">Save</button>
+        </section>
+
+        <!-- Danger Zone -->
+        <section class="settings-card settings-danger-card">
+          <h2 class="settings-section-title danger-title">Danger Zone</h2>
+          <p class="settings-section-desc">You can delete your travel plan but please be informed that it can not be recoved.</p>
+          <button id="delete-plan-btn" class="settings-btn danger-btn" type="button">Delete Travel Plan</button>
+        </section>
+
+      </main>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="smodal-overlay" role="dialog" aria-modal="true">
+      <div class="smodal-box">
+        <h3 class="smodal-title">Delete Travel Plan?</h3>
+        <p class="smodal-desc">This action cannot be undone. Type <strong>Delete</strong> to confirm.</p>
+        <input id="delete-input" class="smodal-input" type="text" placeholder='Type "Delete" to confirm' autocomplete="off" />
+        <div class="smodal-actions">
+          <button id="delete-cancel" class="smodal-cancel" type="button">Cancel</button>
+          <button id="delete-confirm" class="smodal-confirm" type="button" disabled>Confirm</button>
+        </div>
+      </div>
+    </div>
+
+  <div id="settings-toast" class="settings-toast" role="status" aria-live="polite"></div>
+  </div>
+  <footer class="footer-home-match py-5 mt-10 bg-blue-50 dark:bg-slate-900 dark:text-gray-200 relative z-[1000]">
+        <div class="lg:px-20 px-5 py-2 grid grid-cols-4 justify-between gap-10 lg:grid-cols-6 lg:text-left">
+          <div class="col-span-4 flex w-full flex-col gap-6 lg:col-span-2">
+            <div class="flex items-center gap-2 lg:justify-start">
+              <div class="hidden md:flex gap-10 items-center justify-start flex-1"><a href="/">
+                  <div class="flex justify-center items-center leading-5 font-bold text-xl"><img alt="logo"
+                      loading="lazy" width="100" height="50" decoding="async" data-nimg="1" class="dark:hidden"
+                      style="color:transparent" srcset="images/image_3.png 1x, images/image.png 2x"
+                      src="images/image.png"><img alt="logo" loading="lazy" width="100" height="50" decoding="async"
+                      data-nimg="1" class="hidden dark:block" style="color:transparent"
+                      srcset="images/image_4.png 1x, images/image_2.png 2x" src="images/image_2.png"></div>
+                </a></div>
+            </div>
+            <p class="text-muted-foreground dark:text-gray-400">Your perfect trip, built for you. Effortlessly plan
+              personalized itineraries that match your travel style.</p>
+            <ul class="flex items-center space-x-6">
+              <li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300">
+                    <a href="https://www.instagram.com/yatrify.ai" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512"
+                    class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z">
+                    </path>
+                  </svg></a></li>
+              <li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300">
+                    <a href="https://www.facebook.com/profile.php?id=61577480754112" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512"
+                    class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M504 256C504 119 393 8 256 8S8 119 8 256c0 123.78 90.69 226.38 209.25 245V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.28c-30.8 0-40.41 19.12-40.41 38.73V256h68.78l-11 71.69h-57.78V501C413.31 482.38 504 379.78 504 256z">
+                    </path>
+                  </svg></a></li>
+              <li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300">
+                    <a href="https://x.com/Yatrify_ai" target="_blank" rel="noopener noreferrer" aria-label="X"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512"
+                        class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8l165-188.5L26.7 48H172.3l100.7 132.1L389.2 48zm-24.8 373.8h39.1L151.1 88.1h-42l255.3 333.7z"></path>
+                      </svg></a></li>
+              <li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300">
+                    <a href="https://www.linkedin.com/in/yatrify-ai" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512"
+                    class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z">
+                    </path>
+                  </svg></a></li>
+            </ul>
+          </div>
+          <div class="col-span-2 md:col-span-1">
+            <h3 class="mb-5 font-medium">Support</h3>
+            <ul class="space-y-4 text-sm text-muted-foreground dark:text-gray-400">
+              <li class="font-medium"><a
+                  class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
+                  href="/help-center">Help Center</a></li>
+              <li class="font-medium"><a
+                  class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
+                  href="/contact-us">Contact Us</a></li>
+              <li class="font-medium"><a
+                  class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
+                  href="/privacy-policy">Privacy Policy</a></li>
+              <li class="font-medium"><a
+                  class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
+                  href="/terms-of-service">Terms of Service</a></li>
+            </ul>
+          </div>
+          <div class="col-span-2 md:col-span-1">
+            <h3 class="mb-5 font-medium">Company</h3>
+            <ul class="space-y-4 text-sm text-muted-foreground dark:text-gray-400">
+              <li class="font-medium"><a
+                  class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
+                  href="/about-us">About Us</a></li>
+              <li class="font-medium"><a
+                  class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
+                  href="/partners">Partners</a></li>
+            </ul>
+          </div>
+          <div class="col-span-4 md:col-span-2">
+            <h3 class="mb-2 font-medium">Newsletter</h3>
+            <form class="grid gap-1">
+              <div class="flex justify-evenly w-full space-x-2"><input type="email"
+                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-slate-800 dark:border-slate-700"
+                  data-slot="input" placeholder="Email" required="" value=""><button
+                  class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 px-4 py-2 dark:bg-slate-700 dark:hover:bg-slate-600"
+                  data-slot="button" type="submit">Subscribe</button></div>
+            </form>
+            <p class="mt-2 ml-1 text-xs font-medium text-muted-foreground dark:text-gray-400">By submitting, you agree
+              to our<a href="/privacy-policy" class="ml-1 text-primary dark:text-blue-400 hover:underline">Privacy
+                Policy</a></p>
+          </div>
+        </div>
+      </footer>
+
+<script src="/js/clerk-loader.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/plan-service.js"></script>
+  <script src="/js/plan-context.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+(async function () {
+  var GENERATED_PLAN_PATH = "/generated-plan.html";
+  var CURRENT_PAGE_PATH = "/settings.html";
+  var planList = [];
+  var planOptions = [];
+
+  var PLAN_LINKS = [
+    { id: "trip-highlights", icon: "info", label: "Trip Highlights" },
+    { id: "weather-analysis", icon: "cloud-sun", label: "Weather Analysis" },
+    { id: "itinerary", icon: "navigation", label: "Itinerary" },
+    { id: "budget-range", icon: "indian-rupee", label: "Budget Range" },
+    { id: "packing-checklist", icon: "briefcase", label: "Packing Checklist" }
+  ];
+
+  var CONTROL_LINKS = [
+    { icon: "refresh-cw", label: "Refine Plan", href: "/refine-plan.html" },
+    { icon: "wallet", label: "Expense Tracker", href: "/expense-tracker.html" },
+    { icon: "users", label: "Collaborate", href: "/collaborate.html" },
+    { icon: "settings", label: "Settings", href: "/settings.html" }
+  ];
+  var CONTENT_FOOTER_SPACER = 96;
+
+  var activePlanContext = await syncActivePlanContext();
+  var activePlanId = activePlanContext && activePlanContext.id ? activePlanContext.id : "";
+
+  applyThemeMode();
+  renderSidebarLinks("desktop-plan-links", "desktop-control-links");
+  renderSidebarLinks("mobile-plan-links", "mobile-control-links");
+  markCurrentControlPage();
+  setupMobileDrawer();
+  setupThemeToggle();
+  await setupTopbarData();
+  await setupHeaderPlanSearch();
+  setupClerkHeaderProfile();
+  setupContentSpacing();
+  if (window.lucide && typeof window.lucide.createIcons === "function") window.lucide.createIcons();
+  try {
+    document.documentElement.classList.add("yatrify-page-ready");
+    window.dispatchEvent(new Event("yatrify:page-ready"));
+  } catch (_) {}
+  setupSettings();
+
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/\"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function createPlanSignature(plan) {
+    if (!plan || typeof plan !== "object") return "";
+    return [
+      String(plan.startCity || "").trim().toLowerCase(),
+      String(plan.destination || "").trim().toLowerCase(),
+      String(plan.startDate || "").trim(),
+      String(plan.endDate || "").trim(),
+      String(plan.passengers || "").trim().toLowerCase()
+    ].join("|");
+  }
+
+  function getPlanDestinationLabel(plan, index) {
+    var destination = plan && plan.destination;
+    if (destination && typeof destination === "object") {
+      return [destination.city || "", destination.country || ""].filter(Boolean).join(", ");
+    }
+    return String(destination || "Plan " + ((Number(index) || 0) + 1)).trim();
+  }
+
+  function readPlanLibraryRecords() {
+    return planOptions.slice();
+  }
+
+  async function syncActivePlanContext() {
+    var planId = "";
+    if (window.YatrifyPlanContext && typeof window.YatrifyPlanContext.resolvePlanId === "function") {
+      planId = await window.YatrifyPlanContext.resolvePlanId();
+    }
+    if (!planId || !window.YatrifyPlanService) {
+      return { id: "", label: "Plan", planData: {} };
+    }
+    try {
+      var payload = await window.YatrifyPlanService.getPlan(planId);
+      var plan = payload && payload.plan ? payload.plan : {};
+      return { id: planId, label: getPlanDestinationLabel(plan, 0), planData: plan, accessRole: payload.accessRole };
+    } catch (_) {
+      return { id: planId, label: "Plan", planData: {} };
+    }
+  }
+
+  async function ensurePlanListLoaded() {
+    if (!window.YatrifyPlanService) return [];
+    if (planList.length) return planList;
+    try {
+      var listPayload = await window.YatrifyPlanService.listPlans();
+      planList = Array.isArray(listPayload) ? listPayload : (listPayload && listPayload.plans ? listPayload.plans : []);
+    } catch (_) {
+      planList = [];
+    }
+    planOptions = planList.map(function (plan, index) {
+      var label = getPlanDestinationLabel(plan, index);
+      return {
+        id: plan.id,
+        label: label,
+        searchText: label.toLowerCase()
+      };
+    });
+    return planList;
+  }
+
+  function getActivePlanSignature() {
+    return String(activePlanId || "").trim();
+  }
+
+  function buildPlanAwareUrl(path, planId, hash) {
+    if (window.YatrifyPlanContext && typeof window.YatrifyPlanContext.buildPlanAwareUrl === "function") {
+      return window.YatrifyPlanContext.buildPlanAwareUrl(path, planId || activePlanId, hash);
+    }
+    var targetPath = String(path || GENERATED_PLAN_PATH).trim() || GENERATED_PLAN_PATH;
+    var safePlanId = String(planId || activePlanId || "").trim();
+    var hashValue = String(hash || "").trim();
+    var hashIndex = targetPath.indexOf("#");
+    if (hashIndex !== -1) targetPath = targetPath.slice(0, hashIndex);
+    if (safePlanId) {
+      targetPath += (targetPath.indexOf("?") === -1 ? "?" : "&") + "planId=" + encodeURIComponent(safePlanId);
+    }
+    if (hashValue) targetPath += "#" + hashValue;
+    return targetPath;
+  }
+
+  function stabilizeContentSpacing() {
+    var content = document.querySelector(".content");
+    if (!content) return;
+    var sidebar = document.querySelector(".sidebar");
+    var measuredHeight = 0;
+    Array.from(content.children || []).forEach(function (child) {
+      if (!child || child.nodeType !== 1) return;
+      measuredHeight = Math.max(measuredHeight, Math.ceil(child.scrollHeight || child.offsetHeight || 0));
+    });
+    if (sidebar) {
+      measuredHeight = Math.max(measuredHeight, Math.ceil(sidebar.scrollHeight || sidebar.offsetHeight || 0) + CONTENT_FOOTER_SPACER);
+    }
+    if (measuredHeight > 0) {
+      content.style.setProperty("--fixed-step-height", measuredHeight + "px");
+    }
+  }
+
+  function setupContentSpacing() {
+    stabilizeContentSpacing();
+    window.addEventListener("resize", stabilizeContentSpacing);
+  }
+
+  function makeSidebarLink(item) {
+    var href = item.href
+      ? buildPlanAwareUrl(item.href, getActivePlanSignature())
+      : buildPlanAwareUrl(GENERATED_PLAN_PATH, getActivePlanSignature(), item.id);
+    return (
+      '<a class="sidebar-link" href="' + href + '">' +
+      '<i data-lucide="' + item.icon + '" style="width:18px;height:18px;"></i>' +
+      "<span>" + escapeHtml(item.label) + "</span>" +
+      '<span class="dot" aria-hidden="true"></span>' +
+      "</a>"
+    );
+  }
+
+  function renderSidebarLinks(planId, controlId) {
+    var planNode = document.getElementById(planId);
+    var controlNode = document.getElementById(controlId);
+    if (planNode) planNode.innerHTML = PLAN_LINKS.map(makeSidebarLink).join("");
+    if (controlNode) controlNode.innerHTML = CONTROL_LINKS.map(makeSidebarLink).join("");
+  }
+
+  function markCurrentControlPage() {
+    var current = (window.location.pathname.split("/").pop() || "").toLowerCase();
+    Array.from(document.querySelectorAll('.sidebar-link[href^="/"]')).forEach(function (link) {
+      var href = String(link.getAttribute("href") || "").toLowerCase();
+      var hrefPath = href.split("#")[0].split("?")[0];
+      link.classList.toggle("active", hrefPath.endsWith("/" + current) || hrefPath.endsWith(current));
+    });
+  }
+
+  function setupMobileDrawer() {
+    var openBtn = document.getElementById("mobile-menu-btn");
+    var closeBtn = document.getElementById("mobile-close-btn");
+    var overlay = document.getElementById("mobile-overlay");
+    var drawer = document.getElementById("mobile-drawer");
+    if (!openBtn || !closeBtn || !overlay || !drawer) return;
+
+    openBtn.addEventListener("click", function () {
+      drawer.classList.add("open");
+      overlay.classList.add("open");
+      document.body.style.overflow = "hidden";
+    });
+
+    closeBtn.addEventListener("click", closeMobileDrawer);
+    overlay.addEventListener("click", closeMobileDrawer);
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") closeMobileDrawer();
+    });
+  }
+
+  function closeMobileDrawer() {
+    var drawer = document.getElementById("mobile-drawer");
+    var overlay = document.getElementById("mobile-overlay");
+    if (!drawer || !overlay) return;
+    drawer.classList.remove("open");
+    overlay.classList.remove("open");
+    document.body.style.overflow = "";
+  }
+
+  function setThemeMode(dark) {
+    document.documentElement.classList.toggle("dark", dark);
+    document.documentElement.classList.toggle("light", !dark);
+    document.documentElement.style.colorScheme = dark ? "dark" : "light";
+  }
+
+  function applyThemeMode() {
+    setThemeMode(localStorage.getItem("theme") === "dark");
+  }
+
+  function setupThemeToggle() {
+    var button = document.getElementById("theme-toggle-btn");
+    if (!button) return;
+    button.addEventListener("click", function () {
+      var dark = !document.documentElement.classList.contains("dark");
+      localStorage.setItem("theme", dark ? "dark" : "light");
+      setThemeMode(dark);
+    });
+  }
+
+  async function setupTopbarData() {
+    var creditsCount = document.getElementById("credits-count");
+    if (window.YatrifyPlanService) {
+      try {
+        var payload = await window.YatrifyPlanService.getUserMe();
+        var credits = Number(payload && payload.credits);
+        if (creditsCount) creditsCount.textContent = Number.isFinite(credits) ? String(credits) : "—";
+      } catch (_) {
+        if (creditsCount) creditsCount.textContent = "—";
+      }
+    }
+
+    var selectedLabel = document.getElementById("destination-selected-label");
+    if (!selectedLabel) return;
+    var destination = activePlanContext && activePlanContext.label
+      ? activePlanContext.label
+      : getPlanDestinationLabel(activePlanContext && activePlanContext.planData ? activePlanContext.planData : {}, 0);
+    selectedLabel.textContent = destination || "Destination";
+  }
+
+  async function setupHeaderPlanSearch() {
+    var wrap = document.getElementById("header-plan-search");
+    var trigger = document.getElementById("destination-trigger");
+    var searchInput = document.getElementById("destination-search-input");
+    var optionsNode = document.getElementById("destination-options");
+    var emptyNode = document.getElementById("destination-empty");
+    var selectedLabel = document.getElementById("destination-selected-label");
+    if (!wrap || !trigger || !searchInput || !optionsNode || !emptyNode || !selectedLabel) return;
+
+    await ensurePlanListLoaded();
+    var library = readPlanLibraryRecords();
+    function render(query) {
+      var q = String(query || "").toLowerCase().trim();
+      var list = library.filter(function (x) { return !q || x.searchText.indexOf(q) !== -1; });
+      optionsNode.innerHTML = "";
+      emptyNode.style.display = list.length ? "none" : "block";
+      list.forEach(function (entry) {
+        var button = document.createElement("button");
+        button.type = "button";
+        button.className = "destination-option";
+        button.textContent = entry.label;
+        button.addEventListener("click", function () {
+          var nextUrl = buildPlanAwareUrl(CURRENT_PAGE_PATH, entry.id);
+          selectedLabel.textContent = entry.label;
+          wrap.classList.remove("open");
+          trigger.setAttribute("aria-expanded", "false");
+          window.location.href = nextUrl;
+        });
+        optionsNode.appendChild(button);
+      });
+    }
+
+    trigger.addEventListener("click", function () {
+      var open = wrap.classList.toggle("open");
+      trigger.setAttribute("aria-expanded", open ? "true" : "false");
+      if (open) {
+        searchInput.value = "";
+        render("");
+        setTimeout(function () { searchInput.focus(); }, 10);
+      }
+    });
+
+    searchInput.addEventListener("input", function () { render(searchInput.value); });
+    document.addEventListener("click", function (e) {
+      if (!wrap.contains(e.target)) {
+        wrap.classList.remove("open");
+        trigger.setAttribute("aria-expanded", "false");
+      }
+    });
+  }
+
+  function setupClerkHeaderProfile() {
+    var signInLink = document.getElementById("header-signin-link");
+    var profileWrap = document.getElementById("user-profile");
+    var profileBtn = document.getElementById("profile-btn");
+    var avatarImg = document.getElementById("user-avatar");
+    var avatarLetter = document.getElementById("user-avatar-letter");
+    var profileMenu = document.getElementById("profile-menu");
+    var profileName = document.getElementById("profile-name");
+    var profileEmail = document.getElementById("profile-email");
+    var manageBtn = document.getElementById("manage-account");
+    var signOutBtn = document.getElementById("signout-btn");
+
+    function markHeaderAuthReady() {
+    }
+
+    function closeProfileMenu() {
+      if (!profileMenu) return;
+      profileMenu.style.display = "none";
+      profileMenu.setAttribute("aria-hidden", "true");
+      if (profileBtn) profileBtn.setAttribute("aria-expanded", "false");
+    }
+
+    function openProfileMenu() {
+      if (!profileMenu) return;
+      profileMenu.style.display = "block";
+      profileMenu.setAttribute("aria-hidden", "false");
+      if (profileBtn) profileBtn.setAttribute("aria-expanded", "true");
+    }
+
+    function setGuest() {
+      if (signInLink) signInLink.style.display = "inline-flex";
+      if (profileWrap) profileWrap.style.display = "none";
+      markHeaderAuthReady();
+      closeProfileMenu();
+      if (avatarImg) {
+        avatarImg.style.display = "none";
+        avatarImg.removeAttribute("src");
+      }
+      if (avatarLetter) {
+        avatarLetter.textContent = "N";
+        avatarLetter.style.display = "inline-flex";
+      }
+      if (profileName) profileName.textContent = "Guest";
+      if (profileEmail) profileEmail.textContent = "";
+    }
+
+    function setUser(user) {
+      if (!user) {
+        setGuest();
+        return;
+      }
+      if (signInLink) signInLink.style.display = "none";
+      if (profileWrap) profileWrap.style.display = "inline-flex";
+      markHeaderAuthReady();
+
+      var email = user.primaryEmailAddress && user.primaryEmailAddress.emailAddress
+        ? user.primaryEmailAddress.emailAddress
+        : "";
+      var fullName = [user.firstName, user.lastName].filter(Boolean).join(" ").trim();
+      var seed = fullName || user.username || email || "N";
+      var initial = String(seed || "N").charAt(0).toUpperCase();
+      if (profileName) profileName.textContent = seed;
+      if (profileEmail) profileEmail.textContent = email || "No email address";
+
+      if (avatarLetter) avatarLetter.textContent = initial;
+      if (avatarImg) {
+        if (user.imageUrl) {
+          avatarImg.src = user.imageUrl;
+          avatarImg.onerror = function () {
+            avatarImg.style.display = "none";
+            if (avatarLetter) avatarLetter.style.display = "inline-flex";
+          };
+          avatarImg.style.display = "block";
+          if (avatarLetter) avatarLetter.style.display = "none";
+        } else {
+          avatarImg.style.display = "none";
+          if (avatarLetter) avatarLetter.style.display = "inline-flex";
+        }
+      }
+    }
+
+    if (!profileBtn || profileBtn.dataset.bound === "true") return;
+    profileBtn.dataset.bound = "true";
+    profileBtn.setAttribute("aria-haspopup", "menu");
+    profileBtn.setAttribute("aria-expanded", "false");
+    profileBtn.addEventListener("click", function (event) {
+      event.stopPropagation();
+      if (profileMenu && profileWrap && profileWrap.style.display !== "none") {
+        if (profileMenu.style.display === "block") {
+          closeProfileMenu();
+        } else {
+          openProfileMenu();
+        }
+        return;
+      }
+      if (signInLink) {
+        window.location.href = signInLink.getAttribute("href") || "/sign-in/";
+      }
+    });
+
+    if (profileMenu) {
+      profileMenu.addEventListener("click", function (event) {
+        event.stopPropagation();
+      });
+    }
+
+    document.addEventListener("click", function () {
+      if (!profileMenu || profileMenu.style.display !== "block") return;
+      closeProfileMenu();
+    });
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") closeProfileMenu();
+    });
+
+    if (manageBtn && manageBtn.dataset.bound !== "true") {
+      manageBtn.dataset.bound = "true";
+      manageBtn.addEventListener("click", function () {
+        closeProfileMenu();
+        if (window.Clerk && typeof window.Clerk.openUserProfile === "function" && window.Clerk.user) {
+          window.Clerk.openUserProfile();
+        } else if (signInLink) {
+          window.location.href = signInLink.getAttribute("href") || "/sign-in/";
+        }
+      });
+    }
+
+    if (signOutBtn && signOutBtn.dataset.bound !== "true") {
+      signOutBtn.dataset.bound = "true";
+      signOutBtn.addEventListener("click", function () {
+        closeProfileMenu();
+        if (window.Clerk && typeof window.Clerk.signOut === "function" && window.Clerk.user) {
+          window.Clerk.signOut({ redirectUrl: window.location.href });
+        }
+      });
+    }
+
+    function bindClerk(clerk) {
+      if (!clerk) {
+        setGuest();
+        return;
+      }
+      setUser(clerk.user || null);
+      if (typeof clerk.addListener === "function" && !clerk.__yatrifyHeaderListenerBound) {
+        clerk.__yatrifyHeaderListenerBound = true;
+        clerk.addListener(function () {
+          setUser(clerk.user || null);
+        });
+      }
+    }
+
+    if (window.Clerk && typeof window.Clerk.load === "function") {
+      window.Clerk.load().then(function () {
+        bindClerk(window.Clerk);
+      }).catch(function () {
+        setGuest();
+      });
+      return;
+    }
+
+    if (typeof window.__loadYatrifyClerk !== "function") {
+      setGuest();
+      return;
+    }
+
+    window.__loadYatrifyClerk(false).then(function (clerk) {
+      if (!clerk || typeof clerk.load !== "function") {
+        setGuest();
+        return;
+      }
+      clerk.load().then(function () {
+        bindClerk(window.Clerk || clerk);
+      }).catch(function () {
+        setGuest();
+      });
+    }).catch(function () {
+      setGuest();
+    });
+  }
+
+  function setupSettings() {
+    var toastTimer = null;
+    function showToast(message, opts) {
+      var t = document.getElementById("settings-toast");
+      if (!t) return;
+      var title = (opts && opts.title) ? String(opts.title) : "Settings saved";
+      var body = String(message || title || "Saved");
+      if (toastTimer) {
+        window.clearTimeout(toastTimer);
+        toastTimer = null;
+      }
+      t.classList.remove("show");
+      t.innerHTML =
+        '<div class="settings-toast-inner">' +
+        '<div class="settings-toast-head">' +
+        '<p class="settings-toast-title">' + escHtml(title) + "</p>" +
+        '<button class="settings-toast-close" type="button" aria-label="Dismiss notification" data-toast-close="true">' +
+        '<i data-lucide="x"></i></button></div>' +
+        '<p class="settings-toast-message">' + escHtml(body) + "</p></div>";
+      if (window.lucide && typeof window.lucide.createIcons === "function") window.lucide.createIcons();
+      t.classList.add("show");
+      toastTimer = window.setTimeout(function () {
+        t.classList.remove("show");
+        toastTimer = null;
+      }, 3600);
+    }
+    function bindToastClose() {
+      var toast = document.getElementById("settings-toast");
+      if (!toast || toast.dataset.bound === "true") return;
+      toast.dataset.bound = "true";
+      toast.addEventListener("click", function (event) {
+        var closeBtn = event.target.closest("[data-toast-close]");
+        if (!closeBtn) return;
+        toast.classList.remove("show");
+        if (toastTimer) {
+          window.clearTimeout(toastTimer);
+          toastTimer = null;
+        }
+      });
+    }
+    bindToastClose();
+    async function updatePlanData(updates) {
+      if (!activePlanId || !window.YatrifyPlanService) return null;
+      try {
+        var payload = await window.YatrifyPlanService.updatePlan(activePlanId, updates || {});
+        if (payload && payload.plan) {
+          activePlanContext.planData = payload.plan;
+          return payload.plan;
+        }
+      } catch (_) {}
+      return null;
+    }
+    function escHtml(s) {
+      return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    }
+
+    // ── Currency picker (same logic as plans-newplan.html) ──
+    var cpPicker = document.getElementById("currency-picker");
+    var cpInput = document.getElementById("currency");
+    var cpTrigger = document.getElementById("currency-trigger");
+    var cpLabel = document.getElementById("currency-trigger-label");
+    var cpMenu = document.getElementById("currency-menu");
+    var cpOptions = document.getElementById("currency-options");
+    var cpScrollUp = document.getElementById("currency-scroll-up");
+    var cpScrollDown = document.getElementById("currency-scroll-down");
+    var cpCatalog = [];
+    var cpHoverTimer = null;
+    var cpTypeBuffer = "";
+    var cpTypeTimer = null;
+    var cpTypeMatch = "";
+    var pendingCurrency = "INR";
+
+    var CP_BACKUP = ["AED","AFN","ALL","AMD","ANG","AOA","ARS","AUD","AWG","AZN","BAM","BBD","BDT","BGN","BHD","BIF","BMD","BND","BOB","BRL","BSD","BTN","BWP","BYN","BZD","CAD","CDF","CHF","CLP","CNY","COP","CRC","CUP","CVE","CZK","DJF","DKK","DOP","DZD","EGP","ERN","ETB","EUR","FJD","FKP","GBP","GEL","GHS","GIP","GMD","GNF","GTQ","GYD","HKD","HNL","HTG","HUF","IDR","ILS","INR","IQD","IRR","ISK","JMD","JOD","JPY","KES","KGS","KHR","KMF","KRW","KWD","KYD","KZT","LAK","LBP","LKR","LRD","LSL","LYD","MAD","MDL","MGA","MKD","MMK","MNT","MOP","MRU","MUR","MVR","MWK","MXN","MYR","MZN","NAD","NGN","NIO","NOK","NPR","NZD","OMR","PAB","PEN","PGK","PHP","PKR","PLN","PYG","QAR","RON","RSD","RUB","RWF","SAR","SBD","SCR","SDG","SEK","SGD","SHP","SOS","SRD","STN","SVC","SYP","SZL","THB","TJS","TMT","TND","TOP","TRY","TTD","TWD","TZS","UAH","UGX","USD","UYU","UZS","VND","VUV","WST","XAF","XCD","XOF","XPF","YER","ZAR","ZMW","ZWG"];
+    var CP_NAMES = { INR:"Indian Rupee",USD:"US Dollar",EUR:"Euro",GBP:"British Pound",JPY:"Japanese Yen",CNY:"Chinese Yuan",AED:"UAE Dirham",AUD:"Australian Dollar",CAD:"Canadian Dollar",CHF:"Swiss Franc" };
+
+    function cpGetName(code, dn) {
+      if (dn) { try { var n = dn.of(code); if (n && n !== code) return n; } catch(e) {} }
+      try {
+        var parts = new Intl.NumberFormat("en",{style:"currency",currency:code,currencyDisplay:"name",minimumFractionDigits:0,maximumFractionDigits:0}).formatToParts(1);
+        var p = parts.find(function(x){return x.type==="currency";});
+        if (p && p.value) return p.value;
+      } catch(e) {}
+      return CP_NAMES[code] || code;
+    }
+    function cpBuildCatalog() {
+      var codes = [];
+      if (typeof Intl !== "undefined" && typeof Intl.supportedValuesOf === "function") { try { codes = Intl.supportedValuesOf("currency") || []; } catch(e) {} }
+      if (!codes.length) codes = CP_BACKUP.slice();
+      if (codes.indexOf("INR") === -1) codes.push("INR");
+      var seen = {}, deduped = [];
+      codes.forEach(function(c){ var code = String(c||"").toUpperCase(); if (!/^[A-Z]{3}$/.test(code)||seen[code]) return; seen[code]=true; deduped.push(code); });
+      deduped.sort();
+      var dn = null;
+      if (typeof Intl !== "undefined" && typeof Intl.DisplayNames === "function") { try { dn = new Intl.DisplayNames(["en"],{type:"currency"}); } catch(e) {} }
+      return deduped.map(function(code){ var name = cpGetName(code, dn); return {code:code, name:name, label:code+" - "+name}; });
+    }
+    function cpFind(code) {
+      var w = String(code||"").toUpperCase();
+      for (var i=0;i<cpCatalog.length;i++) if (cpCatalog[i].code===w) return cpCatalog[i];
+      return null;
+    }
+    function cpRenderOptions(sel) {
+      if (!cpOptions) return;
+      var active = String(sel||"").toUpperCase();
+      cpOptions.innerHTML = cpCatalog.map(function(item){
+        var isSel = item.code===active;
+        return '<button type="button" class="currency-option'+(isSel?" selected":"")+'" data-currency="'+escHtml(item.code)+'" role="option" aria-selected="'+(isSel?"true":"false")+'">'
+          +'<span class="currency-option-check" aria-hidden="true"><i data-lucide="check" class="currency-option-check-icon"></i></span>'
+          +'<span class="currency-option-label">'+escHtml(item.label)+'</span></button>';
+      }).join("");
+      if (window.lucide && typeof window.lucide.createIcons === "function") window.lucide.createIcons();
+    }
+    function cpSelect(code, silent) {
+      var item = cpFind(code) || cpFind("INR") || cpCatalog[0];
+      if (!item) return;
+      if (cpInput) cpInput.value = item.code;
+      if (cpLabel) cpLabel.textContent = item.label;
+      cpRenderOptions(item.code);
+      pendingCurrency = item.code;
+    }
+    function cpStopScroll() { if (cpHoverTimer) { clearInterval(cpHoverTimer); cpHoverTimer=null; } }
+    function cpStartScroll(dir) { cpStopScroll(); if (!cpOptions) return; cpHoverTimer = setInterval(function(){ cpOptions.scrollTop += dir*8; },16); }
+    function cpClose() {
+      cpStopScroll(); cpTypeBuffer=""; if (cpTypeTimer){clearTimeout(cpTypeTimer);cpTypeTimer=null;} cpTypeMatch="";
+      if (cpMenu) cpMenu.hidden=true;
+      if (cpPicker) cpPicker.classList.remove("open");
+      if (cpTrigger) cpTrigger.setAttribute("aria-expanded","false");
+    }
+    function cpOpen() {
+      if (!cpMenu) return;
+      cpRenderOptions(cpInput ? cpInput.value : "INR");
+      cpMenu.hidden=false;
+      if (cpPicker) cpPicker.classList.add("open");
+      if (cpTrigger) cpTrigger.setAttribute("aria-expanded","true");
+      if (cpOptions) { var sel=cpOptions.querySelector(".currency-option.selected"); if (sel) sel.scrollIntoView({block:"center"}); }
+    }
+    function cpTypeKey(e) {
+      var key = String(e.key||"");
+      if (key==="Escape") { cpClose(); return; }
+      if (key==="Enter" && !cpMenu.hidden && cpTypeMatch) { e.preventDefault(); cpSelect(cpTypeMatch,false); cpClose(); return; }
+      if (!/^[a-z0-9 ]$/i.test(key)||e.ctrlKey||e.metaKey||e.altKey) return;
+      e.preventDefault();
+      if (cpMenu.hidden) cpOpen();
+      cpTypeBuffer += key.toLowerCase();
+      if (cpTypeTimer){clearTimeout(cpTypeTimer);} cpTypeTimer=setTimeout(function(){cpTypeBuffer="";},900);
+      var needle=cpTypeBuffer;
+      var match=null;
+      for (var i=0;i<cpCatalog.length;i++) {
+        var it=cpCatalog[i], c=it.code.toLowerCase(), n=it.name.toLowerCase();
+        if (c.indexOf(needle)===0||n.indexOf(needle)===0){match=it;break;}
+        if (!match&&(c.indexOf(needle)!==-1||n.indexOf(needle)!==-1)) match=it;
+      }
+      if (match) {
+        cpTypeMatch=match.code;
+        if (cpOptions) { var opt=cpOptions.querySelector('.currency-option[data-currency="'+match.code+'"]'); if(opt){opt.classList.add("match"); opt.scrollIntoView({block:"nearest"});} }
+      }
+    }
+
+    if (cpPicker && cpInput && cpTrigger && cpMenu && cpOptions) {
+      cpCatalog = cpBuildCatalog();
+      var planCurrency = (activePlanContext && activePlanContext.planData && activePlanContext.planData.currency)
+        ? String(activePlanContext.planData.currency).toUpperCase()
+        : "INR";
+      pendingCurrency = planCurrency;
+      cpSelect(planCurrency, true);
+      cpTrigger.addEventListener("click", function(){ if(cpMenu.hidden) cpOpen(); else cpClose(); });
+      cpTrigger.addEventListener("keydown", cpTypeKey);
+      cpMenu.addEventListener("keydown", cpTypeKey);
+      cpOptions.addEventListener("click", function(e){ var opt=e.target.closest(".currency-option"); if(!opt) return; cpSelect(opt.getAttribute("data-currency"),false); cpClose(); });
+      function bindScroll(el, dir) {
+        if (!el) return;
+        el.addEventListener("mouseenter",function(){cpStartScroll(dir);});
+        el.addEventListener("mouseleave",cpStopScroll);
+        el.addEventListener("focus",function(){cpStartScroll(dir);});
+        el.addEventListener("blur",cpStopScroll);
+        el.addEventListener("click",function(e){e.preventDefault(); if(cpOptions) cpOptions.scrollTop+=dir*60;});
+        el.addEventListener("mousedown",function(e){e.preventDefault();});
+      }
+      bindScroll(cpScrollUp,-1);
+      bindScroll(cpScrollDown,1);
+      document.addEventListener("click",function(e){ if(cpPicker&&!cpPicker.contains(e.target)) cpClose(); });
+    }
+
+    // Load saved profile values (client-only)
+    var firstInput = document.getElementById("first-name");
+    var lastInput = document.getElementById("last-name");
+    var storedFirst = localStorage.getItem("Yatrify_profile_first_name") || "";
+    var storedLast = localStorage.getItem("Yatrify_profile_last_name") || "";
+    if (firstInput && storedFirst) firstInput.value = storedFirst;
+    if (lastInput && storedLast) lastInput.value = storedLast;
+
+    // Save currency
+    var saveCurrBtn = document.getElementById("save-currency-btn");
+    if (saveCurrBtn) {
+      saveCurrBtn.addEventListener("click", async function() {
+        var nextCurrency = cpInput ? cpInput.value : "INR";
+        var updated = await updatePlanData({ currency: nextCurrency });
+        if (updated) {
+          pendingCurrency = nextCurrency;
+          showToast("All prices now use this currency.", { title: "Currency updated" });
+        } else {
+          showToast("Couldn't save your currency.", { title: "Currency update failed" });
+        }
+      });
+    }
+
+    // Save name
+    var saveNameBtn = document.getElementById("save-name-btn");
+    if (saveNameBtn) {
+      saveNameBtn.addEventListener("click", function() {
+        var firstName = firstInput ? firstInput.value.trim() : "";
+        var lastName = lastInput ? lastInput.value.trim() : "";
+        localStorage.setItem("Yatrify_profile_first_name", firstName);
+        localStorage.setItem("Yatrify_profile_last_name", lastName);
+        var fullName = (firstName + " " + lastName).trim();
+        if (fullName) localStorage.setItem("Yatrify_user_name", fullName);
+        showToast("Your display name was updated.", { title: "Profile refreshed" });
+      });
+    }
+
+    // Delete plan modal
+    var deleteBtn = document.getElementById("delete-plan-btn");
+    var modal = document.getElementById("delete-modal");
+    var deleteInput = document.getElementById("delete-input");
+    var deleteConfirm = document.getElementById("delete-confirm");
+    var deleteCancel = document.getElementById("delete-cancel");
+
+    function openDeleteModal() { if (modal) modal.classList.add("open"); }
+    function closeDeleteModal() {
+      if (modal) modal.classList.remove("open");
+      if (deleteInput) deleteInput.value = "";
+      if (deleteConfirm) deleteConfirm.disabled = true;
+    }
+
+    if (deleteBtn) deleteBtn.addEventListener("click", openDeleteModal);
+    if (deleteCancel) deleteCancel.addEventListener("click", closeDeleteModal);
+    if (modal) modal.addEventListener("click", function(e) { if (e.target === modal) closeDeleteModal(); });
+    if (deleteInput) {
+      deleteInput.addEventListener("input", function() {
+        if (deleteConfirm) deleteConfirm.disabled = deleteInput.value !== "Delete";
+      });
+    }
+    if (deleteConfirm) {
+      deleteConfirm.addEventListener("click", async function() {
+        if (!activePlanId || !window.YatrifyPlanService) return;
+        deleteConfirm.disabled = true;
+        try {
+          var resp = await window.YatrifyPlanService.deletePlan(activePlanId);
+          if (resp && resp.deleted) {
+            showToast("Removed from your library.", { title: "Plan removed" });
+            setTimeout(function() { window.location.href = "/dashboard.html"; }, 1500);
+          } else {
+            showToast("Couldn't remove this plan. Try again.", { title: "Delete didn't finish" });
+          }
+        } catch (_) {
+          showToast("Couldn't remove this plan. Try again.", { title: "Delete didn't finish" });
+        } finally {
+          deleteConfirm.disabled = false;
+          closeDeleteModal();
+        }
+      });
+    }
+    document.addEventListener("keydown", function(e) { if (e.key === "Escape") closeDeleteModal(); });
+  }
+})();
+</script>
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

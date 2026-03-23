@@ -1,0 +1,67 @@
+@startuml
+left to right direction
+skinparam monochrome true
+skinparam shadowing false
+
+' ================= ENTITIES =================
+rectangle "User" as User
+rectangle "AI Service" as AI
+rectangle "Image API" as Img
+rectangle "Booking API" as Book
+
+' ================= SUB-PROCESSES =================
+circle "2.1\nEnter Trip Details" as P1
+circle "2.2\nValidate Input" as P2
+circle "2.3\nCheck Credits" as P3
+circle "2.4\nGenerate Plan (AI)" as P4
+circle "2.5\nFetch Images" as P5
+circle "2.6\nFetch Booking Links" as P6
+circle "2.7\nSave Plan" as P7
+circle "2.8\nDisplay Plan" as P8
+
+' ================= DATA STORES =================
+database "Trip DB" as TDB
+database "User DB" as UDB
+
+' ================= FLOW =================
+
+' Input
+User --> P1 : Trip Details
+P1 --> P2
+
+' Validation
+P2 --> P3 : Valid Data
+
+' Credit Check
+P3 --> UDB : Get Credits
+UDB --> P3
+
+P3 --> P4 : Credits OK
+P3 --> User : Error (No Credits)
+
+' AI Generation
+P4 --> AI : Generate Plan
+AI --> P4 : Itinerary
+
+' External APIs
+P4 --> P5
+P5 --> Img : Image Request
+Img --> P5
+
+P4 --> P6
+P6 --> Book : Booking Request
+Book --> P6
+
+' Save
+P5 --> P7
+P6 --> P7
+P4 --> P7
+
+P7 --> TDB : Save Trip
+TDB --> P7
+
+' Output
+P7 --> P8
+P8 --> User : Display Travel Plan
+
+@enduml

@@ -1,0 +1,41 @@
+@startuml
+left to right direction
+skinparam monochrome true
+skinparam shadowing false
+
+' ================= ENTITIES =================
+rectangle "User" as User
+rectangle "Collaborator" as Collab
+rectangle "AI Service" as AI
+rectangle "Payment System" as Pay
+rectangle "Image API" as Img
+rectangle "Booking API" as Book
+
+' ================= SYSTEM =================
+circle "Yatrify System\n(AI Travel Planner)" as System
+
+' ================= FLOWS =================
+
+' User (Top)
+User --> System : Login / Trip Details
+System --> User : Travel Plan / Dashboard
+
+' Left Side
+Collab --> System : Edits / Comments
+System --> Collab : Shared Plan
+
+' Right Side APIs
+System --> AI : Trip Inputs
+AI --> System : Generated Plan
+
+System --> Img : Destination Query
+Img --> System : Images
+
+System --> Book : Travel Requests
+Book --> System : Booking Links
+
+' Bottom Payment
+User --> Pay : Payment Info
+Pay --> System : Payment Status
+
+@enduml

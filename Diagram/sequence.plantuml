@@ -1,0 +1,128 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+skinparam linetype ortho
+
+actor User
+
+participant "Frontend UI" as UI
+participant "Auth Service" as Auth
+participant "Trip Service" as Trip
+participant "AI Service" as AI
+participant "Image API" as IMG
+participant "Booking API" as BOOK
+participant "Credit System" as Credit
+participant "Collaboration Service" as Collab
+participant "Expense Service" as Expense
+database "Database" as DB
+
+' ================= AUTH =================
+User -> UI : Sign In / Sign Up
+UI -> Auth : authenticate()
+Auth -> DB : verifyUser()
+DB --> Auth : user data
+Auth --> UI : success
+
+' ================= CREATE PLAN =================
+User -> UI : Enter Trip Details
+UI -> Trip : createTrip(data)
+
+Trip -> Credit : checkCredits(userId)
+Credit --> Trip : valid
+
+Trip -> DB : saveTrip()
+DB --> Trip : tripId
+
+' ================= AI GENERATION =================
+Trip -> AI : generatePlan(details)
+AI --> Trip : itinerary + insights
+
+Trip -> IMG : fetchImage(destination)
+IMG --> Trip : imageURL
+
+Trip -> BOOK : fetchBookingLinks()
+BOOK --> Trip : links
+
+Trip -> DB : saveFullPlan()
+DB --> Trip : success
+
+Trip --> UI : show Trip Dashboard
+
+' ================= REFINE PLAN =================
+' ================= REFINE PLAN WITH CREDIT CHECK =================
+User -> UI : Modify Plan
+UI -> Trip : refineTrip(updatedData)
+
+Trip -> Credit : checkCredits(userId)
+
+alt Credits Available
+    Credit --> Trip : valid
+    
+    Trip -> AI : regeneratePlan(updatedData)
+    AI --> Trip : updated itinerary
+    
+    Trip -> DB : updateTrip()
+    DB --> Trip : success
+    
+    Trip --> UI : show updated plan
+
+else No Credits
+    Credit --> Trip : insufficient
+    
+    Trip --> UI : show error "Not enough credits"
+end
+
+' ================= COLLABORATION =================
+User -> UI : Invite Collaborator
+UI -> Collab : sendInvite(email)
+Collab -> DB : saveCollaborator()
+
+User -> UI : Add Comment
+UI -> Collab : addComment()
+Collab -> DB : storeComment()
+
+' ================= EXPENSE TRACKING =================
+User -> UI : Add Expense
+UI -> Expense : addExpense()
+Expense -> DB : saveExpense()
+
+User -> UI : View Total Cost
+UI -> Expense : calculateTotal()
+Expense -> DB : fetchExpenses()
+DB --> Expense : data
+Expense --> UI : total amount
+
+' ================= PUBLISH =================
+User -> UI : Click Publish
+UI -> Trip : publishTrip()
+
+Trip -> DB : updateStatus(published)
+DB --> Trip : success
+
+Trip --> UI : show success message
+
+' ================= COMMUNITY =================
+User -> UI : View Community Plans
+UI -> Trip : getPublishedTrips()
+Trip -> DB : fetchPublished()
+DB --> Trip : plans
+Trip --> UI : display plans
+
+User -> UI : View Plan Details
+UI -> Trip : getTrip(tripId)
+Trip -> DB : fetchTrip()
+DB --> Trip : trip data
+Trip --> UI : read-only view
+
+' ================= UNPUBLISH =================
+User -> UI : Click Unpublish
+UI -> Trip : unpublishTrip()
+Trip -> DB : updateStatus(unpublished)
+DB --> Trip : success
+Trip --> UI : updated
+
+
+
+
+@enduml

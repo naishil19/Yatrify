@@ -1,0 +1,2603 @@
+<!DOCTYPE html>
+<html lang="en" class="light" style="color-scheme: light;">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Collaborate - Yatrify</title>
+  <link rel="stylesheet" href="css/2a2e7898d4f6aad7.css?v=20260323g" />
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --panel: #fff;
+      --panel-soft: #f8fafc;
+      --text: #0f172a;
+      --muted: #64748b;
+      --line: #dbe3ef;
+      --line-strong: #c7d2e1;
+      --blue: #3b82f6;
+      
+      --space-1: 8px;
+      --space-2: 16px;
+      --space-3: 24px;
+      --space-4: 32px;
+      --sidebar-width: 300px;
+      --layout-gap: -10px;
+      --section-gap: 24px;
+      --font-page-title: 20px;
+      --font-sidebar-item: 13px;
+      --collab-row-width: min(620px, calc(50% - 6px));
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text);
+      background: #ffffff;
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    
+    
+    html.dark body {
+      --bg: #020817;
+      --panel: #0f172a;
+      --panel-soft: #111b2f;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --line: #24324a;
+      --line-strong: #334155;
+      background: #020817;
+    }
+body > footer {
+      width: 100%;
+      margin-top: 28px;
+    }
+
+
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 65px;
+      z-index: 1200;
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in oklab, var(--panel) 72%, transparent);
+      backdrop-filter: blur(14px);
+    }
+
+    html.dark .topbar {
+      background: rgba(2, 8, 23, 0.6);
+    }
+
+    .topbar-inner {
+      width: 100%;
+      margin: 0 auto;
+      height: 100%;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      flex: 1 1 auto;
+      min-width: 0;
+      justify-content: flex-start;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex: 0 0 auto;
+      justify-content: flex-end;
+      margin-left: 20px;
+    }
+
+    .topbar-actions {
+      gap: 16px !important;
+    }
+
+    .logo-wrap {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .logo-wrap img {
+      width: 100px;
+      height: 50px;
+      object-fit: contain;
+    }
+
+    .logo-dark {
+      display: none;
+    }
+
+    html.dark .logo-light {
+      display: none;
+    }
+
+    html.dark .logo-dark {
+      display: block;
+    }
+
+    .topbar-nav {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      align-items: center;
+    }
+
+    .topbar-nav a {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .topbar-nav a:hover {
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+
+    .destination-select-wrap {
+      position: relative;
+      width: 320px;
+    }
+
+    .destination-select {
+      width: 100%;
+      min-height: 44px;
+      border-radius: 8px;
+      border: 1px solid #c8d2e2;
+      background: #f3f6fb;
+      color: #1f2937;
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.4;
+      padding: 8px 34px 8px 14px;
+      appearance: none;
+      -webkit-appearance: none;
+      transition: background-color .2s ease, border-color .2s ease, color .2s ease;
+    }
+
+    html.dark .destination-select {
+      border-color: #3b4f6a;
+      background: #0f1a2d;
+      color: #e2e8f0;
+    }
+
+    .destination-trigger {
+      width: 100%;
+      min-height: 20px;
+      border-radius: 8px;
+      border: 1px solid #c8d2e2;
+      background: #ffffff;
+      color: #1f2937;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 5px 34px 5px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      cursor: pointer;
+      text-align: left;
+      transition: background-color .2s ease, border-color .2s ease, color .2s ease;
+    }
+
+    .destination-trigger:hover,
+    .destination-select-wrap.open .destination-trigger {
+      background: #f1f5f9;
+      border-color: #bcc9db;
+    }
+
+    .destination-trigger .destination-label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    html.dark .destination-trigger {
+      border-color: #1e293b;
+      background: #020817;
+      color: #e2e8f0;
+    }
+
+    html.dark .destination-trigger:hover,
+    html.dark .destination-select-wrap.open .destination-trigger {
+      background: #1e293b;
+      border-color: #1e293b;
+    }
+
+    .destination-trigger i {
+      flex: 0 0 auto;
+    }
+
+    .destination-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      z-index: 1300;
+      border: 1px solid #d7dee9;
+      border-radius: 10px;
+      background: #ffffff;
+      box-shadow: 0 10px 26px rgba(15, 23, 42, 0.14);
+      display: none;
+      overflow: hidden;
+    }
+
+    .destination-select-wrap.open .destination-menu {
+      display: block;
+    }
+
+    .destination-search-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-bottom: 1px solid #e2e8f0;
+      color: #64748b;
+    }
+
+    .destination-search-input {
+      width: 100%;
+      border: 0;
+      outline: none;
+      background: transparent;
+      color: #111827;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .destination-search-input::placeholder {
+      color: #64748b;
+    }
+
+    .destination-options {
+      max-height: 250px;
+      overflow-y: auto;
+    }
+
+    .destination-option {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      text-align: left;
+      padding: 10px 12px;
+      color: #0f172a;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .destination-option:hover,
+    .destination-option.active,
+    .destination-option[aria-selected="true"] {
+      background: #f1f6fb;
+    }
+
+    .destination-empty {
+      margin: 0;
+      padding: 12px;
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    html.dark .destination-menu {
+      border-color: #334155;
+      background: #0f172a;
+      box-shadow: 0 10px 26px rgba(2, 6, 23, 0.5);
+    }
+
+    html.dark .destination-search-row {
+      border-bottom-color: #334155;
+      color: #94a3b8;
+    }
+
+    html.dark .destination-search-input {
+      color: #e2e8f0;
+    }
+
+    html.dark .destination-search-input::placeholder {
+      color: #94a3b8;
+    }
+
+    html.dark .destination-option {
+      color: #e2e8f0;
+    }
+
+    html.dark .destination-option:hover,
+    html.dark .destination-option.active,
+    html.dark .destination-option[aria-selected="true"] {
+      background: #1f314f;
+    }
+
+    html.dark .destination-empty {
+      color: #94a3b8;
+    }
+
+    .destination-trigger-icon {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      opacity: .7;
+    }
+
+    .header-credits {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      white-space: nowrap;
+      text-decoration: none;
+      text-underline-offset: 4px;
+    }
+
+    .header-credits:hover {
+      text-decoration: underline;
+    }
+
+    html.dark .header-credits {
+      color: #e5e7eb;
+    }
+
+    .icon-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 0;
+      background: transparent;
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .theme-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      flex: 0 0 34px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      position: relative;
+      transition: color 0.2s ease, opacity 0.2s ease;
+    }
+
+    .theme-toggle:hover {
+      opacity: .9;
+    }
+    .theme-toggle svg {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 24px;
+      height: 24px;
+      display: block;
+      transform: translate(-50%, -50%);
+      transform-origin: center;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    
+
+    html:not(.dark) .theme-toggle #moon-icon {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    html.dark .theme-toggle #sun-icon {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    html.dark .theme-toggle #moon-icon {
+      opacity: 1;
+    }
+
+    .header-signin {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 34px;
+      padding: 4px 8px;
+      border: 0;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      background: transparent;
+    }
+
+    .profile-pill {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 10002;
+    }
+
+    #profile-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 2px solid var(--line-strong);
+      cursor: pointer;
+      background: #c2185b;
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 500;
+      overflow: hidden;
+      padding: 0;
+    }
+
+    #user-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      object-fit: cover;
+      display: none;
+    }
+
+    #user-avatar-letter {
+      width: 100%;
+      height: 100%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1;
+    }
+
+    #profile-menu {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 46px;
+      min-width: 240px;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      padding: 12px;
+      z-index: 10001;
+      animation: slideDown 0.2s ease;
+    }
+
+    #manage-account,
+    #signout-btn {
+      width: 100%;
+      text-align: left;
+      border: 0;
+      background: transparent;
+      padding: 10px 12px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 400;
+      color: #374151;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+
+    #manage-account:hover {
+      background-color: #f3f4f6;
+    }
+
+    #signout-btn {
+      color: #dc2626;
+      margin-top: 4px;
+    }
+
+    #signout-btn:hover {
+      background-color: #fee2e2;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    
+
+    
+    #mobile-menu-btn {
+      display: none;
+    }
+    .page-shell {
+      max-width: 1200px;
+      margin: 0;
+      padding: 0 0 32px;
+      width: 100%;
+      flex: 1 0 auto;
+    }
+
+    .collaborators-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 15px 28px;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+      margin-top: 3px;
+    }
+
+    .collaborators-card h2 {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .divider {
+      margin: 14px 0 12px;
+      border: 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .subtitle {
+      margin: 0 0 18px;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    .email-label {
+      display: block;
+      margin: 0 0 7px;
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .invite-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      justify-content: flex-start;
+    }
+
+    .email-input-wrap {
+      position: relative;
+      width: 320px;
+      flex: 0 0 320px;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      width: 15px;
+      height: 15px;
+      pointer-events: none;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .input-icon i,
+    .input-icon svg {
+      width: 15px;
+      height: 15px;
+      display: block;
+    }
+
+    .email-input {
+      width: 100%;
+      height: 40px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      padding: 0 12px 0 32px;
+      font-size: 13px;
+      color: var(--text);
+      outline: none;
+    }
+
+    .email-input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.16);
+    }
+
+    .invite-btn {
+      height: 40px;
+      border: 0;
+      border-radius: 6px;
+      padding: 0 14px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #ffffff;
+      background: #3b82f6;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+    }
+
+    .invite-btn:hover {
+      background: #3274df;
+    }
+
+    .empty-box {
+      min-height: 115px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      background: var(--panel-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 18px;
+    }
+
+    .empty-box + .empty-box,
+    .empty-box-mt {
+      margin-top: 12px;
+    }
+
+    #pending-section {
+      display: none;
+    }
+
+    .pending-section {
+      margin-bottom: 12px;
+    }
+    #pending-list {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    #collaborator-list {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .pending-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      margin: 10px 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .pending-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      width: var(--collab-row-width);
+      max-width: 100%;
+      min-height: 44px;
+      padding: 5px 10px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: var(--panel);
+      font-size: 13px;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .pending-item > span {
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .pending-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      flex: 0 0 auto;
+    }
+
+    .pending-revoke-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 7px;
+    }
+
+    .collab-access-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      width: var(--collab-row-width);
+      max-width: 100%;
+      min-height: 44px;
+      padding: 5px 10px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: var(--panel);
+      margin-bottom: 8px;
+    }
+
+    .collab-access-label {
+      display: block;
+      min-width: 0;
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.4;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .collab-revoke-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 7px;
+      background: #fef2f2;
+      color: #64748b;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      padding: 0;
+      transition: all 0.2s ease;
+    }
+
+    .collab-revoke-btn:hover {
+      background: #fee2e2;
+      border-color: #fca5a5;
+      color: #dc2626;
+    }
+
+    html.dark .collab-revoke-btn {
+      background: rgba(127, 29, 29, 0.25);
+      border-color: rgba(248, 113, 113, 0.35);
+      color: #fca5a5;
+    }
+
+    html.dark .collab-revoke-btn:hover {
+      background: #3f2727;
+      border-color: #fca5a5;
+      color: #dc2626;
+    }
+
+    @media (max-width: 860px) {
+      .pending-item,
+      .collab-access-item {
+        width: 100%;
+      }
+    }
+
+    .pending-remove {
+      width: 22px;
+      height: 22px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      padding: 0;
+    }
+
+    .pending-remove:hover {
+      background: #fee2e2;
+      border-color: #fca5a5;
+      color: #dc2626;
+    }
+    .pending-accept {
+      border: 1px solid #bfdbfe;
+      background: #eff6ff;
+      color: #1d4ed8;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    html.dark .pending-accept {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: #60a5fa;
+      color: #bfdbfe;
+    }
+    html.dark .pending-remove:hover {
+      background: rgba(220, 38, 38, 0.18);
+      border-color: rgba(220, 38, 38, 0.45);
+      color: #f87171;
+    }
+
+    .invite-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .spin-icon {
+      animation: spin 1s linear infinite;
+      display: inline-block;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 26px;
+      right: 26px;
+      z-index: 1450;
+      width: min(360px, calc(100vw - 32px));
+      min-width: 240px;
+      max-width: calc(100vw - 32px);
+      border-radius: 12px;
+      border: 1px solid #dbe3ef;
+      background: #fff;
+      box-shadow: 0 12px 28px rgba(15, 23, 42, .24);
+      color: #0f172a;
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: opacity .2s ease, transform .2s ease;
+      overflow: hidden;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    .toast-inner {
+      padding: 12px 16px 14px;
+      display: grid;
+      gap: 8px;
+    }
+    .toast-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .toast-title {
+      margin: 0;
+      flex: 1 1 auto;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.3;
+      color: inherit;
+    }
+    .toast-message {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.4;
+      color: #334155;
+    }
+    .toast-close {
+      width: 28px;
+      height: 28px;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: #64748b;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      flex: 0 0 auto;
+      transition: background-color .2s ease, color .2s ease;
+    }
+    .toast-close:hover {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+    .toast-close i,
+    .toast-close svg {
+      width: 16px !important;
+      height: 16px !important;
+      flex: 0 0 auto;
+    }
+    html.dark .toast {
+      background: #0f172a;
+      border-color: #334155;
+      color: #e2e8f0;
+    }
+    html.dark .toast-message { color: #cbd5e1; }
+    html.dark .toast-close { color: #94a3b8; }
+    html.dark .toast-close:hover {
+      background: #162033;
+      color: #f8fafc;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-box {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 28px 32px;
+      width: 460px;
+      max-width: calc(100vw - 32px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0 0 8px;
+    }
+
+    .modal-desc {
+      font-size: 14px;
+      color: var(--muted);
+      margin: 0 0 16px;
+    }
+
+    .modal-desc strong {
+      color: #ef4444;
+      font-weight: 600;
+    }
+
+    .modal-input {
+      width: 100%;
+      height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 0 12px;
+      font-size: 13px;
+      color: var(--text);
+      background: var(--panel);
+      outline: none;
+      margin-bottom: 20px;
+    }
+
+    .modal-input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59,130,246,0.16);
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .modal-cancel {
+      height: 38px;
+      padding: 0 18px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: transparent;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .modal-cancel:hover {
+      background: var(--panel-soft);
+    }
+
+    .modal-confirm {
+      height: 38px;
+      padding: 0 18px;
+      border: 0;
+      border-radius: 6px;
+      background: #334155;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .modal-confirm:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .modal-confirm:not(:disabled):hover {
+      background: #1e293b;
+    }
+
+    .empty-state {
+      color: #64748b;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      font-size: 31px;
+      line-height: 1;
+    }
+
+    .empty-state i {
+      width: 31px;
+      height: 31px;
+    }
+
+    .empty-title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 500;
+      color: #6f8098;
+      line-height: 1.4;
+    }
+
+    .empty-title strong {
+      display: block;
+      color: #42556f;
+      font-weight: 500;
+    }
+
+    .empty-subtext {
+      margin: 0;
+      font-size: 13px;
+      color: #6f8098;
+      line-height: 1.35;
+    }
+
+    @media (max-width: 1024px) {
+      .topbar-nav {
+        display: none;
+      }
+    }
+
+        @media (max-width: 760px) {
+      .destination-select-wrap,
+      .header-credits,
+      .icon-btn {
+        display: none;
+      }
+
+      .collaborators-card h2 {
+        font-size: 17px;
+      }
+
+      .email-label {
+        font-size: 13px;
+      }
+    }
+    .main-grid {
+      width: 100%;
+      margin: 0;
+      padding: 84px 20px 0;
+      min-height: auto;
+      display: grid;
+      grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+      column-gap: var(--layout-gap);
+      align-items: start;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 88px;
+      width: var(--sidebar-width);
+      max-height: calc(100vh - 104px);
+      overflow: auto;
+      padding-right: 8px;
+    }
+
+    .sidebar-group {
+      border-right: 1px solid var(--line);
+      padding: var(--space-1) var(--space-2) var(--space-1) 0;
+      margin-right: 25px;
+    }
+
+    .sidebar-group+.sidebar-group {
+      margin-top: var(--section-gap);
+    }
+
+    .sidebar-title,
+    .sidebar-subtitle {
+      margin: 0 0 var(--space-2);
+      font-weight: 600;
+      font-size: var(--font-page-title);
+      line-height: 0.25;
+      letter-spacing: -.02em;
+    }
+
+    .sidebar-links {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text);
+      border-radius: 10px;
+      padding: var(--space-1) 10px;
+      border: 1px solid transparent;
+      transition: all .2s ease;
+      font-size: var(--font-sidebar-item);
+      line-height: 1.35;
+    }
+
+    .sidebar-link i {
+      width: 18px;
+      height: 18px;
+      flex: 0 0 auto;
+    }
+
+    .sidebar-link:hover {
+      background: #f1f5f9;
+      border-color: transparent;
+    }
+
+    .sidebar-link.active {
+      background: #f1f5f9;
+      border-color: transparent;
+      color: inherit;
+    }
+
+    .dot {
+      display: none;
+    }
+
+    .sidebar-link.active .dot {
+      display: none;
+    }
+
+    html.dark .sidebar-link:hover {
+      background: #1e293b;
+      border-color: transparent;
+    }
+
+    html.dark .sidebar-link.active {
+      background: #1e293b;
+      border-color: transparent;
+      color: inherit;
+    }
+
+    .lock {
+      margin-left: auto;
+      opacity: .65;
+    }
+
+    .content {
+      width: 100%;
+      max-width: 100%;
+      margin-left: 0;
+      padding: 0;
+      --fixed-step-height: 0px;
+      min-height: auto;
+    }
+
+    .mobile-drawer {
+      position: fixed;
+      top: 0;
+      left: -100%;
+      width: 82%;
+      max-width: 360px;
+      height: 100vh;
+      z-index: 1300;
+      background: var(--panel);
+      border-right: 1px solid var(--line);
+      padding: 16px;
+      transition: left .25s ease;
+      overflow-y: auto;
+    }
+
+    .mobile-drawer.open {
+      left: 0;
+    }
+
+    .mobile-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, .42);
+      z-index: 1280;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s ease;
+    }
+
+    .mobile-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .drawer-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 1280px) {
+      .topbar-nav,
+      .sidebar {
+        display: none;
+      }
+
+      #mobile-menu-btn {
+        display: inline-flex;
+      }
+
+      .content {
+        max-width: 100%;
+        margin-left: 0;
+        padding: 0 20px 12px;
+      }
+
+      .destination-select-wrap {
+        width: 290px;
+      }
+    }
+
+    @media (min-width: 1281px) {
+      .main-grid {
+        padding: 84px 80px 0;
+      }
+
+      .topbar-inner {
+        padding: 0 80px;
+      }
+    }
+</style>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+  <link rel="preload" as="script" href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js">`r`n</head>
+
+<body class="__className_fff05e">
+  <header class="topbar">
+    <nav class="topbar-inner" aria-label="Primary">
+      <div class="topbar-left">
+                <button id="mobile-menu-btn" class="icon-btn" type="button" aria-label="Open side menu">
+          <i data-lucide="menu"></i>
+        </button>        <a class="logo-wrap" href="/">
+          <img class="logo-light" src="/images/image.png" srcset="/images/image_3.png 1x, /images/image.png 2x"
+            alt="Yatrify" />
+          <img class="logo-dark" src="/images/image_2.png" srcset="/images/image_4.png 1x, /images/image_2.png 2x"
+            alt="Yatrify" />
+        </a>
+        <ul class="topbar-nav">
+          <li><a href="/">Home</a></li>
+          <li><a href="/dashboard.html">Dashboard</a></li>
+          <li><a href="/#public-plans">Community Plans</a></li>
+        </ul>
+      </div>
+      <div class="topbar-actions">
+        <div id="header-plan-search" class="destination-select-wrap">
+          <button id="destination-trigger" class="destination-trigger" type="button" aria-haspopup="listbox"
+            aria-expanded="false" aria-controls="destination-options">
+            <span id="destination-selected-label" class="destination-label">Destination</span>
+          </button>
+          <i class="destination-trigger-icon" data-lucide="chevron-down" style="width:16px;height:16px;"></i>
+          <div id="destination-menu" class="destination-menu" role="dialog" aria-label="Select travel plan">
+            <div class="destination-search-row">
+              <i data-lucide="search" style="width:18px;height:18px;"></i>
+              <input id="destination-search-input" class="destination-search-input" type="text"
+                placeholder="Select Travel Plan..." autocomplete="off" />
+            </div>
+            <div id="destination-options" class="destination-options" role="listbox"
+              aria-label="Generated travel plans"></div>
+            <p id="destination-empty" class="destination-empty" style="display:none;">No plans found.</p>
+          </div>
+        </div>
+        <span class="header-credits">Credits <span id="credits-count">2</span></span>
+        <button type="button" class="icon-btn" title="Feedback" aria-label="Feedback">
+          <i data-lucide="message-circle" style="width:18px;height:18px;"></i>
+        </button>
+        <button id="theme-toggle-btn" class="theme-toggle" type="button" title="Toggle theme" aria-label="Toggle theme">
+          <svg id="sun-icon" class="dark:hidden lucide lucide-sun-icon lucide-sun" xmlns="http://www.w3.org/2000/svg"
+            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2" />
+            <path d="M12 20v2" />
+            <path d="m4.93 4.93 1.41 1.41" />
+            <path d="m17.66 17.66 1.41 1.41" />
+            <path d="M2 12h2" />
+            <path d="M20 12h2" />
+            <path d="m6.34 17.66-1.41 1.41" />
+            <path d="m19.07 4.93-1.41 1.41" />
+          </svg><svg id="moon-icon" class="hidden dark:block lucide lucide-moon-icon lucide-moon"
+            xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path
+              d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" />
+          </svg>
+        </button>
+        <a id="header-signin-link" class="header-signin" href="/sign-in/">Sign in</a>
+        <div id="user-profile" class="profile-pill" aria-label="User profile">
+          <button id="profile-btn" type="button" aria-label="Profile">
+            <img id="user-avatar" alt="User avatar" />
+            <span id="user-avatar-letter">N</span>
+          </button>
+          <div id="profile-menu" aria-hidden="true">
+            <div style="padding:12px 14px;border-bottom:1px solid #f3f4f6;margin-bottom:8px;">
+              <div id="profile-name" style="font-weight:700;font-size:15px;letter-spacing:-0.3px;">Traveler</div>
+              <div id="profile-email" style="font-size:12px;color:#6b7280;word-break:break-all;margin-top:4px;">traveler@example.com</div>
+            </div>
+            <button id="manage-account" type="button">&#9881;&#65039; Manage account</button>
+            <button id="signout-btn" type="button">&#128682; Sign out</button>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+      <div id="mobile-overlay" class="mobile-overlay"></div>
+  <aside id="mobile-drawer" class="mobile-drawer" aria-label="Mobile sidebar">
+    <div class="drawer-head">
+      <a class="logo-wrap" href="/">
+        <img class="logo-light" src="/images/image.png" srcset="/images/image_3.png 1x, /images/image.png 2x"
+          alt="Yatrify" />
+        <img class="logo-dark" src="/images/image_2.png" srcset="/images/image_4.png 1x, /images/image_2.png 2x"
+          alt="Yatrify" />
+      </a>
+      <button id="mobile-close-btn" class="icon-btn" type="button" aria-label="Close side menu">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+    <div class="sidebar-group">
+      <h2 class="sidebar-title">Your Plan</h2>
+      <div id="mobile-plan-links" class="sidebar-links">
+<a class="sidebar-link" href="#trip-highlights" data-scroll-link="trip-highlights"><i data-lucide="info" style="width:18px;height:18px;"></i><span>Trip Highlights</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="#weather-analysis" data-scroll-link="weather-analysis"><i data-lucide="cloud-sun" style="width:18px;height:18px;"></i><span>Weather Analysis</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="#itinerary" data-scroll-link="itinerary"><i data-lucide="navigation" style="width:18px;height:18px;"></i><span>Itinerary</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="#budget-range" data-scroll-link="budget-range"><i data-lucide="indian-rupee" style="width:18px;height:18px;"></i><span>Budget Range</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="#packing-checklist" data-scroll-link="packing-checklist"><i data-lucide="briefcase" style="width:18px;height:18px;"></i><span>Packing Checklist</span><span class="dot" aria-hidden="true"></span></a></div>
+    </div>
+    <div class="sidebar-group">
+      <h2 class="sidebar-subtitle">Control Center</h2>
+      <div id="mobile-control-links" class="sidebar-links">
+<a class="sidebar-link" href="/refine-plan.html"><i data-lucide="refresh-cw" style="width:18px;height:18px;"></i><span>Refine Plan</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="/expense-tracker.html"><i data-lucide="wallet" style="width:18px;height:18px;"></i><span>Expense Tracker</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="/collaborate.html"><i data-lucide="users" style="width:18px;height:18px;"></i><span>Collaborate</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="/settings.html"><i data-lucide="settings" style="width:18px;height:18px;"></i><span>Settings</span><span class="dot" aria-hidden="true"></span></a></div>
+    </div>
+  </aside>
+
+  <div class="main-grid">
+    <aside class="sidebar" aria-label="Plan navigation">
+      <div class="sidebar-group">
+        <h2 class="sidebar-title">Your Plan</h2>
+        <div id="desktop-plan-links" class="sidebar-links">
+<a class="sidebar-link" href="#trip-highlights" data-scroll-link="trip-highlights"><i data-lucide="info" style="width:18px;height:18px;"></i><span>Trip Highlights</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="#weather-analysis" data-scroll-link="weather-analysis"><i data-lucide="cloud-sun" style="width:18px;height:18px;"></i><span>Weather Analysis</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="#itinerary" data-scroll-link="itinerary"><i data-lucide="navigation" style="width:18px;height:18px;"></i><span>Itinerary</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="#budget-range" data-scroll-link="budget-range"><i data-lucide="indian-rupee" style="width:18px;height:18px;"></i><span>Budget Range</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="#packing-checklist" data-scroll-link="packing-checklist"><i data-lucide="briefcase" style="width:18px;height:18px;"></i><span>Packing Checklist</span><span class="dot" aria-hidden="true"></span></a></div>
+      </div>
+      <div class="sidebar-group">
+        <h2 class="sidebar-subtitle">Control Center</h2>
+        <div id="desktop-control-links" class="sidebar-links">
+<a class="sidebar-link" href="/refine-plan.html"><i data-lucide="refresh-cw" style="width:18px;height:18px;"></i><span>Refine Plan</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="/expense-tracker.html"><i data-lucide="wallet" style="width:18px;height:18px;"></i><span>Expense Tracker</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="/collaborate.html"><i data-lucide="users" style="width:18px;height:18px;"></i><span>Collaborate</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="/settings.html"><i data-lucide="settings" style="width:18px;height:18px;"></i><span>Settings</span><span class="dot" aria-hidden="true"></span></a></div>
+      </div>
+    </aside>
+
+    <div class="content">
+      <main class="page-shell">
+        <section class="collaborators-card">
+          <h2>Collaborators</h2>
+          <hr class="divider" />
+          <p class="subtitle">Invite people to collaborate on your travel plan</p>
+
+          <label class="email-label" for="collaborator-email">Email</label>
+          <div class="invite-row">
+            <div class="email-input-wrap">
+              <span class="input-icon"><i data-lucide="mail"></i></span>
+              <input
+                id="collaborator-email"
+                class="email-input"
+                type="email"
+                placeholder="your-co-traveller@example.com"
+                autocomplete="email"
+              />
+            </div>
+            <button id="invite-btn" class="invite-btn" type="button">
+              <i data-lucide="user-plus"></i>
+              Invite
+            </button>
+          </div>
+
+          <div id="pending-section" class="pending-section">
+            <h3 class="pending-title">Pending Invites</h3>
+            <div id="pending-list"></div>
+          </div>
+
+          <div id="no-pending-box" class="empty-box">
+            <div class="empty-state">
+              <i data-lucide="inbox"></i>
+              <p class="empty-title">No pending invites</p>
+            </div>
+          </div>
+
+          <div id="collaborators-section" class="pending-section">
+            <h3 class="pending-title">People having access to this plan</h3>
+            <div id="collaborator-list"></div>
+          </div>
+
+          <div id="no-collaborators-box" class="empty-box empty-box-mt">
+            <div class="empty-state">
+              <i data-lucide="user-x"></i>
+              <p class="empty-title"><strong>No one has access to this plan yet.</strong></p>
+              <p class="empty-subtext">Invite collaborators to get started!</p>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+  <footer class="footer-home-match py-5 mt-10 bg-blue-50 dark:bg-slate-900 dark:text-gray-200 relative z-[1000]">
+        <div class="lg:px-20 px-5 py-2 grid grid-cols-4 justify-between gap-10 lg:grid-cols-6 lg:text-left">
+          <div class="col-span-4 flex w-full flex-col gap-6 lg:col-span-2">
+            <div class="flex items-center gap-2 lg:justify-start">
+              <div class="hidden md:flex gap-10 items-center justify-start flex-1"><a href="/">
+                  <div class="flex justify-center items-center leading-5 font-bold text-xl"><img alt="logo"
+                      loading="lazy" width="100" height="50" decoding="async" data-nimg="1" class="dark:hidden"
+                      style="color:transparent" srcset="images/image_3.png 1x, images/image.png 2x"
+                      src="images/image.png"><img alt="logo" loading="lazy" width="100" height="50" decoding="async"
+                      data-nimg="1" class="hidden dark:block" style="color:transparent"
+                      srcset="images/image_4.png 1x, images/image_2.png 2x" src="images/image_2.png"></div>
+                </a></div>
+            </div>
+            <p class="text-muted-foreground dark:text-gray-400">Your perfect trip, built for you. Effortlessly plan
+              personalized itineraries that match your travel style.</p>
+            <ul class="flex items-center space-x-6">
+              <li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300">
+                    <a href="https://www.instagram.com/yatrify.ai" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512"
+                    class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z">
+                    </path>
+                  </svg></a></li>
+              <li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300">
+                    <a href="https://www.facebook.com/profile.php?id=61577480754112" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512"
+                    class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M504 256C504 119 393 8 256 8S8 119 8 256c0 123.78 90.69 226.38 209.25 245V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.28c-30.8 0-40.41 19.12-40.41 38.73V256h68.78l-11 71.69h-57.78V501C413.31 482.38 504 379.78 504 256z">
+                    </path>
+                  </svg></a></li>
+              <li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300">
+                    <a href="https://x.com/Yatrify_ai" target="_blank" rel="noopener noreferrer" aria-label="X"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512"
+                        class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8l165-188.5L26.7 48H172.3l100.7 132.1L389.2 48zm-24.8 373.8h39.1L151.1 88.1h-42l255.3 333.7z"></path>
+                      </svg></a></li>
+              <li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300">
+                    <a href="https://www.linkedin.com/in/yatrify-ai" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512"
+                    class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z">
+                    </path>
+                  </svg></a></li>
+            </ul>
+          </div>
+          <div class="col-span-2 md:col-span-1">
+            <h3 class="mb-5 font-medium">Support</h3>
+            <ul class="space-y-4 text-sm text-muted-foreground dark:text-gray-400">
+              <li class="font-medium"><a
+                  class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
+                  href="/help-center">Help Center</a></li>
+              <li class="font-medium"><a
+                  class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
+                  href="/contact-us">Contact Us</a></li>
+              <li class="font-medium"><a
+                  class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
+                  href="/privacy-policy">Privacy Policy</a></li>
+              <li class="font-medium"><a
+                  class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
+                  href="/terms-of-service">Terms of Service</a></li>
+            </ul>
+          </div>
+          <div class="col-span-2 md:col-span-1">
+            <h3 class="mb-5 font-medium">Company</h3>
+            <ul class="space-y-4 text-sm text-muted-foreground dark:text-gray-400">
+              <li class="font-medium"><a
+                  class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
+                  href="/about-us">About Us</a></li>
+              <li class="font-medium"><a
+                  class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
+                  href="/partners">Partners</a></li>
+            </ul>
+          </div>
+          <div class="col-span-4 md:col-span-2">
+            <h3 class="mb-2 font-medium">Newsletter</h3>
+            <form class="grid gap-1">
+              <div class="flex justify-evenly w-full space-x-2"><input type="email"
+                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-slate-800 dark:border-slate-700"
+                  data-slot="input" placeholder="Email" required="" value=""><button
+                  class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 px-4 py-2 dark:bg-slate-700 dark:hover:bg-slate-600"
+                  data-slot="button" type="submit">Subscribe</button></div>
+            </form>
+            <p class="mt-2 ml-1 text-xs font-medium text-muted-foreground dark:text-gray-400">By submitting, you agree
+              to our<a href="/privacy-policy" class="ml-1 text-primary dark:text-blue-400 hover:underline">Privacy
+                Policy</a></p>
+          </div>
+        </div>
+      </footer>
+
+<script src="/js/clerk-loader.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/plan-service.js"></script>
+  <script src="/js/plan-context.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+(async function () {
+  var GENERATED_PLAN_PATH = "/generated-plan.html";
+  var CURRENT_PAGE_PATH = "/collaborate.html";
+  var planList = [];
+  var planOptions = [];
+
+  var PLAN_LINKS = [
+    { id: "trip-highlights", icon: "info", label: "Trip Highlights" },
+    { id: "weather-analysis", icon: "cloud-sun", label: "Weather Analysis" },
+    { id: "itinerary", icon: "navigation", label: "Itinerary" },
+    { id: "budget-range", icon: "indian-rupee", label: "Budget Range" },
+    { id: "packing-checklist", icon: "briefcase", label: "Packing Checklist" }
+  ];
+
+  var CONTROL_LINKS = [
+    { icon: "refresh-cw", label: "Refine Plan", href: "/refine-plan.html" },
+    { icon: "wallet", label: "Expense Tracker", href: "/expense-tracker.html" },
+    { icon: "users", label: "Collaborate", href: "/collaborate.html" },
+    { icon: "settings", label: "Settings", href: "/settings.html" }
+  ];
+  var CONTENT_FOOTER_SPACER = 96;
+
+  var activePlanContext = await syncActivePlanContext();
+  var activePlanId = activePlanContext && activePlanContext.id ? activePlanContext.id : "";
+  window.YatrifyActivePlanContext = activePlanContext;
+  window.YatrifyActivePlanId = activePlanId;
+
+  applyThemeMode();
+  renderSidebarLinks("desktop-plan-links", "desktop-control-links");
+  renderSidebarLinks("mobile-plan-links", "mobile-control-links");
+  markCurrentControlPage();
+  setupMobileDrawer();
+  setupThemeToggle();
+  await setupTopbarData();
+  await setupHeaderPlanSearch();
+  setupClerkHeaderProfile();
+  setupContentSpacing();
+  if (window.lucide && typeof window.lucide.createIcons === "function") window.lucide.createIcons();
+  try {
+    document.documentElement.classList.add("yatrify-page-ready");
+    window.dispatchEvent(new Event("yatrify:page-ready"));
+  } catch (_) {}
+
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/\"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function createPlanSignature(plan) {
+    if (!plan || typeof plan !== "object") return "";
+    return [
+      String(plan.startCity || "").trim().toLowerCase(),
+      String(plan.destination || "").trim().toLowerCase(),
+      String(plan.startDate || "").trim(),
+      String(plan.endDate || "").trim(),
+      String(plan.passengers || "").trim().toLowerCase()
+    ].join("|");
+  }
+
+  function getPlanDestinationLabel(plan, index) {
+    var destination = plan && plan.destination;
+    if (destination && typeof destination === "object") {
+      return [destination.city || "", destination.country || ""].filter(Boolean).join(", ");
+    }
+    return String(destination || "Plan " + ((Number(index) || 0) + 1)).trim();
+  }
+
+  function readPlanLibraryRecords() {
+    return planOptions.slice();
+  }
+
+  async function syncActivePlanContext() {
+    var planId = "";
+    if (window.YatrifyPlanContext && typeof window.YatrifyPlanContext.resolvePlanId === "function") {
+      planId = await window.YatrifyPlanContext.resolvePlanId();
+    }
+    if (!planId || !window.YatrifyPlanService) {
+      return { id: "", label: "Plan", planData: {} };
+    }
+    try {
+      var payload = await window.YatrifyPlanService.getPlan(planId);
+      var plan = payload && payload.plan ? payload.plan : {};
+      return { id: planId, label: getPlanDestinationLabel(plan, 0), planData: plan, accessRole: payload.accessRole };
+    } catch (_) {
+      return { id: planId, label: "Plan", planData: {} };
+    }
+  }
+
+  async function ensurePlanListLoaded() {
+    if (!window.YatrifyPlanService) return [];
+    if (planList.length) return planList;
+    try {
+      var listPayload = await window.YatrifyPlanService.listPlans();
+      planList = Array.isArray(listPayload) ? listPayload : (listPayload && listPayload.plans ? listPayload.plans : []);
+    } catch (_) {
+      planList = [];
+    }
+    planOptions = planList.map(function (plan, index) {
+      var label = getPlanDestinationLabel(plan, index);
+      return {
+        id: plan.id,
+        label: label,
+        searchText: label.toLowerCase()
+      };
+    });
+    return planList;
+  }
+
+  function getActivePlanSignature() {
+    return String(activePlanId || "").trim();
+  }
+
+  function buildPlanAwareUrl(path, signature, hash) {
+    if (window.YatrifyPlanContext && typeof window.YatrifyPlanContext.buildPlanAwareUrl === "function") {
+      return window.YatrifyPlanContext.buildPlanAwareUrl(path, signature || activePlanId, hash);
+    }
+    var targetPath = String(path || GENERATED_PLAN_PATH).trim() || GENERATED_PLAN_PATH;
+    var safePlanId = String(signature || activePlanId || "").trim();
+    var hashValue = String(hash || "").trim();
+    var hashIndex = targetPath.indexOf("#");
+    if (hashIndex !== -1) targetPath = targetPath.slice(0, hashIndex);
+    if (safePlanId) {
+      targetPath += (targetPath.indexOf("?") === -1 ? "?" : "&") + "planId=" + encodeURIComponent(safePlanId);
+    }
+    if (hashValue) targetPath += "#" + hashValue;
+    return targetPath;
+  }
+
+  function stabilizeContentSpacing() {
+    var content = document.querySelector(".content");
+    if (!content) return;
+    var sidebar = document.querySelector(".sidebar");
+    var measuredHeight = 0;
+    Array.from(content.children || []).forEach(function (child) {
+      if (!child || child.nodeType !== 1) return;
+      measuredHeight = Math.max(measuredHeight, Math.ceil(child.scrollHeight || child.offsetHeight || 0));
+    });
+    if (sidebar) {
+      measuredHeight = Math.max(measuredHeight, Math.ceil(sidebar.scrollHeight || sidebar.offsetHeight || 0) + CONTENT_FOOTER_SPACER);
+    }
+    if (measuredHeight > 0) {
+      content.style.setProperty("--fixed-step-height", measuredHeight + "px");
+    }
+  }
+
+  function setupContentSpacing() {
+    stabilizeContentSpacing();
+    window.addEventListener("resize", stabilizeContentSpacing);
+  }
+
+  function makeSidebarLink(item) {
+    var href = item.href
+      ? buildPlanAwareUrl(item.href, getActivePlanSignature())
+      : buildPlanAwareUrl(GENERATED_PLAN_PATH, getActivePlanSignature(), item.id);
+    return (
+      '<a class="sidebar-link" href="' + href + '">' +
+      '<i data-lucide="' + item.icon + '" style="width:18px;height:18px;"></i>' +
+      "<span>" + escapeHtml(item.label) + "</span>" +
+      '<span class="dot" aria-hidden="true"></span>' +
+      "</a>"
+    );
+  }
+
+  function renderSidebarLinks(planId, controlId) {
+    var planNode = document.getElementById(planId);
+    var controlNode = document.getElementById(controlId);
+    if (planNode) planNode.innerHTML = PLAN_LINKS.map(makeSidebarLink).join("");
+    if (controlNode) controlNode.innerHTML = CONTROL_LINKS.map(makeSidebarLink).join("");
+  }
+
+  function markCurrentControlPage() {
+    var current = (window.location.pathname.split("/").pop() || "").toLowerCase();
+    Array.from(document.querySelectorAll('.sidebar-link[href^="/"]')).forEach(function (link) {
+      var href = String(link.getAttribute("href") || "").toLowerCase();
+      var hrefPath = href.split("#")[0].split("?")[0];
+      link.classList.toggle("active", hrefPath.endsWith("/" + current) || hrefPath.endsWith(current));
+    });
+  }
+
+  function setupMobileDrawer() {
+    var openBtn = document.getElementById("mobile-menu-btn");
+    var closeBtn = document.getElementById("mobile-close-btn");
+    var overlay = document.getElementById("mobile-overlay");
+    var drawer = document.getElementById("mobile-drawer");
+    if (!openBtn || !closeBtn || !overlay || !drawer) return;
+
+    openBtn.addEventListener("click", function () {
+      drawer.classList.add("open");
+      overlay.classList.add("open");
+      document.body.style.overflow = "hidden";
+    });
+
+    closeBtn.addEventListener("click", closeMobileDrawer);
+    overlay.addEventListener("click", closeMobileDrawer);
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") closeMobileDrawer();
+    });
+  }
+
+  function closeMobileDrawer() {
+    var drawer = document.getElementById("mobile-drawer");
+    var overlay = document.getElementById("mobile-overlay");
+    if (!drawer || !overlay) return;
+    drawer.classList.remove("open");
+    overlay.classList.remove("open");
+    document.body.style.overflow = "";
+  }
+
+  function setThemeMode(dark) {
+    document.documentElement.classList.toggle("dark", dark);
+    document.documentElement.classList.toggle("light", !dark);
+    document.documentElement.style.colorScheme = dark ? "dark" : "light";
+  }
+
+  function applyThemeMode() {
+    setThemeMode(localStorage.getItem("theme") === "dark");
+  }
+
+  function setupThemeToggle() {
+    var button = document.getElementById("theme-toggle-btn");
+    if (!button) return;
+    button.addEventListener("click", function () {
+      var dark = !document.documentElement.classList.contains("dark");
+      localStorage.setItem("theme", dark ? "dark" : "light");
+      setThemeMode(dark);
+    });
+  }
+
+  async function setupTopbarData() {
+    var creditsCount = document.getElementById("credits-count");
+    if (window.YatrifyPlanService) {
+      try {
+        var payload = await window.YatrifyPlanService.getUserMe();
+        var credits = Number(payload && payload.credits);
+        if (creditsCount) creditsCount.textContent = Number.isFinite(credits) ? String(credits) : "—";
+        if (payload && payload.email) window.YatrifyCurrentUserEmail = payload.email;
+      } catch (_) {
+        if (creditsCount) creditsCount.textContent = "—";
+      }
+    }
+
+    var selectedLabel = document.getElementById("destination-selected-label");
+    if (!selectedLabel) return;
+    var destination = activePlanContext && activePlanContext.label
+      ? activePlanContext.label
+      : getPlanDestinationLabel(activePlanContext && activePlanContext.planData ? activePlanContext.planData : {}, 0);
+    selectedLabel.textContent = destination || "Destination";
+  }
+
+  async function setupHeaderPlanSearch() {
+    var wrap = document.getElementById("header-plan-search");
+    var trigger = document.getElementById("destination-trigger");
+    var searchInput = document.getElementById("destination-search-input");
+    var optionsNode = document.getElementById("destination-options");
+    var emptyNode = document.getElementById("destination-empty");
+    var selectedLabel = document.getElementById("destination-selected-label");
+    if (!wrap || !trigger || !searchInput || !optionsNode || !emptyNode || !selectedLabel) return;
+
+    await ensurePlanListLoaded();
+    var library = readPlanLibraryRecords();
+    function render(query) {
+      var q = String(query || "").toLowerCase().trim();
+      var list = library.filter(function (x) { return !q || x.searchText.indexOf(q) !== -1; });
+      optionsNode.innerHTML = "";
+      emptyNode.style.display = list.length ? "none" : "block";
+      list.forEach(function (entry) {
+        var button = document.createElement("button");
+        button.type = "button";
+        button.className = "destination-option";
+        button.textContent = entry.label;
+        button.addEventListener("click", function () {
+          var nextUrl = buildPlanAwareUrl(CURRENT_PAGE_PATH, entry.id);
+          selectedLabel.textContent = entry.label;
+          wrap.classList.remove("open");
+          trigger.setAttribute("aria-expanded", "false");
+          window.location.href = nextUrl;
+        });
+        optionsNode.appendChild(button);
+      });
+    }
+
+    trigger.addEventListener("click", function () {
+      var open = wrap.classList.toggle("open");
+      trigger.setAttribute("aria-expanded", open ? "true" : "false");
+      if (open) {
+        searchInput.value = "";
+        render("");
+        setTimeout(function () { searchInput.focus(); }, 10);
+      }
+    });
+
+    searchInput.addEventListener("input", function () { render(searchInput.value); });
+    document.addEventListener("click", function (e) {
+      if (!wrap.contains(e.target)) {
+        wrap.classList.remove("open");
+        trigger.setAttribute("aria-expanded", "false");
+      }
+    });
+  }
+
+  function setupClerkHeaderProfile() {
+    var signInLink = document.getElementById("header-signin-link");
+    var profileWrap = document.getElementById("user-profile");
+    var profileBtn = document.getElementById("profile-btn");
+    var avatarImg = document.getElementById("user-avatar");
+    var avatarLetter = document.getElementById("user-avatar-letter");
+    var profileMenu = document.getElementById("profile-menu");
+    var profileName = document.getElementById("profile-name");
+    var profileEmail = document.getElementById("profile-email");
+    var manageBtn = document.getElementById("manage-account");
+    var signOutBtn = document.getElementById("signout-btn");
+
+    function markHeaderAuthReady() {
+    }
+
+    function closeProfileMenu() {
+      if (!profileMenu) return;
+      profileMenu.style.display = "none";
+      profileMenu.setAttribute("aria-hidden", "true");
+      if (profileBtn) profileBtn.setAttribute("aria-expanded", "false");
+    }
+
+    function openProfileMenu() {
+      if (!profileMenu) return;
+      profileMenu.style.display = "block";
+      profileMenu.setAttribute("aria-hidden", "false");
+      if (profileBtn) profileBtn.setAttribute("aria-expanded", "true");
+    }
+
+    function setGuest() {
+      if (signInLink) signInLink.style.display = "inline-flex";
+      if (profileWrap) profileWrap.style.display = "none";
+      markHeaderAuthReady();
+      closeProfileMenu();
+      if (avatarImg) {
+        avatarImg.style.display = "none";
+        avatarImg.removeAttribute("src");
+      }
+      if (avatarLetter) {
+        avatarLetter.textContent = "N";
+        avatarLetter.style.display = "inline-flex";
+      }
+      if (profileName) profileName.textContent = "Guest";
+      if (profileEmail) profileEmail.textContent = "";
+    }
+
+    function setUser(user) {
+      if (!user) {
+        setGuest();
+        return;
+      }
+      if (signInLink) signInLink.style.display = "none";
+      if (profileWrap) profileWrap.style.display = "inline-flex";
+      markHeaderAuthReady();
+
+      var email = user.primaryEmailAddress && user.primaryEmailAddress.emailAddress
+        ? user.primaryEmailAddress.emailAddress
+        : "";
+      var fullName = [user.firstName, user.lastName].filter(Boolean).join(" ").trim();
+      var seed = fullName || user.username || email || "N";
+      var initial = String(seed || "N").charAt(0).toUpperCase();
+      if (profileName) profileName.textContent = seed;
+      if (profileEmail) profileEmail.textContent = email || "No email address";
+
+      if (avatarLetter) avatarLetter.textContent = initial;
+      if (avatarImg) {
+        if (user.imageUrl) {
+          avatarImg.src = user.imageUrl;
+          avatarImg.onerror = function () {
+            avatarImg.style.display = "none";
+            if (avatarLetter) avatarLetter.style.display = "inline-flex";
+          };
+          avatarImg.style.display = "block";
+          if (avatarLetter) avatarLetter.style.display = "none";
+        } else {
+          avatarImg.style.display = "none";
+          if (avatarLetter) avatarLetter.style.display = "inline-flex";
+        }
+      }
+    }
+
+    if (!profileBtn || profileBtn.dataset.bound === "true") return;
+    profileBtn.dataset.bound = "true";
+    profileBtn.setAttribute("aria-haspopup", "menu");
+    profileBtn.setAttribute("aria-expanded", "false");
+    profileBtn.addEventListener("click", function (event) {
+      event.stopPropagation();
+      if (profileMenu && profileWrap && profileWrap.style.display !== "none") {
+        if (profileMenu.style.display === "block") {
+          closeProfileMenu();
+        } else {
+          openProfileMenu();
+        }
+        return;
+      }
+      if (signInLink) {
+        window.location.href = signInLink.getAttribute("href") || "/sign-in/";
+      }
+    });
+
+    if (profileMenu) {
+      profileMenu.addEventListener("click", function (event) {
+        event.stopPropagation();
+      });
+    }
+
+    document.addEventListener("click", function () {
+      if (!profileMenu || profileMenu.style.display !== "block") return;
+      closeProfileMenu();
+    });
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") closeProfileMenu();
+    });
+
+    if (manageBtn && manageBtn.dataset.bound !== "true") {
+      manageBtn.dataset.bound = "true";
+      manageBtn.addEventListener("click", function () {
+        closeProfileMenu();
+        if (window.Clerk && typeof window.Clerk.openUserProfile === "function" && window.Clerk.user) {
+          window.Clerk.openUserProfile();
+        } else if (signInLink) {
+          window.location.href = signInLink.getAttribute("href") || "/sign-in/";
+        }
+      });
+    }
+
+    if (signOutBtn && signOutBtn.dataset.bound !== "true") {
+      signOutBtn.dataset.bound = "true";
+      signOutBtn.addEventListener("click", function () {
+        closeProfileMenu();
+        if (window.Clerk && typeof window.Clerk.signOut === "function" && window.Clerk.user) {
+          window.Clerk.signOut({ redirectUrl: window.location.href });
+        }
+      });
+    }
+
+    function bindClerk(clerk) {
+      if (!clerk) {
+        setGuest();
+        return;
+      }
+      setUser(clerk.user || null);
+      if (typeof clerk.addListener === "function" && !clerk.__yatrifyHeaderListenerBound) {
+        clerk.__yatrifyHeaderListenerBound = true;
+        clerk.addListener(function () {
+          setUser(clerk.user || null);
+        });
+      }
+    }
+
+    if (window.Clerk && typeof window.Clerk.load === "function") {
+      window.Clerk.load().then(function () {
+        bindClerk(window.Clerk);
+      }).catch(function () {
+        setGuest();
+      });
+      return;
+    }
+
+    if (typeof window.__loadYatrifyClerk !== "function") {
+      setGuest();
+      return;
+    }
+
+    window.__loadYatrifyClerk(false).then(function (clerk) {
+      if (!clerk || typeof clerk.load !== "function") {
+        setGuest();
+        return;
+      }
+      clerk.load().then(function () {
+        bindClerk(window.Clerk || clerk);
+      }).catch(function () {
+        setGuest();
+      });
+    }).catch(function () {
+      setGuest();
+    });
+  }
+})();
+</script>
+
+<div id="invite-toast" class="toast" role="status" aria-live="polite"></div>
+
+<div id="revoke-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="revoke-title">
+  <div class="modal-box">
+    <h3 class="modal-title" id="revoke-title">Revoke Access?</h3>
+    <p class="modal-desc" id="revoke-desc">Type <strong>Revoke</strong> to confirm.</p>
+    <input id="revoke-input" class="modal-input" type="text" placeholder='Type "Revoke" to confirm' autocomplete="off" />
+    <div class="modal-actions">
+      <button id="revoke-cancel" class="modal-cancel" type="button">Cancel</button>
+      <button id="revoke-confirm" class="modal-confirm" type="button" disabled>Confirm</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(async function () {
+  var activePlanId = window.YatrifyActivePlanId || "";
+  var planData = window.YatrifyActivePlanContext && window.YatrifyActivePlanContext.planData ? window.YatrifyActivePlanContext.planData : {};
+  var accessRole = window.YatrifyActivePlanContext && window.YatrifyActivePlanContext.accessRole ? window.YatrifyActivePlanContext.accessRole : "owner";
+  var canEdit = accessRole === "owner" || accessRole === "collaborator";
+  var currentUserEmail = window.YatrifyCurrentUserEmail || "";
+  var collaboratorRefreshTimer = null;
+  var revokeModal = document.getElementById("revoke-modal");
+  var revokeInput = document.getElementById("revoke-input");
+  var revokeConfirmBtn = document.getElementById("revoke-confirm");
+  var revokeCancelBtn = document.getElementById("revoke-cancel");
+  var revokeTitleEl = document.getElementById("revoke-title");
+  var revokeDescEl = document.getElementById("revoke-desc");
+  var revokeTargetId = "";
+  var revokeTargetLabel = "";
+  var revokeTargetEmail = "";
+  var revokeTargetKind = "access";
+  var isRevoking = false;
+
+  var INVITE_ICON = '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>';
+  var SPINNER_ICON = '<svg class="spin-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>';
+
+  function escHtml(s) {
+    return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;").replace(/'/g,"&#039;");
+  }
+
+  function parseDate(iso) {
+    if (!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return null;
+    var parts = iso.split("-").map(Number);
+    var dt = new Date(parts[0], parts[1] - 1, parts[2]);
+    if (Number.isNaN(dt.getTime())) return null;
+    return dt;
+  }
+
+  function formatDateLabel(iso) {
+    var dt = parseDate(iso);
+    if (!dt) return "";
+    return new Intl.DateTimeFormat("en-US", { day: "numeric", month: "short", year: "numeric" }).format(dt);
+  }
+
+  function addDays(dateObj, days) {
+    return new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate() + days);
+  }
+
+  function toIsoDate(dateObj) {
+    if (!dateObj || Number.isNaN(dateObj.getTime())) return "";
+    return dateObj.toISOString().slice(0, 10);
+  }
+
+  function getDefaultDayIso(index) {
+    var base = parseDate(planData && planData.startDate ? planData.startDate : "");
+    if (!base) return "";
+    return toIsoDate(addDays(base, index));
+  }
+
+  function getDefaultDayLabel(index) {
+    var iso = getDefaultDayIso(index);
+    return iso ? formatDateLabel(iso) : "";
+  }
+
+  function slugify(text) {
+    return String(text || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)+/g, "")
+      .slice(0, 80);
+  }
+
+  function normalizeArray(value) {
+    if (Array.isArray(value)) return value.filter(Boolean);
+    if (!value) return [];
+    return [String(value)];
+  }
+
+  function buildActivityKey(dayIndex, activity) {
+    return "day-" + (dayIndex + 1) + ":activity:" + slugify(activity);
+  }
+
+  var toastTimer = null;
+  function showToast(message, opts) {
+    var toast = document.getElementById("invite-toast");
+    if (!toast) return;
+    var title = (opts && opts.title) ? String(opts.title) : "Collaboration updated";
+    var body = String(message || title || "Saved");
+    if (toastTimer) {
+      window.clearTimeout(toastTimer);
+      toastTimer = null;
+    }
+    toast.classList.remove("show");
+    toast.innerHTML =
+      '<div class="toast-inner">' +
+      '<div class="toast-head">' +
+      '<p class="toast-title">' + escHtml(title) + "</p>" +
+      '<button class="toast-close" type="button" aria-label="Dismiss notification" data-toast-close="true">' +
+      '<i data-lucide="x"></i></button></div>' +
+      '<p class="toast-message">' + escHtml(body) + "</p></div>";
+    if (window.lucide && typeof window.lucide.createIcons === "function") window.lucide.createIcons();
+    toast.classList.add("show");
+    toastTimer = window.setTimeout(function () {
+      toast.classList.remove("show");
+      toastTimer = null;
+    }, 3600);
+  }
+
+  function bindToastClose() {
+    var toast = document.getElementById("invite-toast");
+    if (!toast || toast.dataset.bound === "true") return;
+    toast.dataset.bound = "true";
+    toast.addEventListener("click", function (event) {
+      var closeBtn = event.target.closest("[data-toast-close]");
+      if (!closeBtn) return;
+      toast.classList.remove("show");
+      if (toastTimer) {
+        window.clearTimeout(toastTimer);
+        toastTimer = null;
+      }
+    });
+  }
+  bindToastClose();
+
+  function setRevokeConfirmState() {
+    if (!revokeConfirmBtn) return;
+    var canConfirm = !isRevoking && String((revokeInput && revokeInput.value) || "").trim().toLowerCase() === "revoke";
+    revokeConfirmBtn.disabled = !canConfirm;
+  }
+
+  function closeRevokeModal() {
+    if (!revokeModal) return;
+    revokeModal.classList.remove("open");
+    revokeTargetId = "";
+    revokeTargetLabel = "";
+    revokeTargetEmail = "";
+    revokeTargetKind = "access";
+    isRevoking = false;
+    if (revokeTitleEl) revokeTitleEl.textContent = "Revoke Access?";
+    if (revokeDescEl) revokeDescEl.innerHTML = 'Type <strong>Revoke</strong> to confirm.';
+    if (revokeInput) revokeInput.value = "";
+    if (revokeConfirmBtn) revokeConfirmBtn.textContent = "Confirm";
+    setRevokeConfirmState();
+  }
+
+  function openRevokeModal(collaboratorId, collaboratorLabel, collaboratorEmail, kind) {
+    if (!revokeModal || !revokeInput || !revokeConfirmBtn) return;
+    revokeTargetId = String(collaboratorId || "").trim();
+    revokeTargetLabel = String(collaboratorLabel || "").trim();
+    revokeTargetEmail = String(collaboratorEmail || "").trim().toLowerCase();
+    revokeTargetKind = String(kind || "access").toLowerCase() === "invite" ? "invite" : "access";
+    isRevoking = false;
+    if (revokeTitleEl) {
+      revokeTitleEl.textContent = revokeTargetKind === "invite" ? "Revoke Invite?" : "Revoke Access?";
+    }
+    if (revokeDescEl) {
+      revokeDescEl.innerHTML = revokeTargetKind === "invite"
+        ? 'Type <strong>Revoke</strong> to cancel this pending invite.'
+        : 'Type <strong>Revoke</strong> to confirm.';
+    }
+    revokeInput.value = "";
+    revokeConfirmBtn.textContent = "Confirm";
+    setRevokeConfirmState();
+    revokeModal.classList.add("open");
+    window.setTimeout(function () {
+      revokeInput.focus();
+      revokeInput.select();
+    }, 10);
+  }
+
+  function bindRevokeModal() {
+    if (!revokeModal || revokeModal.dataset.bound === "true") return;
+    revokeModal.dataset.bound = "true";
+    if (revokeInput) {
+      revokeInput.addEventListener("input", setRevokeConfirmState);
+      revokeInput.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+          event.preventDefault();
+          closeRevokeModal();
+        }
+      });
+    }
+    if (revokeCancelBtn) {
+      revokeCancelBtn.addEventListener("click", closeRevokeModal);
+    }
+    revokeModal.addEventListener("click", function (event) {
+      if (event.target === revokeModal) closeRevokeModal();
+    });
+    if (revokeConfirmBtn) {
+      revokeConfirmBtn.addEventListener("click", async function () {
+        if (isRevoking) return;
+        if (!activePlanId || !revokeTargetId || !window.YatrifyPlanService || typeof window.YatrifyPlanService.revokeCollaborator !== "function") {
+          return;
+        }
+        var isValid = String((revokeInput && revokeInput.value) || "").trim().toLowerCase() === "revoke";
+        if (!isValid) return;
+        isRevoking = true;
+        revokeConfirmBtn.disabled = true;
+        revokeConfirmBtn.textContent = "Revoking...";
+        try {
+          var revokedLabel = revokeTargetLabel;
+          var revokeEmail = String(revokeTargetEmail || "").trim().toLowerCase();
+          await window.YatrifyPlanService.revokeCollaborator(activePlanId, revokeTargetId, revokeEmail);
+          closeRevokeModal();
+          if (revokeTargetKind === "invite") {
+            showToast(
+              revokedLabel
+                ? ("Invite for " + revokedLabel + " was canceled.")
+                : "Pending invite canceled.",
+              { title: "Invite revoked" }
+            );
+          } else {
+            showToast(
+              revokedLabel
+                ? (revokedLabel + " no longer has access.")
+                : "Plan access was removed.",
+              { title: "Access revoked" }
+            );
+          }
+          await renderCollaborators();
+        } catch (error) {
+          isRevoking = false;
+          revokeConfirmBtn.textContent = "Confirm";
+          setRevokeConfirmState();
+          var message = "Unable to revoke collaborator access.";
+          if (error && error.response && typeof error.response.clone === "function") {
+            try {
+              var errJson = await error.response.clone().json();
+              if (errJson && errJson.error) message = String(errJson.error);
+              if (errJson && errJson.detail) message = String(errJson.detail);
+            } catch (_) {}
+          } else if (error && error.message) {
+            message = String(error.message);
+          }
+          showToast(message, { title: "Action didn't finish" });
+        }
+      });
+    }
+  }
+
+  async function ensureActivePlanId() {
+    if (activePlanId) return activePlanId;
+    try {
+      if (window.YatrifyPlanContext && typeof window.YatrifyPlanContext.resolvePlanId === "function") {
+        var resolved = await window.YatrifyPlanContext.resolvePlanId();
+        if (resolved) {
+          activePlanId = String(resolved);
+          window.YatrifyActivePlanId = activePlanId;
+          if (window.YatrifyActivePlanContext) window.YatrifyActivePlanContext.id = activePlanId;
+          return activePlanId;
+        }
+      }
+    } catch (_) {}
+    try {
+      if (window.YatrifyPlanService && typeof window.YatrifyPlanService.listPlans === "function") {
+        var payload = await window.YatrifyPlanService.listPlans();
+        var plans = Array.isArray(payload) ? payload : (payload && payload.plans ? payload.plans : []);
+        if (plans.length && plans[0] && plans[0].id) {
+          activePlanId = String(plans[0].id);
+          window.YatrifyActivePlanId = activePlanId;
+          if (window.YatrifyActivePlanContext) window.YatrifyActivePlanContext.id = activePlanId;
+          if (window.YatrifyPlanContext && typeof window.YatrifyPlanContext.replacePlanId === "function") {
+            window.YatrifyPlanContext.replacePlanId(activePlanId);
+          }
+          return activePlanId;
+        }
+      }
+    } catch (_) {}
+    return "";
+  }
+
+  async function loadPlanData() {
+    if (!window.YatrifyPlanService) return null;
+    if (!activePlanId) {
+      await ensureActivePlanId();
+    }
+    if (!activePlanId) return null;
+    try {
+      var payload = await window.YatrifyPlanService.getPlan(activePlanId);
+      if (payload && payload.plan) {
+        planData = payload.plan;
+        accessRole = payload.accessRole || accessRole;
+        canEdit = accessRole === "owner" || accessRole === "collaborator";
+        if (window.YatrifyActivePlanContext) {
+          window.YatrifyActivePlanContext.planData = planData;
+          window.YatrifyActivePlanContext.accessRole = accessRole;
+        }
+        return planData;
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  async function renderCollaborators() {
+    if (!window.YatrifyPlanService) return;
+    if (!activePlanId) {
+      await ensureActivePlanId();
+    }
+    if (!activePlanId) return;
+    var section = document.getElementById("pending-section");
+    var list = document.getElementById("pending-list");
+    var noBox = document.getElementById("no-pending-box");
+    var collabSection = document.getElementById("collaborators-section");
+    var collabList = document.getElementById("collaborator-list");
+    var noCollabBox = document.getElementById("no-collaborators-box");
+    if (!section || !list || !noBox || !collabSection || !collabList || !noCollabBox) return;
+
+    var payload = await window.YatrifyPlanService.listCollaborators(activePlanId).catch(function () { return null; });
+    var collaborators = payload && payload.collaborators ? payload.collaborators : [];
+    var accepted = collaborators.filter(function (item) {
+      return String(item && item.status || "").trim().toLowerCase() === "accepted";
+    });
+    var pending = collaborators.filter(function (item) {
+      return String(item && item.status || "").trim().toLowerCase() !== "accepted";
+    });
+
+    var acceptedEmails = {};
+    var acceptedUserIds = {};
+    accepted.forEach(function (item) {
+      var email = String(item.email || item.invitedEmail || "").trim().toLowerCase();
+      if (email) acceptedEmails[email] = true;
+      var userId = String(item.userId || "").trim();
+      if (userId) acceptedUserIds[userId] = true;
+    });
+    pending = pending.filter(function (item) {
+      var email = String(item.invitedEmail || item.email || "").trim().toLowerCase();
+      var userId = String(item.userId || "").trim();
+      if (email && acceptedEmails[email]) return false;
+      if (userId && acceptedUserIds[userId]) return false;
+      return true;
+    });
+
+    var isOwner = accessRole === "owner";
+
+    if (accepted.length) {
+      collabSection.style.display = "block";
+      noCollabBox.style.display = "none";
+      collabList.innerHTML = accepted.map(function (item) {
+        var rawName = String(item.name || "").trim();
+        var rawEmail = String(item.email || item.invitedEmail || "").trim();
+        var label = "";
+        if (rawName && rawEmail && rawName.toLowerCase() !== rawEmail.toLowerCase()) {
+          label = rawName + " (" + rawEmail + ")";
+        } else {
+          label = rawEmail || rawName || "Collaborator";
+        }
+        var canRevoke = isOwner && item && item.id;
+        return '<div class="collab-access-item">' +
+          '<span class="collab-access-label">' + escHtml(label) + '</span>' +
+          (canRevoke
+            ? '<button class="collab-revoke-btn" type="button" title="Revoke access" aria-label="Revoke access for ' + escHtml(label) + '" data-collab-id="' + escHtml(item.id) + '" data-collab-label="' + escHtml(label) + '" data-collab-email="' + escHtml(rawEmail.toLowerCase()) + '"><i data-lucide="x" style="width:16px;height:16px;"></i></button>'
+            : '') +
+          '</div>';
+      }).join("");
+      collabList.querySelectorAll(".collab-revoke-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var collaboratorId = btn.getAttribute("data-collab-id") || "";
+          var collaboratorLabel = btn.getAttribute("data-collab-label") || "this collaborator";
+          var collaboratorEmail = btn.getAttribute("data-collab-email") || "";
+          openRevokeModal(collaboratorId, collaboratorLabel, collaboratorEmail, "access");
+        });
+      });
+    } else {
+      collabSection.style.display = "none";
+      noCollabBox.style.display = "flex";
+      collabList.innerHTML = "";
+    }
+
+    if (pending.length) {
+      section.style.display = "block";
+      noBox.style.display = "none";
+      list.innerHTML = pending.map(function (item) {
+        var email = item.invitedEmail || item.email || "Invite";
+        var canAccept = currentUserEmail && email && String(email).toLowerCase() === String(currentUserEmail).toLowerCase();
+        var canRevokePending = isOwner && item && item.id;
+        var actionHtml = "";
+        if (canAccept) {
+          actionHtml += '<button class="pending-accept" type="button" data-invite-id="' + escHtml(item.id) + '">Accept</button>';
+        }
+        if (canRevokePending) {
+          actionHtml += '<button class="collab-revoke-btn pending-revoke-btn" type="button" title="Revoke invite" aria-label="Revoke invite for ' + escHtml(email) + '" data-invite-id="' + escHtml(item.id) + '" data-invite-email="' + escHtml(String(email).toLowerCase()) + '"><i data-lucide="x" style="width:14px;height:14px;"></i></button>';
+        }
+        return '<div class="pending-item">' +
+          '<span>' + escHtml(email) + '</span>' +
+          (actionHtml ? ('<span class="pending-actions">' + actionHtml + '</span>') : '') +
+          '</div>';
+      }).join("");
+      list.querySelectorAll(".pending-accept").forEach(function (btn) {
+        btn.addEventListener("click", async function () {
+          try {
+            btn.disabled = true;
+            var inviteId = btn.getAttribute("data-invite-id") || "";
+            await window.YatrifyPlanService.acceptInvite(activePlanId, inviteId);
+            showToast("The traveler can access this plan now.", { title: "Collaborator added" });
+            await renderCollaborators();
+          } catch (_) {
+            showToast("Couldn't accept the invite. Try again.", { title: "Invite not accepted" });
+          } finally {
+            btn.disabled = false;
+          }
+        });
+      });
+      list.querySelectorAll(".pending-revoke-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var inviteId = btn.getAttribute("data-invite-id") || "";
+          var inviteEmail = btn.getAttribute("data-invite-email") || "";
+          openRevokeModal(inviteId, inviteEmail || "this invite", inviteEmail, "invite");
+        });
+      });
+    } else {
+      section.style.display = "none";
+      noBox.style.display = "flex";
+      list.innerHTML = "";
+    }
+
+    if (window.lucide && typeof window.lucide.createIcons === "function") {
+      window.lucide.createIcons();
+    }
+  }
+
+  function startCollaboratorAutoRefresh() {
+    if (collaboratorRefreshTimer) clearInterval(collaboratorRefreshTimer);
+    collaboratorRefreshTimer = window.setInterval(function () {
+      if (document.hidden) return;
+      renderCollaborators().catch(function () {});
+    }, 3000);
+  }
+
+      function setupInvite() {
+    var emailInput = document.getElementById("collaborator-email");
+    var btn = document.getElementById("invite-btn");
+    if (!emailInput || !btn || !window.YatrifyPlanService) return;
+    if (accessRole !== "owner") {
+      var inviteRow = document.querySelector(".invite-row");
+      var emailLabel = document.querySelector(".email-label");
+      if (inviteRow) inviteRow.style.display = "none";
+      if (emailLabel) emailLabel.style.display = "none";
+      emailInput.disabled = true;
+      btn.disabled = true;
+      return;
+    }
+
+    btn.addEventListener("click", async function () {
+      if (!activePlanId) {
+        await ensureActivePlanId();
+      }
+      if (!activePlanId) {
+        showToast("Open a generated plan before inviting.", { title: "Plan needed" });
+        return;
+      }
+      var email = emailInput.value.trim();
+      if (!email || !email.includes("@")) { emailInput.focus(); return; }
+      btn.disabled = true;
+      btn.innerHTML = SPINNER_ICON + " Inviting...";
+      try {
+        var invitePayload = await window.YatrifyPlanService.inviteCollaborator(activePlanId, email);
+        emailInput.value = "";
+        if (
+          invitePayload &&
+          invitePayload.emailDelivery &&
+          invitePayload.emailDelivery.sent === false
+        ) {
+          var reason = invitePayload.emailDelivery.reason
+            ? String(invitePayload.emailDelivery.reason)
+            : "";
+          showToast(
+            reason
+              ? ("Collaborator added, but email was skipped: " + reason)
+              : "Collaborator added, but email wasn't sent.",
+            { title: "Invite saved locally" }
+          );
+        } else {
+          showToast("The invitation email is on its way.", { title: "Invite sent" });
+        }
+        await renderCollaborators();
+      } catch (error) {
+        var message = "Unable to send invite.";
+        if (error && error.response && typeof error.response.clone === "function") {
+          try {
+            var errJson = await error.response.clone().json();
+            if (errJson && errJson.detail) {
+              message = String(errJson.detail);
+            } else if (errJson && errJson.error) {
+              message = String(errJson.error);
+            }
+          } catch (_) {}
+        } else if (error && error.message) {
+          message = String(error.message);
+        }
+        showToast(message, { title: "Invite couldn't be sent" });
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = INVITE_ICON + " Invite";
+      }
+    });
+
+    emailInput.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") btn.click();
+    });
+  }
+
+  bindRevokeModal();
+  await loadPlanData();
+  await renderCollaborators();
+  setupInvite();
+  startCollaboratorAutoRefresh();
+  document.addEventListener("visibilitychange", function () {
+    if (!document.hidden) {
+      renderCollaborators().catch(function () {});
+    }
+  });
+  window.addEventListener("beforeunload", function () {
+    if (collaboratorRefreshTimer) clearInterval(collaboratorRefreshTimer);
+  });
+})();
+</script>
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

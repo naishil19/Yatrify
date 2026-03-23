@@ -1,0 +1,1772 @@
+<!DOCTYPE html>
+<html lang="en" class="light" style="color-scheme: light;">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/2a2e7898d4f6aad7.css" data-precedence="next">
+  <title>Dashboard - Yatrify</title>
+  <meta name="description" content="Manage your travel plans on Yatrify">
+  <link rel="icon" href="images/favicon.ico" type="image/x-icon" sizes="16x16">
+  <style>
+    #user-profile {
+      display: inline-flex;
+      align-items: center;
+      position: relative;
+    }
+
+    #profile-btn {
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+
+    #profile-btn:hover {
+      transform: scale(1.05);
+      filter: brightness(0.9);
+    }
+
+    #profile-menu {
+      pointer-events: auto;
+      animation: slideDown 0.2s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-5px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    #manage-account,
+    #signout-btn {
+      opacity: 0.8;
+      transition: all 0.2s ease;
+    }
+
+    #manage-account:hover {
+      background-color: #f3f4f6 !important;
+      opacity: 1;
+    }
+
+    #signout-btn:hover {
+      background-color: #fee2e2 !important;
+      opacity: 1;
+    }
+
+    .theme-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      flex: 0 0 34px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      position: relative;
+      transition: color 0.2s ease, opacity 0.2s ease;
+    }
+
+    .theme-toggle:hover {
+      opacity: 0.9;
+    }
+
+    html.dark .theme-toggle {
+      color: #e5e7eb;
+    }
+
+    html.dark .theme-toggle:hover {
+      color: #ffffff;
+    }
+
+    .theme-toggle svg {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 24px;
+      height: 24px;
+      display: block;
+      transform: translate(-50%, -50%);
+      transform-origin: center;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    
+
+    html:not(.dark) .theme-toggle #moon-icon {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    html.dark .theme-toggle #sun-icon {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    html.dark .theme-toggle #moon-icon {
+      opacity: 1;
+    }
+
+    .header-credits {
+      font-size: 14px;
+      font-weight: 500;
+      color: #111827;
+      white-space: nowrap;
+      text-decoration: none;
+      text-underline-offset: 4px;
+    }
+
+    .header-credits:hover {
+      text-decoration: underline;
+    }
+
+    html.dark .header-credits {
+      color: #e5e7eb;
+    }
+
+    .icon-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 0;
+      background: transparent;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #111827;
+      cursor: pointer;
+      transition: color 0.2s ease, background 0.2s ease;
+    }
+
+    .icon-btn:hover {
+      background: rgba(15, 23, 42, 0.06);
+      color: #0f172a;
+    }
+
+    html.dark .icon-btn {
+      color: #e5e7eb;
+    }
+
+    html.dark .icon-btn:hover {
+      background: rgba(148, 163, 184, 0.16);
+      color: #ffffff;
+    }
+
+    .header-action-row {
+      gap: 16px !important;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at top left, rgba(59, 130, 246, 0.08), transparent 28%),
+        linear-gradient(180deg, #fbfdff 0%, #f4f7fb 100%);
+      min-height: 100vh;
+    }
+
+    html.dark body {
+      background:
+        radial-gradient(circle at top left, rgba(59, 130, 246, 0.18), transparent 28%),
+        linear-gradient(180deg, #06101f 0%, #020817 100%);
+    }
+
+    .dashboard-shell {
+      width: 100%;
+      margin: 0;
+      padding: 22px 80px 48px;
+    }
+
+    .dashboard-topbar {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding: 0 0 18px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.24);
+    }
+
+    .dashboard-topbar.is-hidden {
+      display: none;
+    }
+
+    html.dark .dashboard-topbar {
+      border-bottom-color: rgba(71, 85, 105, 0.5);
+    }
+
+    .dashboard-search {
+      position: relative;
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .dashboard-search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      color: #4f7ddf;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    html.dark .dashboard-search-icon {
+      color: #8fb3ff;
+    }
+
+    .dashboard-search-input {
+      width: 100%;
+      height: 40px;
+      border-radius: 14px;
+      border: 1px solid #d6dfeb;
+      background: #ffffff;
+      padding: 0 18px 0 43px;
+      font-size: 16px;
+      font-weight: 500;
+      color: #0f172a;
+      box-shadow: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .dashboard-search-input::placeholder {
+      color: #60759a;
+      opacity: 1;
+    }
+
+    .dashboard-search-input:focus {
+      outline: none;
+      border-color: #cfd9e6;
+      box-shadow: none;
+    }
+
+    html.dark .dashboard-search-input {
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.94), rgba(10, 18, 32, 0.94));
+      border-color: rgba(71, 85, 105, 0.86);
+      color: #eef4ff;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    html.dark .dashboard-search-input::placeholder {
+      color: #8ea4c7;
+    }
+
+    html.dark .dashboard-search-input:focus {
+      border-color: rgba(96, 165, 250, 0.7);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.14);
+    }
+
+    .create-plan-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 11px;
+      width: 220px;
+      flex: 0 0 220px;
+      height: 40px;
+      padding: 0 24px;
+      border: none;
+      border-radius: 999px;
+      background: #4a7ff3;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      box-shadow: none;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .create-plan-btn:hover {
+      background: #2563eb;
+    }
+
+    html.dark .create-plan-btn {
+      background: linear-gradient(135deg, #4e86ff 0%, #2563eb 100%);
+      box-shadow: 0 12px 30px rgba(37, 99, 235, 0.28);
+    }
+
+    html.dark .create-plan-btn:hover {
+      background: linear-gradient(135deg, #6696ff 0%, #2f6ef0 100%);
+      box-shadow: 0 16px 34px rgba(37, 99, 235, 0.34);
+    }
+
+    .create-plan-btn svg {
+      width: 18px;
+      height: 18px;
+      flex: 0 0 auto;
+    }
+
+    .create-plan-btn span {
+      display: inline-block;
+      line-height: 1;
+    }
+
+    .dashboard-stage {
+      margin-top: 28px;
+      min-height: 640px;
+      border: 1px solid rgba(219, 231, 245, 0.94);
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.82);
+      box-shadow: 0 24px 55px rgba(15, 23, 42, 0.06);
+      backdrop-filter: blur(10px);
+      padding: 16px 26px 30px;
+    }
+
+    html.dark .dashboard-stage {
+      background:
+        linear-gradient(180deg, rgba(15, 23, 42, 0.92) 0%, rgba(7, 14, 28, 0.92) 100%);
+      border-color: rgba(71, 85, 105, 0.82);
+      box-shadow:
+        0 24px 60px rgba(2, 6, 23, 0.42),
+        inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    .dashboard-stage-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 14px;
+    }
+
+    .dashboard-stage.is-empty .dashboard-stage-head {
+      display: none;
+    }
+
+    .dashboard-stage.is-loading .dashboard-stage-head {
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .dashboard-stage.is-empty {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .dashboard-stage.is-loading {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .dashboard-stage.is-empty .dashboard-state {
+      flex: 1;
+      width: 100%;
+      min-height: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dashboard-stage.is-loading .dashboard-state {
+      flex: 1;
+      width: 100%;
+      min-height: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dashboard-stage.is-empty .dashboard-state-shell {
+      width: 100%;
+      height: 100%;
+    }
+
+    .dashboard-stage.is-loading .dashboard-state-shell {
+      width: 100%;
+      height: 100%;
+    }
+
+    .dashboard-title {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: #0f172a;
+    }
+
+    .dashboard-subtitle {
+      margin: 8px 0 0;
+      font-size: 14px;
+      color: #64748b;
+    }
+
+    html.dark .dashboard-title {
+      color: #f8fafc;
+    }
+
+    html.dark .dashboard-subtitle {
+      color: #94a3b8;
+    }
+
+    .dashboard-count-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 52px;
+      height: 30px;
+      padding: 0 10px;
+      border-radius: 16px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid #bfdbfe;
+    }
+
+    html.dark .dashboard-count-pill {
+      background: rgba(37, 99, 235, 0.16);
+      border-color: rgba(96, 165, 250, 0.36);
+      color: #dbeafe;
+    }
+
+    .dashboard-state {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      min-height: clamp(320px, 52vh, 420px);
+      border: none;
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(248, 250, 252, 0.95) 0%, rgba(255, 255, 255, 0.84) 100%);
+      text-align: center;
+      padding: 24px 22px 20px;
+    }
+
+    .dashboard-state.is-visible {
+      display: flex;
+    }
+
+    .dashboard-state-shell {
+      width: 100%;
+      display: grid;
+      place-items: center;
+    }
+
+    .dashboard-state-panel {
+      display: none;
+      width: 100%;
+      justify-items: center;
+    }
+
+    .dashboard-state-panel.is-visible {
+      display: grid;
+    }
+
+    .dashboard-loading-panel {
+      gap: 10px;
+      justify-items: center;
+      align-content: center;
+      max-width: 720px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .dashboard-empty-panel {
+      gap: 10px;
+      padding-top: 0;
+      justify-items: center;
+      text-align: center;
+      align-content: center;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .dashboard-loading-visual {
+      position: relative;
+      width: min(350px, 72vw);
+      max-width: 350px;
+      aspect-ratio: 1.08;
+      display: grid;
+      place-items: center;
+    }
+
+    .dashboard-loading-backdrop {
+      position: absolute;
+      inset: 14% 12% 6%;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 42%, rgba(59, 130, 246, 0.14), rgba(59, 130, 246, 0.02) 58%, transparent 72%),
+        radial-gradient(circle at 48% 60%, rgba(125, 211, 252, 0.12), transparent 64%);
+      filter: blur(2px);
+    }
+
+    .dashboard-loading-image {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 350px;
+      height: auto;
+      display: block;
+      animation: dashboardLoaderFade 2.4s ease-in-out infinite;
+    }
+
+    @keyframes dashboardLoaderFade {
+      0% {
+        opacity: 0.58;
+        transform: translateY(0);
+      }
+
+      50% {
+        opacity: 1;
+        transform: translateY(-2px);
+      }
+
+      100% {
+        opacity: 0.58;
+        transform: translateY(0);
+      }
+    }
+
+    .dashboard-loading-title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: #0f172a;
+    }
+
+    .dashboard-loading-copy {
+      margin: 0;
+      max-width: 420px;
+      color: #64748b;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .dashboard-empty-visual {
+      position: relative;
+      width: min(350px, 72vw);
+      max-width: 350px;
+      aspect-ratio: 1.08;
+      display: grid;
+      place-items: center;
+      margin-bottom: 0;
+    }
+
+    .dashboard-empty-image {
+      width: 100%;
+      max-width: 350px;
+      height: auto;
+      display: block;
+    }
+
+    .dashboard-empty-title {
+      margin: 0;
+      max-width: none;
+      font-size: 16px;
+      line-height: 1.2;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #111827;
+      white-space: nowrap;
+    }
+
+    .dashboard-empty-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-width: 214px;
+      height: 42px;
+      padding: 0 18px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #4f83ff 0%, #3b82f6 100%);
+      color: #fff;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+      box-shadow: 0 10px 24px rgba(59, 130, 246, 0.24);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    }
+
+    .dashboard-empty-cta svg {
+      width: 15px;
+      height: 15px;
+      flex: 0 0 auto;
+      display: block;
+    }
+
+    .dashboard-empty-cta span {
+      line-height: 1;
+    }
+
+    .dashboard-empty-cta:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 28px rgba(59, 130, 246, 0.28);
+      filter: saturate(1.02);
+    }
+
+    .dashboard-generic-panel {
+      gap: 0;
+    }
+
+    .dashboard-state h2 {
+      margin: 16px 0 8px;
+      font-size: 28px;
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: -0.03em;
+    }
+
+    .dashboard-state p {
+      margin: 0;
+      max-width: 440px;
+      color: #64748b;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .dashboard-state-icon {
+      width: 92px;
+      height: 92px;
+      margin: 0 auto;
+      display: grid;
+      place-items: center;
+      border-radius: 28px;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.14), rgba(125, 211, 252, 0.2));
+      color: #2563eb;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+    }
+
+    html.dark .dashboard-state {
+      border-color: rgba(71, 85, 105, 0.78);
+      background: linear-gradient(180deg, rgba(11, 18, 32, 0.92) 0%, rgba(5, 10, 20, 0.92) 100%);
+    }
+
+    html.dark .dashboard-loading-backdrop {
+      background:
+        radial-gradient(circle at 50% 42%, rgba(59, 130, 246, 0.22), rgba(59, 130, 246, 0.04) 58%, transparent 72%),
+        radial-gradient(circle at 48% 60%, rgba(14, 165, 233, 0.14), transparent 64%);
+    }
+
+    html.dark .dashboard-loading-title {
+      color: #f8fafc;
+    }
+
+    html.dark .dashboard-loading-copy {
+      color: #94a3b8;
+    }
+
+    html.dark .dashboard-loading-title {
+      color: #f8fafc;
+    }
+
+    html.dark .dashboard-empty-title {
+      color: #f8fafc;
+    }
+
+    html.dark .dashboard-empty-cta {
+      background: linear-gradient(135deg, #4f83ff 0%, #2563eb 100%);
+      box-shadow: 0 10px 24px rgba(37, 99, 235, 0.32);
+    }
+
+    html.dark .dashboard-state h2 {
+      color: #f8fafc;
+    }
+
+    html.dark .dashboard-state p {
+      color: #94a3b8;
+    }
+
+    html.dark .dashboard-state-icon {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.22), rgba(14, 165, 233, 0.18));
+      color: #93c5fd;
+      box-shadow: none;
+    }
+
+    .plans-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+      align-items: start;
+      align-content: start;
+    }
+
+    .plan-card {
+      position: relative;
+      display: block;
+      width: 100%;
+      min-height: 255px;
+      border-radius: 10px;
+      overflow: hidden;
+      text-decoration: none;
+      background: #dbeafe;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 18px 38px rgba(15, 23, 42, 0.14);
+      transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease, filter 0.24s ease;
+      isolation: isolate;
+    }
+
+    html.dark .plan-card {
+      border-color: rgba(148, 163, 184, 0.12);
+      box-shadow: 0 18px 38px rgba(2, 6, 23, 0.36);
+    }
+
+    .plan-card:hover {
+      transform: translateY(-2px) scale(1.01);
+      border-color: rgba(255, 255, 255, 0.28);
+      box-shadow: 0 24px 40px rgba(15, 23, 42, 0.2);
+      filter: saturate(1.04);
+    }
+
+    html.dark .plan-card:hover {
+      border-color: rgba(148, 163, 184, 0.26);
+      box-shadow: 0 24px 44px rgba(2, 6, 23, 0.5);
+      filter: saturate(1.08) brightness(1.03);
+    }
+
+    .plan-card-media {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    .plan-card-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transform: scale(1);
+      transition: transform 0.42s ease;
+    }
+
+    .plan-card:hover .plan-card-image {
+      transform: scale(1.15);
+    }
+
+    .plan-card.no-image .plan-card-image {
+      display: none;
+    }
+
+    .plan-card-scrim {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(15, 23, 42, 0.08) 0%, rgba(15, 23, 42, 0.18) 34%, rgba(15, 23, 42, 0.78) 100%);
+      transition: background 0.24s ease;
+    }
+
+    .plan-card:hover .plan-card-scrim {
+      background:
+        linear-gradient(180deg, rgba(15, 23, 42, 0.02) 0%, rgba(15, 23, 42, 0.14) 30%, rgba(15, 23, 42, 0.74) 100%);
+    }
+
+    html.dark .plan-card-scrim {
+      background:
+        linear-gradient(180deg, rgba(2, 6, 23, 0.14) 0%, rgba(2, 6, 23, 0.26) 32%, rgba(2, 6, 23, 0.84) 100%);
+    }
+
+    html.dark .plan-card:hover .plan-card-scrim {
+      background:
+        linear-gradient(180deg, rgba(2, 6, 23, 0.08) 0%, rgba(2, 6, 23, 0.2) 28%, rgba(2, 6, 23, 0.8) 100%);
+    }
+
+    .plan-card-body {
+      position: relative;
+      min-height: 255px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 16px;
+      color: #ffffff;
+    }
+
+    .plan-card-badges {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .plan-card-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      padding: 0;
+      padding-right: 2px;
+      background: transparent;
+      border: none;
+      color: #f8fafc;
+    }
+
+    .plan-card-badge i {
+      width: 11px;
+      height: 11px;
+    }
+
+    .plan-card-bottom {
+      display: grid;
+      gap: 7px;
+    }
+
+    .plan-card-title {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.18;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      text-shadow: 0 4px 18px rgba(15, 23, 42, 0.35);
+    }
+
+    .plan-card-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.96);
+      text-shadow: 0 4px 18px rgba(15, 23, 42, 0.35);
+    }
+
+    .plan-card-meta i {
+      width: 14px;
+      height: 14px;
+      flex: 0 0 auto;
+      opacity: 0.9;
+    }
+    .plan-card-meta svg {
+      width: 14px !important;
+      height: 14px !important;
+      flex: 0 0 auto;
+    }
+
+    .plan-card-fallback {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.46);
+      letter-spacing: -0.05em;
+      text-transform: uppercase;
+    }
+
+    .plan-card.no-image .plan-card-fallback {
+      display: flex;
+    }
+
+    .plan-card.no-image .plan-card-scrim {
+      background:
+        linear-gradient(180deg, rgba(15, 23, 42, 0.05) 0%, rgba(15, 23, 42, 0.18) 30%, rgba(15, 23, 42, 0.84) 100%);
+    }
+
+    @media (max-width: 1450px) {
+      .dashboard-stage {
+        min-height: 620px;
+      }
+
+      .plans-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 1100px) {
+      .dashboard-stage {
+        min-height: 580px;
+      }
+
+      .plans-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 900px) {
+      .dashboard-shell {
+        padding: 18px 20px 36px;
+      }
+
+      .dashboard-topbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .create-plan-btn {
+        width: 100%;
+        flex-basis: auto;
+      }
+
+      .dashboard-stage {
+        min-height: auto;
+        padding: 20px 16px 24px;
+      }
+
+      .dashboard-state {
+        min-height: 300px;
+        padding: 22px 16px 18px;
+      }
+
+      .dashboard-loading-visual {
+        width: min(310px, 86vw);
+      }
+
+      .dashboard-loading-image {
+        width: min(290px, 82vw);
+      }
+
+      .dashboard-loading-title {
+        font-size: 18px;
+      }
+
+      .dashboard-stage-head {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .plans-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+  </style>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+  <link rel="preload" as="script" href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></head>
+
+<body class="__className_fff05e">
+  <header
+    class="w-full border-b bottom-2 border-border/40 z-50 sticky top-0 bg-background backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <nav class="lg:px-20 px-5 py-3 mx-auto">
+      <div class="flex justify-evenly w-full">
+        <div class="hidden md:flex gap-10 items-center justify-start flex-1">
+          <a href="/">
+            <div class="flex justify-center items-center leading-5 font-bold text-xl">
+              <img alt="logo" loading="lazy" width="100" height="50" decoding="async" data-nimg="1" class="dark:hidden"
+                style="color:transparent" srcset="images/image_3.png 1x, images/image.png 2x" src="images/image.png">
+              <img alt="logo" loading="lazy" width="100" height="50" decoding="async" data-nimg="1"
+                class="hidden dark:flex" style="color:transparent" srcset="images/image_4.png 1x, images/image_2.png 2x"
+                src="images/image_2.png">
+            </div>
+          </a>
+        </div>
+        <div class="hidden md:flex items-center justify-center">
+          <ul class="flex gap-8 items-center text-sm">
+            <li
+              class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer text-foreground">
+              <a href="/">Home</a></li>
+            <li
+              class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer text-foreground">
+              <a href="/dashboard.html">Dashboard</a></li>
+            <li
+              class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer text-foreground">
+              <a href="/#public-plans">Community Plans</a></li>
+          </ul>
+        </div>
+        <div class="md:hidden flex gap-6 flex-1">
+          <button
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary underline-offset-4 hover:underline h-10 px-4 py-2 text-xl"
+            aria-label="open side menu">
+            <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" height="1em"
+              width="1em" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M904 160H120c-4.4 0-8 3.6-8 8v64c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-64c0-4.4-3.6-8-8-8zm0 624H120c-4.4 0-8 3.6-8 8v64c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-64c0-4.4-3.6-8-8-8zm0-312H120c-4.4 0-8 3.6-8 8v64c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-64c0-4.4-3.6-8-8-8z">
+              </path>
+            </svg>
+          </button>
+          <aside
+            class="fixed top-0 z-[100] bg-background w-[50%] border-r-2 border-neutral-200 h-full ease-in-out duration-700 left-[-100%] flex flex-col gap-2 min-h-[100svh]">
+            <div class="flex justify-between p-2">
+              <a href="/">
+                <div class="flex flex-col leading-5 font-bold text-md p-1">
+                  <img alt="logo" loading="lazy" width="100" height="50" decoding="async" data-nimg="1"
+                    class="dark:hidden" style="color:transparent" srcset="images/image_3.png 1x, images/image.png 2x"
+                    src="images/image.png">
+                  <img alt="logo" loading="lazy" width="100" height="50" decoding="async" data-nimg="1"
+                    class="hidden dark:flex" style="color:transparent"
+                    srcset="images/image_4.png 1x, images/image_2.png 2x" src="images/image_2.png">
+                </div>
+              </a>
+              <button
+                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary underline-offset-4 hover:underline h-10 px-4 py-2 text-xl"
+                aria-label="close menu">
+                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024"
+                  fill-rule="evenodd" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M799.855 166.312c.023.007.043.018.084.059l57.69 57.69c.041.041.052.06.059.084a.118.118 0 0 1 0 .069c-.007.023-.018.042-.059.083L569.926 512l287.703 287.703c.041.04.052.06.059.083a.118.118 0 0 1 0 .07c-.007.022-.018.042-.059.083l-57.69 57.69c-.041.041-.06.052-.084.059a.118.118 0 0 1-.069 0c-.023-.007-.042-.018-.083-.059L512 569.926 224.297 857.629c-.04.041-.06.052-.083.059a.118.118 0 0 1-.07 0c-.022-.007-.042-.018-.083-.059l-57.69-57.69c-.041-.041-.052-.06-.059-.084a.118.118 0 0 1 0-.069c.007-.023.018-.042.059-.083L454.073 512 166.371 224.297c-.041-.04-.052-.06-.059-.083a.118.118 0 0 1 0-.07c.007-.022.018-.042.059-.083l57.69-57.69c.041-.041.06-.052.084-.059a.118.118 0 0 1 .069 0c.023.007.042.018.083.059L512 454.073l287.703-287.702c.04-.041.06-.052.083-.059a.118.118 0 0 1 .07 0Z">
+                  </path>
+                </svg>
+              </button>
+            </div>
+            <ul class="w-full flex flex-col gap-7 justify-center items-start p-5 text-sm font-medium">
+              <li
+                class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer text-foreground">
+                <a href="/">Home</a></li>
+              <li
+                class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer text-foreground">
+                <a href="/dashboard.html">Dashboard</a></li>
+              <li
+                class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer text-foreground">
+                <a href="/#public-plans">Community Plans</a></li>
+            </ul>
+          </aside>
+        </div>
+        <div class="flex gap-5 justify-end items-center flex-1 header-action-row" style="position:relative;z-index:10005;">
+          <span class="header-credits">Credits <span id="credits-count">2</span></span>
+          <button type="button" class="icon-btn" title="Feedback" aria-label="Feedback">
+            <i data-lucide="message-circle" style="width:18px;height:18px;"></i>
+          </button>
+          <button id="theme-toggle-btn" class="theme-toggle" title="Toggle theme">
+            <svg id="sun-icon" class="dark:hidden lucide lucide-sun-icon lucide-sun" xmlns="http://www.w3.org/2000/svg"
+              width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="4" />
+              <path d="M12 2v2" />
+              <path d="M12 20v2" />
+              <path d="m4.93 4.93 1.41 1.41" />
+              <path d="m17.66 17.66 1.41 1.41" />
+              <path d="M2 12h2" />
+              <path d="M20 12h2" />
+              <path d="m6.34 17.66-1.41 1.41" />
+              <path d="m19.07 4.93-1.41 1.41" />
+            </svg><svg id="moon-icon" class="hidden dark:block lucide lucide-moon-icon lucide-moon"
+              xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path
+                d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" />
+            </svg>
+          </button>
+          <div id="user-profile" style="position:relative;z-index:10002;">
+            <button id="profile-btn" type="button"
+              style="border:0;background:transparent;padding:0;cursor:pointer;pointer-events:auto;border-radius:50%;overflow:hidden;width:34px;height:34px;display:flex;align-items:center;justify-content:center;">
+              <img id="user-avatar" alt="user"
+                style="width:34px;height:34px;border-radius:50%;object-fit:cover;">
+            </button>
+            <div id="profile-menu"
+              style="display:none;position:absolute;right:0;top:50px;min-width:240px;background:#fff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,0.15);padding:12px;z-index:10001;">
+              <div style="padding:12px 14px;border-bottom:1px solid #f3f4f6;margin-bottom:8px;">
+                <div id="profile-name" style="font-weight:700;font-size:15px;color:#111;letter-spacing:-0.3px;"></div>
+                <div id="profile-email" style="font-size:12px;color:#6b7280;word-break:break-all;margin-top:4px;"></div>
+              </div>
+              <button id="manage-account" type="button"
+                style="width:100%;text-align:left;border:0;background:transparent;padding:10px 12px;cursor:pointer;font-size:14px;font-weight:500;color:#374151;border-radius:8px;transition:all 0.2s ease;">&#9881;&#65039;
+                Manage account</button>
+              <button id="signout-btn" type="button"
+                style="width:100%;text-align:left;border:0;background:transparent;padding:10px 12px;cursor:pointer;font-size:14px;font-weight:500;color:#dc2626;border-radius:8px;margin-top:4px;transition:all 0.2s ease;">&#128682;
+                Sign out</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+  <main class="dashboard-shell">
+    <section id="dashboard-topbar" class="dashboard-topbar is-hidden" aria-label="Dashboard controls">
+      <div class="dashboard-search">
+        <svg class="dashboard-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+        <input id="dashboard-search-input" class="dashboard-search-input" type="search"
+          placeholder="Search Travel Plan..." aria-label="Search travel plans">
+      </div>
+      <button class="create-plan-btn" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"
+          stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="7" width="18" height="13" rx="2"></rect>
+          <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          <path d="M3 12h18"></path>
+        </svg>
+        <span>Create Travel Plan</span>
+      </button>
+    </section>
+
+    <section class="dashboard-stage is-loading" aria-labelledby="dashboard-title">
+      <div class="dashboard-stage-head">
+        <div>
+          <h1 id="dashboard-title" class="dashboard-title">Your Travel Plans</h1>
+        </div>
+        <div id="dashboard-count-pill" class="dashboard-count-pill">0 plans</div>
+      </div>
+
+      <div id="dashboard-state" class="dashboard-state is-visible is-loading" aria-live="polite">
+        <div class="dashboard-state-shell">
+          <div id="dashboard-loading-panel" class="dashboard-state-panel dashboard-loading-panel is-visible">
+            <div class="dashboard-loading-visual" aria-hidden="true">
+              <div class="dashboard-loading-backdrop"></div>
+              <img class="dashboard-loading-image" src="/images/loading-animation-dashboard.svg" loading="eager" decoding="async" alt="Loading travel plans illustration">
+            </div>
+            <h2 class="dashboard-loading-title">Loading Travel Plans...</h2>
+            <p class="dashboard-loading-copy">Gathering your saved trips and preparing the dashboard for a smooth takeoff.</p>
+          </div>
+
+          <div id="dashboard-empty-panel" class="dashboard-state-panel dashboard-empty-panel">
+            <div class="dashboard-empty-visual" aria-hidden="true">
+              <img class="dashboard-empty-image" src="/images/loading-animation-dashboard.svg" loading="eager" decoding="async" alt="">
+            </div>
+            <h2 class="dashboard-empty-title">Your Plans List Is Empty. Ready To Add Your First One?!</h2>
+            <a class="dashboard-empty-cta" href="plans-newplan.html">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="7" width="18" height="13" rx="2"></rect>
+                <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                <path d="M3 12h18"></path>
+              </svg>
+              <span>Create Travel Plan</span>
+            </a>
+          </div>
+
+          <div id="dashboard-generic-panel" class="dashboard-state-panel dashboard-generic-panel">
+            <div>
+              <div class="dashboard-state-icon">
+                <i id="dashboard-state-icon" data-lucide="loader" style="width:38px;height:38px;"></i>
+              </div>
+              <h2 id="dashboard-state-title">Loading your plans</h2>
+              <p id="dashboard-state-copy">We're pulling in every generated itinerary so each one is directly accessible from your dashboard.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="plans-grid" class="plans-grid" style="display:none;" aria-live="polite"></div>
+    </section>
+  </main>
+  <footer class="py-5 mt-10 bg-blue-50 dark:bg-slate-900 dark:text-gray-200 relative z-[1000]">
+    <div class="lg:px-20 px-5 py-2 grid grid-cols-4 justify-between gap-10 lg:grid-cols-6 lg:text-left">
+      <div class="col-span-4 flex w-full flex-col gap-6 lg:col-span-2">
+        <div class="flex items-center gap-2 lg:justify-start">
+          <div class="hidden md:flex gap-10 items-center justify-start flex-1"><a href="/">
+              <div class="flex justify-center items-center leading-5 font-bold text-xl"><img alt="logo" loading="lazy"
+                  width="100" height="50" decoding="async" data-nimg="1" class="dark:hidden" style="color:transparent"
+                  srcset="images/image_3.png 1x, images/image.png 2x" src="images/image.png"><img alt="logo"
+                  loading="lazy" width="100" height="50" decoding="async" data-nimg="1" class="hidden dark:block"
+                  style="color:transparent" srcset="images/image_4.png 1x, images/image_2.png 2x"
+                  src="images/image_2.png"></div>
+            </a></div>
+        </div>
+        <p class="text-muted-foreground dark:text-gray-400">Your perfect trip, built for you. Effortlessly plan
+          personalized itineraries that match your travel style.</p>
+        <ul class="flex items-center space-x-6">
+          <li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300"><a
+              href="#"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512"
+                class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z">
+                </path>
+              </svg></a></li>
+          <li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300"><a
+              href="#"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512"
+                class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M504 256C504 119 393 8 256 8S8 119 8 256c0 123.78 90.69 226.38 209.25 245V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.28c-30.8 0-40.41 19.12-40.41 38.73V256h68.78l-11 71.69h-57.78V501C413.31 482.38 504 379.78 504 256z">
+                </path>
+              </svg></a></li>
+          <li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300"><a
+              href="#"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512"
+                class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z">
+                </path>
+              </svg></a></li>
+          <li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300"><a
+              href="#"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512"
+                class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z">
+                </path>
+              </svg></a></li>
+        </ul>
+      </div>
+      <div class="col-span-2 md:col-span-1">
+        <h3 class="mb-5 font-medium">Support</h3>
+        <ul class="space-y-4 text-sm text-muted-foreground dark:text-gray-400">
+          <li class="font-medium"><a
+              class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
+              href="/help-center">Help Center</a></li>
+          <li class="font-medium"><a
+              class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
+              href="/contact-us">Contact Us</a></li>
+          <li class="font-medium"><a
+              class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
+              href="/privacy-policy">Privacy Policy</a></li>
+          <li class="font-medium"><a
+              class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
+              href="/terms-of-service">Terms of Service</a></li>
+        </ul>
+      </div>
+      <div class="col-span-2 md:col-span-1">
+        <h3 class="mb-5 font-medium">Company</h3>
+        <ul class="space-y-4 text-sm text-muted-foreground dark:text-gray-400">
+          <li class="font-medium"><a
+              class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
+              href="/about-us">About Us</a></li>
+          <li class="font-medium"><a
+              class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
+              href="/partners">Partners</a></li>
+        </ul>
+      </div>
+      <div class="col-span-4 md:col-span-2">
+        <h3 class="mb-2 font-medium">Newsletter</h3>
+        <form class="grid gap-1">
+          <div class="flex justify-evenly w-full space-x-2"><input type="email"
+              class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-slate-800 dark:border-slate-700"
+              data-slot="input" placeholder="Email" required="" value=""><button
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 px-4 py-2 dark:bg-slate-700 dark:hover:bg-slate-600"
+              data-slot="button" type="submit">Subscribe</button></div>
+        </form>
+        <p class="mt-2 ml-1 text-xs font-medium text-muted-foreground dark:text-gray-400">By submitting, you agree to
+          our<a href="/privacy-policy" class="ml-1 text-primary dark:text-blue-400 hover:underline">Privacy Policy</a>
+        </p>
+      </div>
+    </div>
+  </footer>
+  <script src="/js/clerk-loader.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/plan-service.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script>
+    (function () {
+      var profileBtn = document.getElementById('profile-btn');
+      var profileMenu = document.getElementById('profile-menu');
+      var manageBtn = document.getElementById('manage-account');
+      var signOutBtn = document.getElementById('signout-btn');
+      var avatar = document.getElementById('user-avatar');
+      var nameEl = document.getElementById('profile-name');
+      var emailEl = document.getElementById('profile-email');
+      var themeToggle = document.getElementById('theme-toggle-btn');
+      var sunIcon = document.getElementById('sun-icon');
+      var moonIcon = document.getElementById('moon-icon');
+      var createPlanBtn = document.querySelector('.create-plan-btn');
+      var creditsCount = document.getElementById('credits-count');
+      var dashboardTopbar = document.getElementById('dashboard-topbar');
+      var dashboardStage = document.querySelector('.dashboard-stage');
+      var searchInput = document.getElementById('dashboard-search-input');
+      var plansGrid = document.getElementById('plans-grid');
+      var dashboardState = document.getElementById('dashboard-state');
+      var dashboardLoadingPanel = document.getElementById('dashboard-loading-panel');
+      var dashboardEmptyPanel = document.getElementById('dashboard-empty-panel');
+      var dashboardGenericPanel = document.getElementById('dashboard-generic-panel');
+      var dashboardStateIcon = document.getElementById('dashboard-state-icon');
+      var dashboardStateTitle = document.getElementById('dashboard-state-title');
+      var dashboardStateCopy = document.getElementById('dashboard-state-copy');
+      var dashboardCountPill = document.getElementById('dashboard-count-pill');
+      var clerkReady = false;
+      var allPlans = [];
+      var heroHydrationCache = Object.create(null);
+
+      function closeMenu() {
+        if (profileMenu) profileMenu.style.display = 'none';
+      }
+
+      if (profileBtn) {
+        profileBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          if (profileMenu.style.display === 'none') {
+            profileMenu.style.display = 'block';
+          } else {
+            closeMenu();
+          }
+        });
+      }
+
+      document.addEventListener('click', closeMenu);
+
+      if (manageBtn) {
+        manageBtn.addEventListener('click', function () {
+          if (window.Clerk && typeof window.Clerk.openUserProfile === 'function') {
+            window.Clerk.openUserProfile();
+          }
+        });
+      }
+
+      if (signOutBtn) {
+        signOutBtn.addEventListener('click', function () {
+          if (window.Clerk && typeof window.Clerk.signOut === 'function') {
+            window.Clerk.signOut(function () { window.location.href = '/'; });
+          }
+        });
+      }
+
+      function buildInitialsAvatar(initials) {
+        var safe = (initials || "U").toUpperCase();
+        var svg = [
+          '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">',
+          '<rect width="80" height="80" rx="40" fill="#e5e7eb"/>',
+          '<text x="50%" y="52%" text-anchor="middle" font-family="Arial, sans-serif" font-size="34" fill="#6b7280" font-weight="600" dy=".35em">',
+          safe,
+          "</text></svg>",
+        ].join("");
+        return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+      }
+
+      function updateUI() {
+        if (!window.Clerk) return;
+        if (window.Clerk.user) {
+          var fullName = [window.Clerk.user.firstName, window.Clerk.user.lastName].filter(Boolean).join(' ').trim();
+          var initial = fullName ? fullName.charAt(0) : "U";
+          if (avatar) {
+            avatar.onerror = function () {
+              avatar.onerror = null;
+              avatar.src = buildInitialsAvatar(initial);
+            };
+            avatar.src = window.Clerk.user.imageUrl || buildInitialsAvatar(initial);
+          }
+          if (nameEl) {
+            nameEl.textContent = fullName || 'Account';
+          }
+          if (emailEl) {
+            emailEl.textContent = window.Clerk.user.primaryEmailAddress ? window.Clerk.user.primaryEmailAddress.emailAddress : '';
+          }
+        } else if (clerkReady) {
+          window.location.href = '/';
+        }
+      }
+
+      function bindClerk(clerk) {
+        if (!clerk) return;
+        clerkReady = true;
+        updateUI();
+        if (typeof clerk.addListener === "function" && !clerk.__dashboardHeaderBound) {
+          clerk.__dashboardHeaderBound = true;
+          clerk.addListener(function () {
+            updateUI();
+          });
+        }
+      }
+
+      function ensureClerkLoaded() {
+        if (window.Clerk) {
+          return window.Clerk.loaded ? Promise.resolve(window.Clerk) : window.Clerk.load().then(function () { return window.Clerk; });
+        }
+        if (typeof window.__loadYatrifyClerk === "function") {
+          return window.__loadYatrifyClerk(true).then(function (clerk) {
+            if (!clerk) throw new Error("Clerk SDK not available");
+            if (typeof clerk.load === "function" && !clerk.loaded) {
+              return clerk.load().then(function () { return window.Clerk || clerk; });
+            }
+            return window.Clerk || clerk;
+          });
+        }
+        return Promise.reject(new Error("Clerk SDK not available"));
+      }
+
+      function loadCredits() {
+        if (!creditsCount || !window.YatrifyPlanService) return;
+        window.YatrifyPlanService.getUserMe().then(function (payload) {
+          var credits = Number(payload && payload.credits);
+          creditsCount.textContent = Number.isFinite(credits) ? String(credits) : "-";
+        }).catch(function () {
+          creditsCount.textContent = "-";
+        });
+      }
+
+      function escapeHtml(value) {
+        return String(value == null ? "" : value)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function pluralizePlans(count) {
+        return count === 1 ? "plan" : "plans";
+      }
+
+      function setCountPill(count) {
+        if (!dashboardCountPill) return;
+        dashboardCountPill.textContent = count + " " + pluralizePlans(count);
+      }
+
+      function showState(icon, title, copy, mode) {
+        if (dashboardState) dashboardState.classList.add("is-visible");
+        if (dashboardState) dashboardState.classList.toggle("is-loading", mode === "loading");
+        if (dashboardStage) dashboardStage.classList.toggle("is-empty", mode === "empty");
+        if (dashboardStage) dashboardStage.classList.toggle("is-loading", mode === "loading");
+        if (dashboardTopbar) dashboardTopbar.classList.toggle("is-hidden", mode === "loading" || mode === "empty");
+        if (plansGrid) plansGrid.style.display = "none";
+        if (dashboardLoadingPanel) dashboardLoadingPanel.classList.toggle("is-visible", mode === "loading");
+        if (dashboardEmptyPanel) dashboardEmptyPanel.classList.toggle("is-visible", mode === "empty");
+        if (dashboardGenericPanel) dashboardGenericPanel.classList.toggle("is-visible", mode !== "loading" && mode !== "empty");
+        if (dashboardStateIcon) dashboardStateIcon.setAttribute("data-lucide", icon || "map");
+        if (dashboardStateTitle) dashboardStateTitle.textContent = title || "";
+        if (dashboardStateCopy) dashboardStateCopy.textContent = copy || "";
+        renderLucideIcons();
+      }
+
+      function showGrid() {
+        if (dashboardState) dashboardState.classList.remove("is-visible");
+        if (dashboardState) dashboardState.classList.remove("is-loading");
+        if (dashboardStage) dashboardStage.classList.remove("is-empty");
+        if (dashboardStage) dashboardStage.classList.remove("is-loading");
+        if (dashboardTopbar) dashboardTopbar.classList.remove("is-hidden");
+        if (dashboardLoadingPanel) dashboardLoadingPanel.classList.remove("is-visible");
+        if (dashboardEmptyPanel) dashboardEmptyPanel.classList.remove("is-visible");
+        if (dashboardGenericPanel) dashboardGenericPanel.classList.remove("is-visible");
+        if (plansGrid) plansGrid.style.display = "grid";
+      }
+
+      function hashString(value) {
+        var text = String(value || "");
+        var hash = 0;
+        for (var i = 0; i < text.length; i += 1) {
+          hash = ((hash << 5) - hash) + text.charCodeAt(i);
+          hash |= 0;
+        }
+        return Math.abs(hash);
+      }
+
+      function getGradientForPlan(plan) {
+        var palette = [
+          ["#1d4ed8", "#38bdf8"],
+          ["#0f766e", "#14b8a6"],
+          ["#b45309", "#f97316"],
+          ["#7c3aed", "#ec4899"],
+          ["#166534", "#22c55e"],
+          ["#be185d", "#fb7185"]
+        ];
+        var seed = hashString((plan && plan.destination) || (plan && plan.id) || "");
+        var colors = palette[seed % palette.length];
+        return "linear-gradient(135deg, " + colors[0] + " 0%, " + colors[1] + " 100%)";
+      }
+
+      function formatDate(value) {
+        if (!value) return "";
+        var parsed = new Date(value);
+        if (Number.isNaN(parsed.getTime())) return "";
+        return new Intl.DateTimeFormat("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric"
+        }).format(parsed);
+      }
+
+      function getPlanDateRange(plan) {
+        var start = formatDate(plan && (plan.visitStartDate || plan.startDate));
+        var end = formatDate(plan && (plan.visitEndDate || plan.endDate));
+        if (start && end) return start + " - " + end;
+        return start || end || "Dates will appear once your trip is finalized";
+      }
+
+      function getPlanTitle(plan) {
+        var destination = String(plan && plan.destination || "").trim();
+        var startCity = String(plan && plan.startCity || "").trim();
+        if (destination) return destination;
+        if (startCity) return startCity + " getaway";
+        return "Untitled travel plan";
+      }
+
+      function getPlanSummary(plan) {
+        var sections = plan && plan.sections && typeof plan.sections === "object" ? plan.sections : {};
+        var summary = "";
+        if (typeof sections.summary === "string" && sections.summary.trim()) {
+          summary = sections.summary.trim();
+        } else if (typeof sections.tripSummary === "string" && sections.tripSummary.trim()) {
+          summary = sections.tripSummary.trim();
+        } else if (Array.isArray(sections.highlights) && sections.highlights.length) {
+          summary = String(sections.highlights[0] || "").trim();
+        }
+        return summary || "Open this itinerary to review your day-by-day plan, trip details, and refinements.";
+      }
+
+      function getApiBaseUrl() {
+        if (window.YatrifyApiClient && typeof window.YatrifyApiClient.getApiBase === "function") {
+          return window.YatrifyApiClient.getApiBase();
+        }
+        return String(window.__YATRIFY_API_BASE_URL || window.YATRIFY_API_BASE_URL || "http://localhost:4000").replace(/\/+$/, "");
+      }
+
+      function normalizeThemeQueryList(themes) {
+        if (!Array.isArray(themes)) return "";
+        return themes.map(function (theme) {
+          return String(theme || "").trim();
+        }).filter(Boolean).join(",");
+      }
+
+      function fetchDestinationHeroImage(destinationText, startCityText, themes) {
+        var destination = String(destinationText || "").trim();
+        var startCity = String(startCityText || "").trim();
+        var query = new URLSearchParams();
+        if (destination) query.set("destination", destination);
+        if (startCity) query.set("startCity", startCity);
+        var themeQuery = normalizeThemeQueryList(themes);
+        if (themeQuery) query.set("themes", themeQuery);
+        return fetch(getApiBaseUrl() + "/api/unsplash/hero?" + query.toString())
+          .then(function (res) {
+            if (!res.ok) throw new Error("Hero image request failed");
+            return res.json();
+          })
+          .then(function (payload) {
+            return payload && payload.imageUrl ? String(payload.imageUrl).trim() : "";
+          });
+      }
+
+      function getPlanInitials(plan) {
+        var title = getPlanTitle(plan).replace(/[^A-Za-z0-9 ]/g, " ").trim();
+        if (!title) return "YT";
+        var words = title.split(/\s+/).filter(Boolean);
+        if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+        return (words[0].charAt(0) + words[1].charAt(0)).toUpperCase();
+      }
+
+      function applyPlanCardMedia() {
+        if (!plansGrid) return;
+        var mediaNodes = plansGrid.querySelectorAll(".plan-card-media");
+        mediaNodes.forEach(function (node) {
+          var heroUrl = node.getAttribute("data-hero-url") || "";
+          var gradient = node.getAttribute("data-gradient") || "linear-gradient(135deg, #1d4ed8 0%, #38bdf8 100%)";
+          var image = node.querySelector(".plan-card-image");
+          node.style.backgroundImage = gradient;
+          if (image) {
+            if (heroUrl) {
+              image.src = heroUrl;
+            } else {
+              image.removeAttribute("src");
+            }
+          }
+        });
+      }
+
+      function updatePlanInMemory(planId, patch) {
+        if (!planId) return null;
+        var updatedPlan = null;
+        allPlans = allPlans.map(function (plan) {
+          if (!plan || plan.id !== planId) return plan;
+          updatedPlan = Object.assign({}, plan, patch || {});
+          return updatedPlan;
+        });
+        return updatedPlan;
+      }
+
+      function updatePlanCardHero(planId, heroUrl) {
+        if (!plansGrid || !planId || !heroUrl) return;
+        var card = plansGrid.querySelector('.plan-card[data-plan-id="' + String(planId) + '"]');
+        if (!card) return;
+        var media = card.querySelector(".plan-card-media");
+        if (media) {
+          media.setAttribute("data-hero-url", heroUrl);
+        }
+        card.classList.remove("no-image");
+        applyPlanCardMedia();
+      }
+
+      function ensurePlanHeroImage(plan) {
+        if (!plan || !plan.id) return Promise.resolve("");
+        if (heroHydrationCache[plan.id]) return heroHydrationCache[plan.id];
+
+        heroHydrationCache[plan.id] = Promise.resolve()
+          .then(function () {
+            return window.YatrifyPlanService.getPlan(plan.id);
+          })
+          .then(function (payload) {
+            var detailedPlan = payload && payload.plan ? payload.plan : null;
+            var existingHero = detailedPlan && detailedPlan.heroImageUrl
+              ? String(detailedPlan.heroImageUrl).trim()
+              : String(plan.heroImageUrl || "").trim();
+            if (existingHero) {
+              updatePlanInMemory(plan.id, { heroImageUrl: existingHero });
+              updatePlanCardHero(plan.id, existingHero);
+              return existingHero;
+            }
+
+            var destination = detailedPlan && detailedPlan.destination ? detailedPlan.destination : plan.destination;
+            var startCity = detailedPlan && detailedPlan.startCity ? detailedPlan.startCity : plan.startCity;
+            var themes = detailedPlan && Array.isArray(detailedPlan.themes) ? detailedPlan.themes : plan.themes;
+            return fetchDestinationHeroImage(destination, startCity, themes).then(function (imageUrl) {
+              if (!imageUrl) return "";
+              updatePlanInMemory(plan.id, { heroImageUrl: imageUrl });
+              updatePlanCardHero(plan.id, imageUrl);
+              if (window.YatrifyPlanService && typeof window.YatrifyPlanService.updatePlan === "function") {
+                window.YatrifyPlanService.updatePlan(plan.id, { heroImageUrl: imageUrl }).catch(function () { });
+              }
+              return imageUrl;
+            });
+          })
+          .catch(function () {
+            var fallbackHero = String(plan.heroImageUrl || "").trim();
+            if (fallbackHero) {
+              updatePlanCardHero(plan.id, fallbackHero);
+              return fallbackHero;
+            }
+            return "";
+          });
+
+        return heroHydrationCache[plan.id];
+      }
+
+      function hydratePlanCardImages(plans) {
+        if (!Array.isArray(plans) || !plans.length) return;
+        plans.forEach(function (plan) {
+          if (!plan) return;
+          ensurePlanHeroImage(plan);
+        });
+      }
+
+      function renderPlans(plans) {
+        if (!plansGrid) return;
+
+        if (!plans.length) {
+          var query = searchInput ? String(searchInput.value || "").trim() : "";
+          setCountPill(allPlans.length);
+          if (allPlans.length && query) {
+            showState("search", "No matching plans found", "Try a different destination or clear the search to see all of your saved itineraries.");
+          } else {
+            showState("map", "Your plans list is empty", "Create your first travel plan and it will appear here as a card you can open directly from the dashboard.", "empty");
+          }
+          return;
+        }
+
+        plansGrid.innerHTML = plans.map(function (plan) {
+          var title = getPlanTitle(plan);
+          var heroUrl = String(plan && plan.heroImageUrl || "").trim();
+          var fallbackInitials = getPlanInitials(plan);
+          var href = "generated-plan.html?planId=" + encodeURIComponent(String(plan && plan.id || ""));
+          var badges = [
+            '<span class="plan-card-badge" aria-label="Saved plan"><i data-lucide="map-pinned"></i></span>'
+          ];
+          if (plan && plan.isPublished) {
+            badges.push('<span class="plan-card-badge" aria-label="Community plan"><i data-lucide="globe"></i></span>');
+          }
+          return [
+            '<a class="plan-card' + (heroUrl ? "" : " no-image") + '" data-plan-id="' + escapeHtml(String(plan && plan.id || "")) + '" href="' + href + '" aria-label="Open ' + escapeHtml(title) + '">',
+            '  <div class="plan-card-media" data-hero-url="' + escapeHtml(heroUrl) + '" data-gradient="' + escapeHtml(getGradientForPlan(plan)) + '">',
+            '    <img class="plan-card-image"' + (heroUrl ? ' src="' + escapeHtml(heroUrl) + '"' : "") + ' loading="lazy" decoding="async" alt="' + escapeHtml(title) + ' hero image">',
+            '  </div>',
+            '  <div class="plan-card-fallback">' + escapeHtml(fallbackInitials) + '</div>',
+            '  <div class="plan-card-scrim"></div>',
+            '  <div class="plan-card-body">',
+            '    <div class="plan-card-badges">' + badges.join("") + '</div>',
+            '    <div class="plan-card-bottom">',
+            '      <div>',
+            '        <h2 class="plan-card-title">' + escapeHtml(title) + '</h2>',
+            '      </div>',
+            '      <div class="plan-card-meta"><i data-lucide="calendar-range"></i><span>' + escapeHtml(getPlanDateRange(plan)) + '</span></div>',
+            '    </div>',
+            '  </div>',
+            '</a>'
+          ].join("");
+        }).join("");
+
+        setCountPill(allPlans.length);
+        showGrid();
+        applyPlanCardMedia();
+        renderLucideIcons();
+        hydratePlanCardImages(plans);
+      }
+
+      function applySearchFilter() {
+        var query = searchInput ? String(searchInput.value || "").trim().toLowerCase() : "";
+        if (!query) {
+          renderPlans(allPlans.slice());
+          return;
+        }
+        var filtered = allPlans.filter(function (plan) {
+          var haystack = [
+            plan.destination,
+            plan.startCity,
+            getPlanSummary(plan),
+            plan.id
+          ].join(" ").toLowerCase();
+          return haystack.indexOf(query) !== -1;
+        });
+        renderPlans(filtered);
+      }
+
+      function sortPlans(plans) {
+        return plans.slice().sort(function (a, b) {
+          var aTime = Date.parse(a && (a.updatedAt || a.createdAt) || "") || 0;
+          var bTime = Date.parse(b && (b.updatedAt || b.createdAt) || "") || 0;
+          return bTime - aTime;
+        });
+      }
+
+      function loadPlans() {
+        if (!window.YatrifyPlanService || typeof window.YatrifyPlanService.listPlans !== "function") {
+          showState("triangle-alert", "Plan service unavailable", "The dashboard could not connect to your saved plans right now.");
+          return Promise.resolve();
+        }
+
+        showState("loader", "Loading your plans", "We're pulling in every generated itinerary so each one is directly accessible from your dashboard.", "loading");
+
+        return window.YatrifyPlanService.listPlans().then(function (plans) {
+          allPlans = sortPlans(Array.isArray(plans) ? plans : []);
+          applySearchFilter();
+        }).catch(function (error) {
+          if (error && error.status === 401) {
+            window.location.href = "/";
+            return;
+          }
+          allPlans = [];
+          setCountPill(0);
+          showState("triangle-alert", "Unable to load plans", "Something went wrong while fetching your dashboard. Please refresh and try again.");
+        });
+      }
+
+      function renderLucideIcons() {
+        if (!window.lucide || typeof window.lucide.createIcons !== "function") return;
+        window.lucide.createIcons({
+          attrs: { "stroke-width": "2.1", "stroke-linecap": "round", "stroke-linejoin": "round" }
+        });
+      }
+
+      if (createPlanBtn) {
+        createPlanBtn.addEventListener('click', function () {
+          if (window.Clerk && window.Clerk.user) {
+            window.location.href = 'plans-newplan.html';
+          }
+        });
+      }
+
+      if (searchInput) {
+        searchInput.addEventListener("input", applySearchFilter);
+      }
+
+      if (themeToggle) {
+        themeToggle.addEventListener('click', function () {
+          var html = document.documentElement;
+          if (html.classList.contains('dark')) {
+            html.classList.remove('dark');
+            html.style.colorScheme = 'light';
+            localStorage.setItem('theme', 'light');
+          } else {
+            html.classList.add('dark');
+            html.style.colorScheme = 'dark';
+            localStorage.setItem('theme', 'dark');
+          }
+        });
+      }
+
+      var savedTheme = localStorage.getItem('theme') || 'light';
+      if (savedTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+        document.documentElement.style.colorScheme = 'dark';
+      }
+
+      window.addEventListener('load', function () {
+        ensureClerkLoaded().then(function (clerk) {
+          bindClerk(clerk);
+          loadCredits();
+          loadPlans();
+          renderLucideIcons();
+        }).catch(function () {
+          loadCredits();
+          loadPlans();
+          renderLucideIcons();
+        });
+      });
+    })();
+  </script>
+<script src="/js/page-transition.js"></script>
+<script src="/js/page-data-loader.js"></script>
+</body>
+
+</html>

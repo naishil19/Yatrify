@@ -1,0 +1,4505 @@
+<!DOCTYPE html>
+<html lang="en" class="light" style="color-scheme: light;">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Refine Plan - Yatrify</title>
+  <link rel="stylesheet" href="css/2a2e7898d4f6aad7.css?v=20260323g" />
+
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --panel: #fff;
+      --panel-soft: #f8fafc;
+      --text: #0f172a;
+      --muted: #64748b;
+      --line: #dbe3ef;
+      --line-strong: #c7d2e1;
+      --blue: #3b82f6;
+      
+      --space-1: 8px;
+      --space-2: 16px;
+      --space-3: 24px;
+      --space-4: 32px;
+      --sidebar-width: 300px;
+      --layout-gap: -10px;
+      --section-gap: 24px;
+      --font-page-title: 20px;
+      --font-sidebar-item: 13px;}
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text);
+      background: #ffffff;
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    
+    
+    html.dark body {
+      --bg: #020817;
+      --panel: #0f172a;
+      --panel-soft: #111b2f;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --line: #24324a;
+      --line-strong: #334155;
+      background: #020817;
+    }
+body > footer {
+      width: 100%;
+      margin-top: 28px;
+    }
+
+
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 65px;
+      z-index: 1200;
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in oklab, var(--panel) 72%, transparent);
+      backdrop-filter: blur(14px);
+    }
+
+    html.dark .topbar {
+      background: rgba(2, 8, 23, 0.6);
+    }
+
+    .topbar-inner {
+      width: 100%;
+      margin: 0 auto;
+      height: 100%;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      flex: 1 1 auto;
+      min-width: 0;
+      justify-content: flex-start;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex: 0 0 auto;
+      justify-content: flex-end;
+      margin-left: 20px;
+    }
+
+    .topbar-actions {
+      gap: 16px !important;
+    }
+
+    .logo-wrap {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .logo-wrap img {
+      width: 100px;
+      height: 50px;
+      object-fit: contain;
+    }
+
+    .logo-dark {
+      display: none;
+    }
+
+    html.dark .logo-light {
+      display: none;
+    }
+
+    html.dark .logo-dark {
+      display: block;
+    }
+
+    .topbar-nav {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      align-items: center;
+    }
+
+    .topbar-nav a {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .topbar-nav a:hover {
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+
+    .destination-select-wrap {
+      position: relative;
+      width: 320px;
+    }
+
+    .destination-select {
+      width: 100%;
+      min-height: 44px;
+      border-radius: 8px;
+      border: 1px solid #c8d2e2;
+      background: #f3f6fb;
+      color: #1f2937;
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.4;
+      padding: 8px 34px 8px 14px;
+      appearance: none;
+      -webkit-appearance: none;
+      transition: background-color .2s ease, border-color .2s ease, color .2s ease;
+    }
+
+    html.dark .destination-select {
+      border-color: #3b4f6a;
+      background: #0f1a2d;
+      color: #e2e8f0;
+    }
+
+    .destination-trigger {
+      width: 100%;
+      min-height: 20px;
+      border-radius: 8px;
+      border: 1px solid #c8d2e2;
+      background: #ffffff;
+      color: #1f2937;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 5px 34px 5px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      cursor: pointer;
+      text-align: left;
+      transition: background-color .2s ease, border-color .2s ease, color .2s ease;
+    }
+
+    .destination-trigger:hover,
+    .destination-select-wrap.open .destination-trigger {
+      background: #f1f5f9;
+      border-color: #bcc9db;
+    }
+
+    .destination-trigger .destination-label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    html.dark .destination-trigger {
+      border-color: #1e293b;
+      background: #020817;
+      color: #e2e8f0;
+    }
+
+    html.dark .destination-trigger:hover,
+    html.dark .destination-select-wrap.open .destination-trigger {
+      background: #1e293b;
+      border-color: #1e293b;
+    }
+
+    .destination-trigger i {
+      flex: 0 0 auto;
+    }
+
+    .destination-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      z-index: 1300;
+      border: 1px solid #d7dee9;
+      border-radius: 10px;
+      background: #ffffff;
+      box-shadow: 0 10px 26px rgba(15, 23, 42, 0.14);
+      display: none;
+      overflow: hidden;
+    }
+
+    .destination-select-wrap.open .destination-menu {
+      display: block;
+    }
+
+    .destination-search-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-bottom: 1px solid #e2e8f0;
+      color: #64748b;
+    }
+
+    .destination-search-input {
+      width: 100%;
+      border: 0;
+      outline: none;
+      background: transparent;
+      color: #111827;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .destination-search-input::placeholder {
+      color: #64748b;
+    }
+
+    .destination-options {
+      max-height: 250px;
+      overflow-y: auto;
+    }
+
+    .destination-option {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      text-align: left;
+      padding: 10px 12px;
+      color: #0f172a;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .destination-option:hover,
+    .destination-option.active,
+    .destination-option[aria-selected="true"] {
+      background: #f1f6fb;
+    }
+
+    .destination-empty {
+      margin: 0;
+      padding: 12px;
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    html.dark .destination-menu {
+      border-color: #334155;
+      background: #0f172a;
+      box-shadow: 0 10px 26px rgba(2, 6, 23, 0.5);
+    }
+
+    html.dark .destination-search-row {
+      border-bottom-color: #334155;
+      color: #94a3b8;
+    }
+
+    html.dark .destination-search-input {
+      color: #e2e8f0;
+    }
+
+    html.dark .destination-search-input::placeholder {
+      color: #94a3b8;
+    }
+
+    html.dark .destination-option {
+      color: #e2e8f0;
+    }
+
+    html.dark .destination-option:hover,
+    html.dark .destination-option.active,
+    html.dark .destination-option[aria-selected="true"] {
+      background: #1f314f;
+    }
+
+    html.dark .destination-empty {
+      color: #94a3b8;
+    }
+
+    .destination-trigger-icon {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      opacity: .7;
+    }
+
+    .header-credits {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      white-space: nowrap;
+      text-decoration: none;
+      text-underline-offset: 4px;
+    }
+
+    .header-credits:hover {
+      text-decoration: underline;
+    }
+
+    html.dark .header-credits {
+      color: #e5e7eb;
+    }
+
+    .icon-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 0;
+      background: transparent;
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .theme-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      flex: 0 0 34px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      position: relative;
+      transition: color 0.2s ease, opacity 0.2s ease;
+    }
+
+    .theme-toggle:hover {
+      opacity: .9;
+    }
+    .theme-toggle svg {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 24px;
+      height: 24px;
+      display: block;
+      transform: translate(-50%, -50%);
+      transform-origin: center;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    
+
+    html:not(.dark) .theme-toggle #moon-icon {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    html.dark .theme-toggle #sun-icon {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    html.dark .theme-toggle #moon-icon {
+      opacity: 1;
+    }
+
+    .header-signin {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 34px;
+      padding: 4px 8px;
+      border: 0;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      background: transparent;
+    }
+
+    .profile-pill {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 10002;
+    }
+
+    #profile-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 2px solid var(--line-strong);
+      cursor: pointer;
+      background: #c2185b;
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 500;
+      overflow: hidden;
+      padding: 0;
+    }
+
+    #user-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      object-fit: cover;
+      display: none;
+    }
+
+    #user-avatar-letter {
+      width: 100%;
+      height: 100%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1;
+    }
+
+    #profile-menu {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 46px;
+      min-width: 240px;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      padding: 12px;
+      z-index: 10001;
+      animation: slideDown 0.2s ease;
+    }
+
+    #manage-account,
+    #signout-btn {
+      width: 100%;
+      text-align: left;
+      border: 0;
+      background: transparent;
+      padding: 10px 12px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 400;
+      color: #374151;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+
+    #manage-account:hover {
+      background-color: #f3f4f6;
+    }
+
+    #signout-btn {
+      color: #dc2626;
+      margin-top: 4px;
+    }
+
+    #signout-btn:hover {
+      background-color: #fee2e2;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    
+
+    
+    #mobile-menu-btn {
+      display: none;
+    }
+.page-shell {
+      max-width: 1200px;
+      margin: 0;
+      padding: 0 0 32px;
+      width: 100%;
+      flex: 1 0 auto;
+    }
+
+    .page-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+    }
+
+    .page-card h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .page-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .action-row {
+      margin-top: 18px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      height: 40px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      padding: 0 14px;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      color: var(--text);
+      background: var(--panel);
+    }
+
+    .btn.primary {
+      background: var(--blue);
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .page-shell .grid {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .page-shell .grid h2 {
+      margin: 0 0 10px;
+      font-size: 19px;
+    }
+
+    .page-shell .grid ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    @media (max-width: 1024px) {
+      .topbar-nav {
+        display: none;
+      }
+    }
+
+        @media (max-width: 760px) {
+      .page-shell .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .destination-select-wrap,
+      .header-credits,
+      .icon-btn {
+        display: none;
+      }
+
+      .page-card h1 {
+        font-size: 24px;
+      }
+    }
+    .main-grid {
+      width: 100%;
+      margin: 0;
+      padding: 84px 20px 0;
+      min-height: auto;
+      display: grid;
+      grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+      column-gap: var(--layout-gap);
+      align-items: start;
+    }
+    .main-grid.is-loading {
+      min-height: auto;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 88px;
+      width: var(--sidebar-width);
+      max-height: calc(100vh - 104px);
+      overflow: auto;
+      padding-right: 8px;
+    }
+
+    .sidebar-group {
+      border-right: 1px solid var(--line);
+      padding: var(--space-1) var(--space-2) var(--space-1) 0;
+      margin-right: 25px;
+    }
+
+    .sidebar-group+.sidebar-group {
+      margin-top: var(--section-gap);
+    }
+
+    .sidebar-title,
+    .sidebar-subtitle {
+      margin: 0 0 var(--space-2);
+      font-weight: 600;
+      font-size: var(--font-page-title);
+      line-height: 0.25;
+      letter-spacing: -.02em;
+    }
+
+    .sidebar-links {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text);
+      border-radius: 10px;
+      padding: var(--space-1) 10px;
+      border: 1px solid transparent;
+      transition: all .2s ease;
+      font-size: var(--font-sidebar-item);
+      line-height: 1.35;
+    }
+
+    .sidebar-link i {
+      width: 18px;
+      height: 18px;
+      flex: 0 0 auto;
+    }
+
+    .sidebar-link:hover {
+      background: #f1f5f9;
+      border-color: transparent;
+    }
+
+    .sidebar-link.active {
+      background: #f1f5f9;
+      border-color: transparent;
+      color: inherit;
+    }
+
+    .dot {
+      display: none;
+    }
+
+    .sidebar-link.active .dot {
+      display: none;
+    }
+
+    html.dark .sidebar-link:hover {
+      background: #1e293b;
+      border-color: transparent;
+    }
+
+    html.dark .sidebar-link.active {
+      background: #1e293b;
+      border-color: transparent;
+      color: inherit;
+    }
+
+    .lock {
+      margin-left: auto;
+      opacity: .65;
+    }
+
+    .content {
+      width: 100%;
+      max-width: 100%;
+      margin-left: 0;
+      padding: 0;
+      --fixed-step-height: 0px;
+      min-height: auto;
+    }
+    .content.is-loading {
+      padding-bottom: 0;
+      min-height: auto;
+    }
+
+    .mobile-drawer {
+      position: fixed;
+      top: 0;
+      left: -100%;
+      width: 82%;
+      max-width: 360px;
+      height: 100vh;
+      z-index: 1300;
+      background: var(--panel);
+      border-right: 1px solid var(--line);
+      padding: 16px;
+      transition: left .25s ease;
+      overflow-y: auto;
+    }
+
+    .mobile-drawer.open {
+      left: 0;
+    }
+
+    .mobile-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, .42);
+      z-index: 1280;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s ease;
+    }
+
+    .mobile-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .drawer-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 1280px) {
+      .topbar-nav,
+      .sidebar {
+        display: none;
+      }
+
+      #mobile-menu-btn {
+        display: inline-flex;
+      }
+
+      .content {
+        max-width: 100%;
+        margin-left: 0;
+        padding: 0 20px 12px;
+      }
+
+      .destination-select-wrap {
+        width: 290px;
+      }
+    }
+
+    @media (min-width: 1281px) {
+      .main-grid {
+        padding: 84px 80px 0;
+      }
+
+      .topbar-inner {
+        padding: 0 80px;
+      }
+    }
+
+    /* ── Inline-style replacements ─────────────── */
+    .rf-input-with-clear { position: relative; }
+    .rf-dest-input-wrap { position: relative; }
+
+    .rf-suggest-pos {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0; right: 0;
+    }
+
+    .rf-currency-caret {
+      color: #64748b;
+      flex: 0 0 auto;
+    }
+
+    .rf-pass-caret {
+      color: #64748b;
+      flex: 0 0 auto;
+    }
+
+    .rf-cal-hint-text {
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    /* ── Refine Form styles ─────────────────────── */
+    .refine-wrapper {
+      padding: 0 0 0px;
+    }
+
+    .refine-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: 0 1px 4px rgba(15,23,42,0.07);
+      overflow: visible;
+      margin-top: 3px;
+
+    }
+
+    .refine-head {
+      padding: 15px 22px 16px;
+    }
+
+    .refine-head h1 {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .refine-divider {
+      border: none;
+      border-top: 1px solid var(--line);
+      margin: 0;
+    }
+
+    .refine-body {
+      padding: 20px 22px 24px;
+    }
+    .refine-body.is-loading {
+      padding: 16px 22px 18px;
+      overflow: visible;
+      display: block;
+      min-height: auto;
+    }
+    .refine-body.is-loading + .refine-divider {
+      display: none;
+    }
+    .refine-body.is-loading .refine-loading {
+      width: 100%;
+    }
+    .refine-body.is-loading .refine-loading-panel {
+      width: min(760px, 100%);
+      margin: 0 auto;
+    }
+    .refine-body.is-loading .refine-loading-panel {
+      min-height: 0;
+      padding-bottom: 0;
+    }
+    .refine-body.is-loading .refine-banner,
+    .refine-body.is-loading #refine-form {
+      display: none;
+    }
+    .refine-loading {
+      display: none;
+    }
+    .refine-body.is-loading .refine-loading {
+      display: block;
+    }
+    .refine-loading-panel {
+      border: 0;
+      border-radius: 16px;
+      background: transparent;
+      padding: 16px 12px 18px;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 18px;
+    }
+    .refine-body.is-loading .refine-loading-title {
+      justify-content: center;
+      text-align: center;
+    }
+    .refine-body.is-loading .refine-loading-grid {
+      justify-items: center;
+    }
+    html.dark .refine-loading-panel {
+      background: transparent;
+      border-color: transparent;
+    }
+    .refine-loading-hero {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 2px;
+    }
+    .refine-loading-title {
+      font-size: 19px;
+      font-weight: 600;
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      justify-content: center;
+      width: 100%;
+    }
+    .refine-loading-sub {
+      font-size: 13px;
+      color: var(--muted);
+      max-width: 560px;
+      text-align: center;
+      margin: 0 auto;
+    }
+    .refine-loading-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      color: #334155;
+      font-size: 12px;
+      padding: 6px 12px;
+    }
+    html.dark .refine-loading-pill {
+      background: #1f2937;
+      color: #cbd5f5;
+    }
+    .refine-loading-spinner {
+      width: 20px;
+      height: 20px;
+      border-radius: 999px;
+      border: 2px solid #cbd5f5;
+      border-top-color: #3b82f6;
+      animation: refineSpin 0.9s linear infinite;
+    }
+    html.dark .refine-loading-spinner {
+      border-color: #1f2937;
+      border-top-color: #60a5fa;
+    }
+    @keyframes refineSpin {
+      to { transform: rotate(360deg); }
+    }
+    .refine-loading-step-two {
+      display: none;
+      width: 100%;
+    }
+    .refine-loading.is-step-two .refine-loading-step-one {
+      display: none;
+    }
+    .refine-loading.is-step-two .refine-loading-step-two {
+      display: block;
+    }
+    .refine-loading-grid {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(160px, 1fr));
+      gap: 12px 16px;
+      justify-content: center;
+      justify-items: center;
+      align-items: center;
+      width: min(560px, 100%);
+      margin: 16px auto 0;
+    }
+    .refine-loading-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      padding: 10px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      background: #fff;
+      width: 100%;
+      max-width: 180px;
+    }
+    html.dark .refine-loading-chip {
+      background: #0b1220;
+      border-color: #1f2937;
+      color: #e2e8f0;
+    }
+
+    /* Banner */
+    .refine-banner {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 13px 14px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 12px;
+      margin-bottom: 22px;
+      position: relative;
+    }
+
+    html.dark .refine-banner {
+      background: rgba(59,130,246,0.08);
+      border-color: rgba(59,130,246,0.25);
+    }
+
+    .refine-banner-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: #bfdbfe;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      color: #2563eb;
+    }
+
+    html.dark .refine-banner-icon {
+      background: rgba(59,130,246,0.2);
+      color: #60a5fa;
+    }
+
+    .refine-banner-content { flex: 1; min-width: 0; }
+
+    .refine-banner-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1e40af;
+      margin-bottom: 3px;
+    }
+
+    html.dark .refine-banner-title { color: #93c5fd; }
+
+    .refine-banner-sub {
+      font-size: 12px;
+      color: #3b82f6;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    html.dark .refine-banner-sub { color: #60a5fa; }
+
+    .refine-credit-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 9px;
+      border-radius: 999px;
+      border: 1px solid #93c5fd;
+      background: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      color: #1e40af;
+    }
+
+    html.dark .refine-credit-badge {
+      background: rgba(59,130,246,0.12);
+      border-color: rgba(59,130,246,0.4);
+      color: #93c5fd;
+    }
+
+    .refine-banner-close {
+      border: 0;
+      background: transparent;
+      color: #64748b;
+      cursor: pointer;
+      padding: 2px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      flex: 0 0 auto;
+      transition: color 0.2s ease, background 0.2s ease;
+    }
+
+    .refine-banner-close:hover {
+      color: #0f172a;
+      background: rgba(15,23,42,0.06);
+    }
+
+    html.dark .refine-banner-close:hover {
+      color: #e2e8f0;
+      background: rgba(255,255,255,0.08);
+    }
+
+    /* Top 2-col row */
+    .refine-top-row {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 16px;
+      margin-bottom: 0;
+      align-items: start;
+    }
+
+    @media (max-width: 900px) {
+      .refine-top-row { grid-template-columns: 1fr; }
+    }
+
+    /* Fields */
+    .rf-field { margin-bottom: 18px; }
+
+    .rf-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    /* Start city input with clear button */
+    .rf-input-with-clear { position: relative; }
+
+    .rf-input-with-clear input {
+      width: 100%;
+      padding: 10px 34px 10px 13px;
+      border-radius: 10px;
+      border: 1px solid var(--line-strong);
+      background: var(--panel);
+      color: var(--text);
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .rf-input-with-clear input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+    }
+
+    html.dark .rf-input-with-clear input {
+      background: var(--panel);
+      border-color: var(--line);
+      color: var(--text);
+    }
+
+    .rf-input-with-clear input::placeholder { color: var(--muted); }
+
+    .rf-clear-btn {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: color 0.2s ease, background 0.2s ease;
+    }
+
+    .rf-clear-btn:hover {
+      color: var(--text);
+      background: var(--panel-soft);
+    }
+
+    /* Date display button */
+    .rf-date-wrap { position: relative; }
+
+    .rf-date-btn {
+      width: 100%;
+      padding: 10px 13px 10px 38px;
+      border-radius: 10px;
+      border: 1px solid var(--line-strong);
+      background: var(--panel);
+      color: var(--text);
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      cursor: pointer;
+      text-align: left;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .rf-date-btn:hover { border-color: #bfdbfe; }
+
+    .rf-date-btn.active {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+    }
+
+    html.dark .rf-date-btn {
+      background: var(--panel);
+      border-color: var(--line);
+      color: var(--text);
+    }
+
+    .rf-date-icon {
+      position: absolute;
+      left: 11px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: var(--muted);
+    }
+
+    /* Calendar popover */
+    .rf-cal-popover {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      width: 340px;
+      background: #fff;
+      border: 1px solid #d6dde8;
+      border-radius: 13px;
+      box-shadow: 0 16px 34px rgba(15,23,42,0.14);
+      padding: 9px;
+      z-index: 300;
+      display: none;
+    }
+
+    .rf-cal-popover.open { display: block; }
+
+    html.dark .rf-cal-popover {
+      background: #0b1220;
+      border-color: #334155;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.45);
+    }
+
+    .rf-cal-head {
+      display: grid;
+      grid-template-columns: 32px 1fr 32px;
+      gap: 7px;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+
+    .rf-cal-nav-btn {
+      width: 32px; height: 32px;
+      border-radius: 9px;
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+      color: #334155;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .rf-cal-nav-btn:hover { background: #eff6ff; border-color: #93c5fd; }
+
+    html.dark .rf-cal-nav-btn { background: #020817; border-color: #334155; color: #cbd5e1; }
+    html.dark .rf-cal-nav-btn:hover { background: #1e293b; border-color: #475569; }
+
+    .rf-cal-selects {
+      display: grid;
+      grid-template-columns: 138px 90px;
+      gap: 7px;
+      justify-content: center;
+    }
+
+    .rf-cal-selects select {
+      height: 38px;
+      padding: 5px 9px;
+      border-radius: 9px;
+      font-size: 12px;
+      font-weight: 500;
+      font-family: inherit;
+      border: 1px solid var(--line-strong);
+      background: var(--panel);
+      color: var(--text);
+      outline: none;
+    }
+
+    html.dark .rf-cal-selects select { background: #020817; border-color: #334155; color: #e5e7eb; }
+
+    .rf-cal-week {
+      display: grid;
+      grid-template-columns: repeat(7,1fr);
+      gap: 3px;
+      margin-bottom: 3px;
+    }
+
+    .rf-cal-weekday {
+      text-align: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: #64748b;
+      padding: 3px 0;
+    }
+
+    html.dark .rf-cal-weekday { color: #94a3b8; }
+
+    .rf-cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7,1fr);
+      gap: 3px;
+    }
+
+    .rf-cal-day {
+      width: 100%;
+      height: 28px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--text);
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+      font-family: inherit;
+    }
+
+    .rf-cal-day:hover { background: #eff6ff; border-color: #bfdbfe; }
+
+    html.dark .rf-cal-day:hover { background: rgba(59,130,246,0.18); border-color: rgba(96,165,250,0.4); }
+    .rf-cal-day.muted { color: #94a3b8; }
+    html.dark .rf-cal-day.muted { color: #64748b; }
+    .rf-cal-day.today { border-color: #93c5fd; }
+    .rf-cal-day.in-range { background: #e0ecff; color: #1e3a8a; }
+    html.dark .rf-cal-day.in-range { background: rgba(37,99,235,0.3); color: #dbeafe; }
+    .rf-cal-day.selected { background: #2563eb; color: #fff; border-color: #2563eb; }
+    html.dark .rf-cal-day.selected { background: #3b82f6; border-color: #3b82f6; }
+    .rf-cal-day.disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+
+    .rf-cal-foot {
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    .rf-cal-reset {
+      border: 0; background: transparent;
+      color: #2563eb; font-weight: 700;
+      cursor: pointer; padding: 4px 2px;
+      font-family: inherit; font-size: 11px;
+    }
+
+    .rf-cal-reset:hover { text-decoration: underline; }
+
+    /* Destination search input */
+    .rf-dest-input-wrap { position: relative; }
+
+    .rf-dest-input {
+      width: 100%;
+      padding: 9px 13px;
+      border-radius: 10px;
+      border: 1px solid var(--line-strong);
+      background: var(--panel);
+      color: var(--text);
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .rf-dest-input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+    }
+
+    html.dark .rf-dest-input { background: var(--panel); border-color: var(--line); color: var(--text); }
+    .rf-dest-input::placeholder { color: var(--muted); }
+
+    /* Selected destination chips row */
+    .rf-dest-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .rf-dest-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: #0f172a;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    html.dark .rf-dest-chip { background: #1e293b; color: #e2e8f0; }
+
+    .rf-dest-chip-rm {
+      border: 0; background: transparent;
+      color: rgba(255,255,255,0.65);
+      cursor: pointer; padding: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      transition: color 0.2s ease;
+    }
+
+    .rf-dest-chip-rm:hover { color: #fff; }
+
+    /* Suggest list */
+    .rf-suggest {
+      display: none;
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0; right: 0;
+      max-height: 260px;
+      overflow-y: auto;
+      background: #fff;
+      border: 1px solid #d6dde8;
+      border-radius: 10px;
+      box-shadow: 0 10px 22px rgba(15,23,42,0.12);
+      z-index: 200;
+      scrollbar-width: thin;
+      scrollbar-color: #9ca3af transparent;
+    }
+
+    .rf-suggest.open { display: block; }
+    html.dark .rf-suggest { background: #020817; border-color: #334155; }
+
+    .rf-suggest-item {
+      width: 100%; border: 0; background: transparent;
+      padding: 9px 12px; text-align: left;
+      cursor: pointer; font-size: 13px; font-weight: 500;
+      color: var(--text); font-family: inherit;
+    }
+
+    .rf-suggest-item:hover { background: #f3f6fb; }
+    html.dark .rf-suggest-item:hover { background: rgba(51,65,85,0.65); }
+
+    /* Chips (themes, pace, etc.) */
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      border: 1px solid #dfe5ef;
+      background: #f3f5f9;
+      color: #8b96a8;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+    }
+
+    .chip .chip-icon { width: 13px; height: 13px; opacity: 0.8; stroke-width: 2.35; }
+
+    .chip:hover { border-color: #d7deea; background: #eef1f6; color: #0f172a; }
+
+    .chip.selected { background: #e9f1ff; border-color: #3b82f6; color: #0f172a; }
+    .chip.selected .chip-icon { opacity: 0.95; }
+
+    html.dark .chip { background: #111827; border-color: #324668; color: #6f84a8; }
+    html.dark .chip:hover { background: #1e293b; border-color: rgba(241,245,249,0.5); color: #fff; }
+    html.dark .chip.selected { background: #020817; border-color: rgba(241,245,249,0.9); color: #f8fafc; }
+
+    /* Add theme button */
+    .rf-add-theme-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 13px;
+      border-radius: 999px;
+      border: 1px solid var(--line-strong);
+      background: var(--panel);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .rf-add-theme-btn:hover { border-color: #bfdbfe; background: #f1f5f9; }
+    html.dark .rf-add-theme-btn:hover { background: #1e293b; border-color: #475569; }
+
+    .rf-add-theme-row {
+      display: none;
+      gap: 8px;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    .rf-add-theme-row.visible { display: flex; }
+
+    .rf-theme-text-input {
+      flex: 1;
+      padding: 7px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line-strong);
+      background: var(--panel);
+      color: var(--text);
+      font-size: 12px;
+      font-family: inherit;
+      outline: none;
+      min-width: 0;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .rf-theme-text-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+    html.dark .rf-theme-text-input { background: var(--panel); border-color: var(--line); color: var(--text); }
+
+    /* Currency picker */
+    .rf-currency-picker { position: relative; }
+
+    .rf-currency-trigger {
+      width: 100%;
+      padding: 10px 13px;
+      border-radius: 10px;
+      border: 1px solid var(--line-strong);
+      background: var(--panel);
+      color: var(--text);
+      font-size: 13px;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .rf-currency-trigger:hover { border-color: #bfdbfe; }
+    .rf-currency-picker.open .rf-currency-trigger { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+    html.dark .rf-currency-trigger { background: var(--panel); border-color: var(--line); color: var(--text); }
+
+    .rf-currency-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0; right: 0;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 16px 34px rgba(15,23,42,0.14);
+      overflow: hidden;
+      z-index: 220;
+    }
+
+    .rf-currency-menu[hidden] { display: none; }
+    html.dark .rf-currency-menu { background: #0b1220; border-color: #334155; box-shadow: 0 20px 40px rgba(0,0,0,0.45); }
+
+    .rf-currency-arrow {
+      width: 100%; height: 26px;
+      border: 0;
+      background: #f8fafc;
+      color: #1e3a8a;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s ease;
+    }
+
+    .rf-currency-arrow:hover { background: #e2e8f0; }
+    html.dark .rf-currency-arrow { background: #020817; color: #93c5fd; }
+    html.dark .rf-currency-arrow:hover { background: #1e293b; }
+
+    .rf-currency-options {
+      max-height: 200px;
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+
+    .rf-currency-options::-webkit-scrollbar { display: none; }
+
+    .rf-currency-option {
+      width: 100%; border: 0; background: transparent;
+      padding: 9px 12px;
+      display: flex; align-items: center; gap: 8px;
+      text-align: left; font-size: 13px;
+      color: var(--text); cursor: pointer; font-family: inherit;
+    }
+
+    .rf-currency-option:hover { background: #f1f5f9; }
+    .rf-currency-option.selected { background: #dbeafe; }
+    html.dark .rf-currency-option { color: #e5e7eb; }
+    html.dark .rf-currency-option:hover { background: rgba(51,65,85,0.65); }
+    html.dark .rf-currency-option.selected { background: rgba(59,130,246,0.28); }
+
+    .rf-currency-check {
+      width: 14px; height: 14px;
+      color: #2563eb; opacity: 0; flex: 0 0 auto;
+    }
+
+    .rf-currency-option.selected .rf-currency-check { opacity: 1; }
+
+    .rf-currency-option.match {
+      background: #eff6ff;
+      outline: 2px solid #93c5fd;
+      outline-offset: -2px;
+    }
+
+    html.dark .rf-currency-option.match {
+      background: rgba(59,130,246,0.2);
+      outline-color: rgba(96,165,250,0.6);
+    }
+
+    /* Budget */
+    .rf-budget-row {
+      display: grid;
+      grid-template-columns: 1fr 240px;
+      gap: 12px;
+      align-items: center;
+    }
+
+    @media (max-width: 680px) { .rf-budget-row { grid-template-columns: 1fr; } }
+
+    #rf-budget-slider {
+      width: 100%; height: 10px;
+      border-radius: 999px;
+      border: 0; outline: none;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      background: linear-gradient(to right, #2563eb 0 var(--rf-fill,0%), #d7e0ee var(--rf-fill,0%) 100%);
+    }
+
+    #rf-budget-slider::-webkit-slider-runnable-track { height: 10px; border-radius: 999px; background: transparent; }
+    #rf-budget-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      border: 3px solid #fff;
+      background: #2563eb;
+      box-shadow: 0 0 0 1px rgba(37,99,235,0.2);
+      margin-top: -6px;
+    }
+    #rf-budget-slider::-moz-range-track { height: 10px; border-radius: 999px; background: #d7e0ee; }
+    #rf-budget-slider::-moz-range-progress { height: 10px; border-radius: 999px; background: #2563eb; }
+    #rf-budget-slider::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; border: 3px solid #fff; background: #2563eb; }
+
+    html.dark #rf-budget-slider {
+      background: linear-gradient(to right, #3b82f6 0 var(--rf-fill,0%), #334155 var(--rf-fill,0%) 100%);
+    }
+
+    .rf-budget-box {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      min-height: 40px;
+      border: 1px solid var(--line-strong);
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--panel);
+    }
+
+    html.dark .rf-budget-box { border-color: var(--line); }
+
+    .rf-budget-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #eef2f7;
+      color: #0f172a;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    html.dark .rf-budget-pill { background: #1e293b; color: #e2e8f0; }
+
+    #rf-budget {
+      width: 100%; border: 0; border-radius: 0;
+      padding: 0 12px; height: 40px;
+      font-size: 13px; font-weight: 400;
+      background: var(--panel);
+      color: var(--text);
+      font-family: inherit; outline: none;
+      -moz-appearance: textfield;
+    }
+
+    #rf-budget::placeholder { color: var(--muted); }
+    #rf-budget::-webkit-outer-spin-button, #rf-budget::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    html.dark #rf-budget { background: var(--panel); color: var(--text); color-scheme: dark; }
+
+    /* Passenger picker */
+    .rf-passenger-picker { position: relative; }
+
+    .rf-passenger-trigger {
+      width: 100%;
+      padding: 10px 13px;
+      border-radius: 10px;
+      border: 1px solid var(--line-strong);
+      background: var(--panel);
+      color: var(--text);
+      font-size: 13px;
+      font-family: inherit;
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .rf-passenger-trigger:hover { border-color: #bfdbfe; }
+    .rf-passenger-picker.open .rf-passenger-trigger { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+    html.dark .rf-passenger-trigger { background: var(--panel); border-color: var(--line); color: var(--text); }
+
+    .rf-pass-left { display: inline-flex; align-items: center; gap: 8px; }
+
+    .rf-passenger-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      width: min(320px,100%);
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 16px 34px rgba(15,23,42,0.14);
+      padding: 10px;
+      z-index: 220;
+    }
+
+    .rf-passenger-menu[hidden] { display: none; }
+    html.dark .rf-passenger-menu { background: #0b1220; border-color: #334155; box-shadow: 0 20px 40px rgba(0,0,0,0.45); }
+
+    .rf-pass-row {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      padding: 4px 0;
+    }
+
+    .rf-pass-title { font-size: 13px; font-weight: 500; color: var(--text); }
+    .rf-pass-age { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    html.dark .rf-pass-title { color: #e5e7eb; }
+    html.dark .rf-pass-age { color: #94a3b8; }
+
+    .rf-pass-controls { display: inline-flex; align-items: center; gap: 8px; }
+
+    .rf-pass-btn {
+      width: 30px; height: 30px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: #f8fafc;
+      color: #64748b;
+      display: inline-flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .rf-pass-btn:hover { background: #eff6ff; border-color: #93c5fd; }
+    .rf-pass-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    html.dark .rf-pass-btn { background: #020817; border-color: #334155; color: #94a3b8; }
+    html.dark .rf-pass-btn:hover { background: #1e293b; border-color: #475569; }
+
+    .rf-pass-count { min-width: 16px; text-align: center; font-size: 14px; font-weight: 500; color: var(--text); }
+    html.dark .rf-pass-count { color: #e5e7eb; }
+
+    .rf-pass-divider { margin: 8px 0; border-top: 1px solid #e2e8f0; }
+    html.dark .rf-pass-divider { border-top-color: #334155; }
+
+    .rf-pass-note { margin: 0 0 8px; font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+    .rf-pass-apply {
+      width: 100%;
+      padding: 9px;
+      border-radius: 8px;
+      border: 0;
+      background: var(--blue);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.2s ease;
+    }
+
+    .rf-pass-apply:hover { background: #2563eb; }
+
+    /* Textarea */
+    .rf-textarea {
+      width: 100%;
+      min-height: 96px;
+      padding: 10px 13px;
+      border-radius: 10px;
+      border: 1px solid var(--line-strong);
+      background: var(--panel);
+      color: var(--text);
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      resize: vertical;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .rf-textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+    .rf-textarea::placeholder { color: var(--muted); }
+    html.dark .rf-textarea { background: var(--panel); border-color: var(--line); color: var(--text); }
+
+    /* Submit */
+    .rf-submit-row { display: flex; justify-content: flex-end; margin-top: 24px; }
+
+    .rf-submit-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 22px;
+      border-radius: 10px;
+      border: 0;
+      background: var(--blue);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .rf-submit-btn:hover {
+      background: #2563eb;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(37,99,235,0.3);
+    }
+    .rf-submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+</style>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+  <link rel="preload" as="script" href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js">`r`n</head>
+
+<body class="__className_fff05e">
+  <header class="topbar">
+    <nav class="topbar-inner" aria-label="Primary">
+      <div class="topbar-left">
+                <button id="mobile-menu-btn" class="icon-btn" type="button" aria-label="Open side menu">
+          <i data-lucide="menu"></i>
+        </button>        <a class="logo-wrap" href="/">
+          <img class="logo-light" src="/images/image.png" srcset="/images/image_3.png 1x, /images/image.png 2x"
+            alt="Yatrify" />
+          <img class="logo-dark" src="/images/image_2.png" srcset="/images/image_4.png 1x, /images/image_2.png 2x"
+            alt="Yatrify" />
+        </a>
+        <ul class="topbar-nav">
+          <li><a href="/">Home</a></li>
+          <li><a href="/dashboard.html">Dashboard</a></li>
+          <li><a href="/#public-plans">Community Plans</a></li>
+        </ul>
+      </div>
+      <div class="topbar-actions">
+        <div id="header-plan-search" class="destination-select-wrap">
+          <button id="destination-trigger" class="destination-trigger" type="button" aria-haspopup="listbox"
+            aria-expanded="false" aria-controls="destination-options">
+            <span id="destination-selected-label" class="destination-label">Destination</span>
+          </button>
+          <i class="destination-trigger-icon" data-lucide="chevron-down" style="width:16px;height:16px;"></i>
+          <div id="destination-menu" class="destination-menu" role="dialog" aria-label="Select travel plan">
+            <div class="destination-search-row">
+              <i data-lucide="search" style="width:18px;height:18px;"></i>
+              <input id="destination-search-input" class="destination-search-input" type="text"
+                placeholder="Select Travel Plan..." autocomplete="off" />
+            </div>
+            <div id="destination-options" class="destination-options" role="listbox"
+              aria-label="Generated travel plans"></div>
+            <p id="destination-empty" class="destination-empty" style="display:none;">No plans found.</p>
+          </div>
+        </div>
+        <span class="header-credits">Credits <span id="credits-count">2</span></span>
+        <button type="button" class="icon-btn" title="Feedback" aria-label="Feedback">
+          <i data-lucide="message-circle" style="width:18px;height:18px;"></i>
+        </button>
+        <button id="theme-toggle-btn" class="theme-toggle" type="button" title="Toggle theme" aria-label="Toggle theme">
+          <svg id="sun-icon" class="dark:hidden lucide lucide-sun-icon lucide-sun" xmlns="http://www.w3.org/2000/svg"
+            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2" />
+            <path d="M12 20v2" />
+            <path d="m4.93 4.93 1.41 1.41" />
+            <path d="m17.66 17.66 1.41 1.41" />
+            <path d="M2 12h2" />
+            <path d="M20 12h2" />
+            <path d="m6.34 17.66-1.41 1.41" />
+            <path d="m19.07 4.93-1.41 1.41" />
+          </svg><svg id="moon-icon" class="hidden dark:block lucide lucide-moon-icon lucide-moon"
+            xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path
+              d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" />
+          </svg>
+        </button>
+        <a id="header-signin-link" class="header-signin" href="/sign-in/">Sign in</a>
+        <div id="user-profile" class="profile-pill" aria-label="User profile">
+          <button id="profile-btn" type="button" aria-label="Profile">
+            <img id="user-avatar" alt="User avatar" />
+            <span id="user-avatar-letter">N</span>
+          </button>
+          <div id="profile-menu" aria-hidden="true">
+            <div style="padding:12px 14px;border-bottom:1px solid #f3f4f6;margin-bottom:8px;">
+              <div id="profile-name" style="font-weight:700;font-size:15px;letter-spacing:-0.3px;">Traveler</div>
+              <div id="profile-email" style="font-size:12px;color:#6b7280;word-break:break-all;margin-top:4px;">traveler@example.com</div>
+            </div>
+            <button id="manage-account" type="button">&#9881;&#65039; Manage account</button>
+            <button id="signout-btn" type="button">&#128682; Sign out</button>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+      <div id="mobile-overlay" class="mobile-overlay"></div>
+  <aside id="mobile-drawer" class="mobile-drawer" aria-label="Mobile sidebar">
+    <div class="drawer-head">
+      <a class="logo-wrap" href="/">
+        <img class="logo-light" src="/images/image.png" srcset="/images/image_3.png 1x, /images/image.png 2x"
+          alt="Yatrify" />
+        <img class="logo-dark" src="/images/image_2.png" srcset="/images/image_4.png 1x, /images/image_2.png 2x"
+          alt="Yatrify" />
+      </a>
+      <button id="mobile-close-btn" class="icon-btn" type="button" aria-label="Close side menu">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+    <div class="sidebar-group">
+      <h2 class="sidebar-title">Your Plan</h2>
+      <div id="mobile-plan-links" class="sidebar-links">
+<a class="sidebar-link" href="#trip-highlights" data-scroll-link="trip-highlights"><i data-lucide="info" style="width:18px;height:18px;"></i><span>Trip Highlights</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="#weather-analysis" data-scroll-link="weather-analysis"><i data-lucide="cloud-sun" style="width:18px;height:18px;"></i><span>Weather Analysis</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="#itinerary" data-scroll-link="itinerary"><i data-lucide="navigation" style="width:18px;height:18px;"></i><span>Itinerary</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="#budget-range" data-scroll-link="budget-range"><i data-lucide="indian-rupee" style="width:18px;height:18px;"></i><span>Budget Range</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="#packing-checklist" data-scroll-link="packing-checklist"><i data-lucide="briefcase" style="width:18px;height:18px;"></i><span>Packing Checklist</span><span class="dot" aria-hidden="true"></span></a></div>
+    </div>
+    <div class="sidebar-group">
+      <h2 class="sidebar-subtitle">Control Center</h2>
+      <div id="mobile-control-links" class="sidebar-links">
+<a class="sidebar-link" href="/refine-plan.html"><i data-lucide="refresh-cw" style="width:18px;height:18px;"></i><span>Refine Plan</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="/expense-tracker.html"><i data-lucide="wallet" style="width:18px;height:18px;"></i><span>Expense Tracker</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="/collaborate.html"><i data-lucide="users" style="width:18px;height:18px;"></i><span>Collaborate</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="/settings.html"><i data-lucide="settings" style="width:18px;height:18px;"></i><span>Settings</span><span class="dot" aria-hidden="true"></span></a></div>
+    </div>
+  </aside>
+
+  <div class="main-grid">
+    <aside class="sidebar" aria-label="Plan navigation">
+      <div class="sidebar-group">
+        <h2 class="sidebar-title">Your Plan</h2>
+        <div id="desktop-plan-links" class="sidebar-links">
+<a class="sidebar-link" href="#trip-highlights" data-scroll-link="trip-highlights"><i data-lucide="info" style="width:18px;height:18px;"></i><span>Trip Highlights</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="#weather-analysis" data-scroll-link="weather-analysis"><i data-lucide="cloud-sun" style="width:18px;height:18px;"></i><span>Weather Analysis</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="#itinerary" data-scroll-link="itinerary"><i data-lucide="navigation" style="width:18px;height:18px;"></i><span>Itinerary</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="#budget-range" data-scroll-link="budget-range"><i data-lucide="indian-rupee" style="width:18px;height:18px;"></i><span>Budget Range</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="#packing-checklist" data-scroll-link="packing-checklist"><i data-lucide="briefcase" style="width:18px;height:18px;"></i><span>Packing Checklist</span><span class="dot" aria-hidden="true"></span></a></div>
+      </div>
+      <div class="sidebar-group">
+        <h2 class="sidebar-subtitle">Control Center</h2>
+        <div id="desktop-control-links" class="sidebar-links">
+<a class="sidebar-link" href="/refine-plan.html"><i data-lucide="refresh-cw" style="width:18px;height:18px;"></i><span>Refine Plan</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="/expense-tracker.html"><i data-lucide="wallet" style="width:18px;height:18px;"></i><span>Expense Tracker</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="/collaborate.html"><i data-lucide="users" style="width:18px;height:18px;"></i><span>Collaborate</span><span class="dot" aria-hidden="true"></span></a>
+<a class="sidebar-link" href="/settings.html"><i data-lucide="settings" style="width:18px;height:18px;"></i><span>Settings</span><span class="dot" aria-hidden="true"></span></a></div>
+      </div>
+    </aside>
+
+    <div class="content">
+      <div class="refine-wrapper">
+        <div class="refine-card">
+
+          <!-- Card title -->
+          <div class="refine-head">
+            <h1>Refine Plan</h1>
+          </div>
+          <hr class="refine-divider" />
+
+          <div class="refine-body">
+
+            <!-- Info banner -->
+            <div class="refine-banner" id="refine-banner">
+              <div class="refine-banner-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+              </div>
+              <div class="refine-banner-content">
+                <div class="refine-banner-title">Need to Make Changes?</div>
+                <div class="refine-banner-sub">
+                  Your trip, your way! Adjustments are easy, but will include a fee
+                  <span class="refine-credit-badge">0.25 Credit</span>
+                </div>
+              </div>
+              <button class="refine-banner-close" id="refine-banner-close" type="button" aria-label="Close banner">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+
+            <div class="refine-loading" id="refine-loading" aria-live="polite">
+              <div class="refine-loading-panel">
+                <div class="refine-loading-hero">
+                  <svg width="220" height="180" viewBox="0 0 220 180" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <rect x="18" y="20" width="184" height="120" rx="14" fill="rgba(59,130,246,0.08)" />
+                    <rect x="34" y="36" width="60" height="72" rx="6" fill="#ffffff" />
+                    <rect x="42" y="46" width="18" height="18" rx="4" fill="#60a5fa" />
+                    <rect x="65" y="46" width="18" height="18" rx="4" fill="#93c5fd" />
+                    <rect x="42" y="70" width="41" height="8" rx="4" fill="#dbeafe" />
+                    <circle cx="148" cy="76" r="24" fill="#ffffff" />
+                    <path d="M148 52C136 52 126 61 126 73C126 91 148 114 148 114C148 114 170 91 170 73C170 61 160 52 148 52Z" fill="#2563eb" />
+                    <circle cx="148" cy="73" r="8" fill="#ffffff" />
+                    <rect x="30" y="126" width="160" height="10" rx="5" fill="rgba(59,130,246,0.18)" />
+                    <circle cx="50" cy="140" r="10" fill="#fde68a" />
+                    <path d="M170 112L182 100L196 112L182 108Z" fill="#f472b6" />
+                  </svg>
+                </div>
+                <div class="refine-loading-step refine-loading-step-one">
+                  <div class="refine-loading-title"><span class="refine-loading-spinner"></span>Analyzing Feasibility...</div>
+                  <p class="refine-loading-sub">We're evaluating your trip details to make sure everything fits your preferences and budget.</p>
+                  <span class="refine-loading-pill"><i data-lucide="info" style="width:14px;height:14px;"></i> A quick 30–40 seconds is all it takes to assess feasibility.</span>
+                </div>
+                <div class="refine-loading-step refine-loading-step-two">
+                  <div class="refine-loading-title"><span class="refine-loading-spinner"></span>Fasten your seatbelt—your refined plan is taking off!</div>
+                  <p class="refine-loading-sub">We're refining your plan...</p>
+                  <div class="refine-loading-grid">
+                    <span class="refine-loading-chip"><i data-lucide="info" style="width:14px;height:14px;"></i>Trip Highlights</span>
+                    <span class="refine-loading-chip"><i data-lucide="cloud-sun" style="width:14px;height:14px;"></i>Weather Analysis</span>
+                    <span class="refine-loading-chip"><i data-lucide="navigation" style="width:14px;height:14px;"></i>Itinerary</span>
+                    <span class="refine-loading-chip"><i data-lucide="indian-rupee" style="width:14px;height:14px;"></i>Budget Range</span>
+                    <span class="refine-loading-chip"><i data-lucide="briefcase" style="width:14px;height:14px;"></i>Packing Checklist</span>
+                    <span class="refine-loading-chip"><i data-lucide="link" style="width:14px;height:14px;"></i>Booking Links</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Form -->
+            <form id="refine-form" autocomplete="off">
+
+              <!-- Row: Start city + Dates -->
+              <div class="refine-top-row">
+                <!-- Start city -->
+                <div class="rf-field">
+                  <label class="rf-label" for="rf-start-city">Where are you starting your trip from?</label>
+                  <div class="rf-input-with-clear">
+                    <input id="rf-start-city" type="text" placeholder="Enter your start city here..." autocomplete="off" />
+                    <button type="button" class="rf-clear-btn" id="rf-start-city-clear" aria-label="Clear start city">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                    <div id="rf-start-suggestions" class="rf-suggest rf-suggest-pos"></div>
+                  </div>
+                </div>
+
+                <!-- Date range -->
+                <div class="rf-field">
+                  <label class="rf-label">Select Dates</label>
+                  <div class="rf-date-wrap">
+                    <span class="rf-date-icon">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    </span>
+                    <button type="button" class="rf-date-btn" id="rf-date-btn" aria-label="Select date range">
+                      <span id="rf-date-label">Select date range...</span>
+                    </button>
+                    <!-- Calendar popover -->
+                    <div class="rf-cal-popover" id="rf-cal-popover" aria-hidden="true">
+                      <div class="rf-cal-head">
+                        <button type="button" class="rf-cal-nav-btn" id="rf-cal-prev" aria-label="Previous month">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                        </button>
+                        <div class="rf-cal-selects">
+                          <select id="rf-cal-month" aria-label="Month"></select>
+                          <select id="rf-cal-year" aria-label="Year"></select>
+                        </div>
+                        <button type="button" class="rf-cal-nav-btn" id="rf-cal-next" aria-label="Next month">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                        </button>
+                      </div>
+                      <div class="rf-cal-week" id="rf-cal-week"></div>
+                      <div class="rf-cal-grid" id="rf-cal-grid"></div>
+                      <div class="rf-cal-foot">
+                        <span id="rf-cal-hint" class="rf-cal-hint-text"></span>
+                        <button type="button" class="rf-cal-reset" id="rf-cal-reset">Reset</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Destination search -->
+              <div class="rf-field">
+                <label class="rf-label">Search for your destination country/city</label>
+                <div class="rf-dest-input-wrap">
+                  <input id="rf-destination" class="rf-dest-input" type="text" placeholder="Search for places..." autocomplete="off" />
+                  <div id="rf-dest-suggestions" class="rf-suggest rf-suggest-pos"></div>
+                </div>
+                <div class="rf-dest-chips" id="rf-dest-chips">
+                  <!-- pre-filled chip from screenshot -->
+                  <span class="rf-dest-chip" data-value="Dubai - United Arab Emirates">
+                    Dubai - United Arab Emirates
+                    <button type="button" class="rf-dest-chip-rm" aria-label="Remove destination">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                  </span>
+                </div>
+              </div>
+
+              <!-- Travel themes -->
+              <div class="rf-field">
+                <label class="rf-label">Which of these travel themes best describes your dream getaway? (Optional)</label>
+                <div class="chips" data-field="themes" data-multi="true">
+                  <button type="button" class="chip"><i data-lucide="landmark" class="chip-icon" aria-hidden="true"></i>Historical Sites and Landmarks</button>
+                  <button type="button" class="chip"><i data-lucide="mountain" class="chip-icon" aria-hidden="true"></i>Adventure</button>
+                  <button type="button" class="chip"><i data-lucide="globe" class="chip-icon" aria-hidden="true"></i>Local Culture</button>
+                  <button type="button" class="chip"><i data-lucide="palmtree" class="chip-icon" aria-hidden="true"></i>Beaches</button>
+                  <button type="button" class="chip"><i data-lucide="mountain" class="chip-icon" aria-hidden="true"></i>Hills, Nature and Wildlife</button>
+                  <button type="button" class="chip"><i data-lucide="party-popper" class="chip-icon" aria-hidden="true"></i>Nightlife</button>
+                  <button type="button" class="chip"><i data-lucide="camera" class="chip-icon" aria-hidden="true"></i>For the Gram</button>
+                  <button type="button" class="chip"><i data-lucide="shopping-bag" class="chip-icon" aria-hidden="true"></i>Shopping &amp; Relaxation</button>
+                </div>
+                <div style="margin-top:8px;">
+                  <button type="button" class="rf-add-theme-btn" id="rf-add-theme-btn">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Add theme
+                  </button>
+                </div>
+                <div class="rf-add-theme-row" id="rf-add-theme-row">
+                  <input id="rf-custom-theme" class="rf-theme-text-input" type="text" placeholder="Type your theme here..." />
+                  <button type="button" class="rf-add-theme-btn" id="rf-save-theme-btn">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Save
+                  </button>
+                </div>
+              </div>
+
+              <!-- Pace -->
+              <div class="rf-field">
+                <label class="rf-label">What pace of travel do you prefer? (Optional)</label>
+                <div class="chips" data-field="pace" data-multi="false">
+                  <button type="button" class="chip"><i data-lucide="bike" class="chip-icon" aria-hidden="true"></i>Slow and Easy</button>
+                  <button type="button" class="chip selected"><i data-lucide="gauge" class="chip-icon" aria-hidden="true"></i>Balanced</button>
+                  <button type="button" class="chip"><i data-lucide="rocket" class="chip-icon" aria-hidden="true"></i>Fast</button>
+                </div>
+              </div>
+
+              <!-- Weather -->
+              <div class="rf-field">
+                <label class="rf-label">What kind of weather do you prefer for your trip? (Optional)</label>
+                <div class="chips" data-field="weather" data-multi="false">
+                  <button type="button" class="chip"><i data-lucide="sun" class="chip-icon" aria-hidden="true"></i>Warm and Sunny</button>
+                  <button type="button" class="chip selected"><i data-lucide="wind" class="chip-icon" aria-hidden="true"></i>Cool and Breezy</button>
+                  <button type="button" class="chip"><i data-lucide="snowflake" class="chip-icon" aria-hidden="true"></i>Cold and Snowy</button>
+                  <button type="button" class="chip"><i data-lucide="cloud-sun" class="chip-icon" aria-hidden="true"></i>Mild and Pleasant</button>
+                  <button type="button" class="chip"><i data-lucide="cloud-rain" class="chip-icon" aria-hidden="true"></i>Rainy and Cozy</button>
+                </div>
+              </div>
+
+              <!-- Accommodation -->
+              <div class="rf-field">
+                <label class="rf-label">What type of accommodation would you prefer? (Optional)</label>
+                <div class="chips" data-field="accommodation" data-multi="true">
+                  <button type="button" class="chip"><i data-lucide="star" class="chip-icon" aria-hidden="true"></i>3 Star</button>
+                  <button type="button" class="chip selected"><i data-lucide="star" class="chip-icon" aria-hidden="true"></i>4 Star</button>
+                  <button type="button" class="chip"><i data-lucide="star" class="chip-icon" aria-hidden="true"></i>5 Star</button>
+                  <button type="button" class="chip"><i data-lucide="house" class="chip-icon" aria-hidden="true"></i>Airbnb</button>
+                  <button type="button" class="chip"><i data-lucide="heart" class="chip-icon" aria-hidden="true"></i>Homestay</button>
+                  <button type="button" class="chip"><i data-lucide="building-2" class="chip-icon" aria-hidden="true"></i>Hostel</button>
+                </div>
+              </div>
+
+              <!-- Food -->
+              <div class="rf-field">
+                <label class="rf-label">What type of food would you like to enjoy during your trip? (Optional)</label>
+                <div class="chips" data-field="food" data-multi="true">
+                  <button type="button" class="chip selected"><i data-lucide="leaf" class="chip-icon" aria-hidden="true"></i>Vegetarian</button>
+                  <button type="button" class="chip"><i data-lucide="sprout" class="chip-icon" aria-hidden="true"></i>Vegan</button>
+                  <button type="button" class="chip"><i data-lucide="wheat-off" class="chip-icon" aria-hidden="true"></i>Gluten Free</button>
+                  <button type="button" class="chip"><i data-lucide="moon-star" class="chip-icon" aria-hidden="true"></i>Halal</button>
+                  <button type="button" class="chip"><i data-lucide="scale" class="chip-icon" aria-hidden="true"></i>Kosher</button>
+                  <button type="button" class="chip"><i data-lucide="map-pin" class="chip-icon" aria-hidden="true"></i>Local Cuisine</button>
+                </div>
+              </div>
+
+              <!-- Transport -->
+              <div class="rf-field">
+                <label class="rf-label">How would you like to travel from departure to destination (Optional)</label>
+                <div class="chips" data-field="transport" data-multi="true">
+                  <button type="button" class="chip selected"><i data-lucide="plane" class="chip-icon" aria-hidden="true"></i>Flights</button>
+                  <button type="button" class="chip"><i data-lucide="train" class="chip-icon" aria-hidden="true"></i>Trains</button>
+                  <button type="button" class="chip"><i data-lucide="bus" class="chip-icon" aria-hidden="true"></i>Buses</button>
+                  <button type="button" class="chip"><i data-lucide="route" class="chip-icon" aria-hidden="true"></i>Road</button>
+                </div>
+              </div>
+
+              <!-- Currency -->
+              <div class="rf-field">
+                <label class="rf-label">Which currency would you like to use for your trip? (Optional)</label>
+                <div class="rf-currency-picker" id="rf-currency-picker">
+                  <input type="hidden" id="rf-currency-val" value="INR" />
+                  <button type="button" class="rf-currency-trigger" id="rf-currency-trigger" aria-haspopup="listbox" aria-expanded="false">
+                    <span id="rf-currency-label">INR - Indian rupee</span>
+                    <svg class="rf-currency-caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                  </button>
+                  <div class="rf-currency-menu" id="rf-currency-menu" hidden>
+                    <button type="button" class="rf-currency-arrow" id="rf-cur-up" aria-label="Scroll up">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
+                    </button>
+                    <div class="rf-currency-options" id="rf-currency-options" role="listbox"></div>
+                    <button type="button" class="rf-currency-arrow" id="rf-cur-down" aria-label="Scroll down">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Budget -->
+              <div class="rf-field">
+                <label class="rf-label">What is your estimated travel budget? (<span id="rf-budget-cur-label">INR</span>) (Optional)</label>
+                <div class="rf-budget-row">
+                  <input id="rf-budget-slider" type="range" min="0" max="1000000" step="1000" value="0" aria-label="Budget slider" />
+                  <div class="rf-budget-box">
+                    <span class="rf-budget-pill" id="rf-budget-pill">INR</span>
+                    <input id="rf-budget" type="number" min="0" step="1000" placeholder="e.g. INR 1000" inputmode="numeric" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Passengers -->
+              <div class="rf-field">
+                <label class="rf-label">How many passengers? (Required)</label>
+                <div class="rf-passenger-picker" id="rf-passenger-picker">
+                  <input type="hidden" id="rf-passengers-val" value="1 adult" />
+                  <button type="button" class="rf-passenger-trigger" id="rf-passenger-trigger" aria-haspopup="dialog" aria-expanded="false">
+                    <span class="rf-pass-left">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                      <span id="rf-pass-label">1 adult</span>
+                    </span>
+                    <svg class="rf-pass-caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                  </button>
+                  <div class="rf-passenger-menu" id="rf-passenger-menu" hidden>
+                    <!-- Adults -->
+                    <div class="rf-pass-row">
+                      <div>
+                        <div class="rf-pass-title">Adults</div>
+                        <div class="rf-pass-age">Age 12+</div>
+                      </div>
+                      <div class="rf-pass-controls">
+                        <button type="button" class="rf-pass-btn" data-type="adults" data-action="decrease" disabled aria-label="Decrease adults">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        </button>
+                        <span class="rf-pass-count" id="rf-count-adults">1</span>
+                        <button type="button" class="rf-pass-btn" data-type="adults" data-action="increase" aria-label="Increase adults">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        </button>
+                      </div>
+                    </div>
+                    <!-- Children -->
+                    <div class="rf-pass-row">
+                      <div>
+                        <div class="rf-pass-title">Children</div>
+                        <div class="rf-pass-age">Age 2–11</div>
+                      </div>
+                      <div class="rf-pass-controls">
+                        <button type="button" class="rf-pass-btn" data-type="children" data-action="decrease" disabled aria-label="Decrease children">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        </button>
+                        <span class="rf-pass-count" id="rf-count-children">0</span>
+                        <button type="button" class="rf-pass-btn" data-type="children" data-action="increase" aria-label="Increase children">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        </button>
+                      </div>
+                    </div>
+                    <!-- Infants -->
+                    <div class="rf-pass-row">
+                      <div>
+                        <div class="rf-pass-title">Infants</div>
+                        <div class="rf-pass-age">Under 2</div>
+                      </div>
+                      <div class="rf-pass-controls">
+                        <button type="button" class="rf-pass-btn" data-type="infants" data-action="decrease" disabled aria-label="Decrease infants">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        </button>
+                        <span class="rf-pass-count" id="rf-count-infants">0</span>
+                        <button type="button" class="rf-pass-btn" data-type="infants" data-action="increase" aria-label="Increase infants">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="rf-pass-divider"></div>
+                    <p class="rf-pass-note" id="rf-pass-note">Note: Infants must be accompanied by an adult (maximum 1 infant per adult).</p>
+                    <button type="button" class="rf-pass-apply" id="rf-pass-apply">Apply</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Additional preferences -->
+              <div class="rf-field">
+                <label class="rf-label">Any additional preferences or specific places/activities you'd like to include? (Optional)</label>
+                <textarea class="rf-textarea" id="rf-preferences" placeholder="e.g., I want to visit the Eiffel Tower, go parasailing, or try local cooking classes..."></textarea>
+              </div>
+
+              <!-- Submit -->
+              <div class="rf-submit-row">
+                <button type="button" class="rf-submit-btn" id="rf-submit-btn" onclick="window.YatrifyPersistRefinePlan ? window.YatrifyPersistRefinePlan() : alert('Refine script not loaded. Please refresh and try again.')">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                  Check Feasibility
+                </button>
+              </div>
+
+            </form>
+          </div><!-- /refine-body -->
+        </div><!-- /refine-card -->
+      </div><!-- /refine-wrapper -->
+    </div>
+  </div>
+  <footer class="footer-home-match py-5 mt-10 bg-blue-50 dark:bg-slate-900 dark:text-gray-200 relative z-[1000]">
+        <div class="lg:px-20 px-5 py-2 grid grid-cols-4 justify-between gap-10 lg:grid-cols-6 lg:text-left">
+          <div class="col-span-4 flex w-full flex-col gap-6 lg:col-span-2">
+            <div class="flex items-center gap-2 lg:justify-start">
+              <div class="hidden md:flex gap-10 items-center justify-start flex-1"><a href="/">
+                  <div class="flex justify-center items-center leading-5 font-bold text-xl"><img alt="logo"
+                      loading="lazy" width="100" height="50" decoding="async" data-nimg="1" class="dark:hidden"
+                      style="color:transparent" srcset="images/image_3.png 1x, images/image.png 2x"
+                      src="images/image.png"><img alt="logo" loading="lazy" width="100" height="50" decoding="async"
+                      data-nimg="1" class="hidden dark:block" style="color:transparent"
+                      srcset="images/image_4.png 1x, images/image_2.png 2x" src="images/image_2.png"></div>
+                </a></div>
+            </div>
+            <p class="text-muted-foreground dark:text-gray-400">Your perfect trip, built for you. Effortlessly plan
+              personalized itineraries that match your travel style.</p>
+            <ul class="flex items-center space-x-6">
+              <li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300">
+                    <a href="https://www.instagram.com/yatrify.ai" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512"
+                    class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z">
+                    </path>
+                  </svg></a></li>
+              <li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300">
+                    <a href="https://www.facebook.com/profile.php?id=61577480754112" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512"
+                    class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M504 256C504 119 393 8 256 8S8 119 8 256c0 123.78 90.69 226.38 209.25 245V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.28c-30.8 0-40.41 19.12-40.41 38.73V256h68.78l-11 71.69h-57.78V501C413.31 482.38 504 379.78 504 256z">
+                    </path>
+                  </svg></a></li>
+              <li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300">
+                    <a href="https://x.com/Yatrify_ai" target="_blank" rel="noopener noreferrer" aria-label="X"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512"
+                        class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8l165-188.5L26.7 48H172.3l100.7 132.1L389.2 48zm-24.8 373.8h39.1L151.1 88.1h-42l255.3 333.7z"></path>
+                      </svg></a></li>
+              <li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300">
+                    <a href="https://www.linkedin.com/in/yatrify-ai" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512"
+                    class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z">
+                    </path>
+                  </svg></a></li>
+            </ul>
+          </div>
+          <div class="col-span-2 md:col-span-1">
+            <h3 class="mb-5 font-medium">Support</h3>
+            <ul class="space-y-4 text-sm text-muted-foreground dark:text-gray-400">
+              <li class="font-medium"><a
+                  class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
+                  href="/help-center">Help Center</a></li>
+              <li class="font-medium"><a
+                  class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
+                  href="/contact-us">Contact Us</a></li>
+              <li class="font-medium"><a
+                  class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
+                  href="/privacy-policy">Privacy Policy</a></li>
+              <li class="font-medium"><a
+                  class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
+                  href="/terms-of-service">Terms of Service</a></li>
+            </ul>
+          </div>
+          <div class="col-span-2 md:col-span-1">
+            <h3 class="mb-5 font-medium">Company</h3>
+            <ul class="space-y-4 text-sm text-muted-foreground dark:text-gray-400">
+              <li class="font-medium"><a
+                  class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
+                  href="/about-us">About Us</a></li>
+              <li class="font-medium"><a
+                  class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
+                  href="/partners">Partners</a></li>
+            </ul>
+          </div>
+          <div class="col-span-4 md:col-span-2">
+            <h3 class="mb-2 font-medium">Newsletter</h3>
+            <form class="grid gap-1">
+              <div class="flex justify-evenly w-full space-x-2"><input type="email"
+                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-slate-800 dark:border-slate-700"
+                  data-slot="input" placeholder="Email" required="" value=""><button
+                  class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 px-4 py-2 dark:bg-slate-700 dark:hover:bg-slate-600"
+                  data-slot="button" type="submit">Subscribe</button></div>
+            </form>
+            <p class="mt-2 ml-1 text-xs font-medium text-muted-foreground dark:text-gray-400">By submitting, you agree
+              to our<a href="/privacy-policy" class="ml-1 text-primary dark:text-blue-400 hover:underline">Privacy
+                Policy</a></p>
+          </div>
+        </div>
+      </footer>
+
+<script src="/js/clerk-loader.js"></script>
+<script src="/js/api-client.js"></script>
+<script src="/js/plan-service.js"></script>
+<script src="/js/plan-context.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+(async function () {
+  var GENERATED_PLAN_PATH = "/generated-plan.html";
+  var CURRENT_PAGE_PATH = "/refine-plan.html";
+
+  var PLAN_LINKS = [
+    { id: "trip-highlights", icon: "info", label: "Trip Highlights" },
+    { id: "weather-analysis", icon: "cloud-sun", label: "Weather Analysis" },
+    { id: "itinerary", icon: "navigation", label: "Itinerary" },
+    { id: "budget-range", icon: "indian-rupee", label: "Budget Range" },
+    { id: "packing-checklist", icon: "briefcase", label: "Packing Checklist" }
+  ];
+
+  var CONTROL_LINKS = [
+    { icon: "refresh-cw", label: "Refine Plan", href: "/refine-plan.html" },
+    { icon: "wallet", label: "Expense Tracker", href: "/expense-tracker.html" },
+    { icon: "users", label: "Collaborate", href: "/collaborate.html" },
+    { icon: "settings", label: "Settings", href: "/settings.html" }
+  ];
+  var CONTENT_FOOTER_SPACER = 96;
+
+  var activePlanContext = { id: "", label: "Plan", planData: {} };
+  try {
+    activePlanContext = await syncActivePlanContext();
+  } catch (err) {
+    console.warn("Plan context sync failed.", err);
+  }
+  var activePlanId = activePlanContext && activePlanContext.id ? activePlanContext.id : "";
+  var planList = [];
+  var planOptions = [];
+  window.YatrifyActivePlanContext = activePlanContext;
+  window.YatrifyActivePlanId = activePlanId;
+
+  applyThemeMode();
+  renderSidebarLinks("desktop-plan-links", "desktop-control-links");
+  renderSidebarLinks("mobile-plan-links", "mobile-control-links");
+  markCurrentControlPage();
+  setupMobileDrawer();
+  setupThemeToggle();
+  try {
+    await setupTopbarData();
+  } catch (err) {
+    console.warn("Topbar data setup failed.", err);
+  }
+  try {
+    await setupHeaderPlanSearch();
+  } catch (err) {
+    console.warn("Header plan search setup failed.", err);
+  }
+  setupClerkHeaderProfile();
+  setupContentSpacing();
+  if (window.lucide && typeof window.lucide.createIcons === "function") window.lucide.createIcons();
+  try {
+    document.documentElement.classList.add("yatrify-page-ready");
+    window.dispatchEvent(new Event("yatrify:page-ready"));
+  } catch (_) {}
+
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/\"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function createPlanSignature(plan) {
+    if (!plan || typeof plan !== "object") return "";
+    return [
+      String(plan.startCity || "").trim().toLowerCase(),
+      String(plan.destination || "").trim().toLowerCase(),
+      String(plan.startDate || "").trim(),
+      String(plan.endDate || "").trim(),
+      String(plan.passengers || "").trim().toLowerCase()
+    ].join("|");
+  }
+
+  function getPlanDestinationLabel(plan, index) {
+    var destination = plan && plan.destination;
+    if (destination && typeof destination === "object") {
+      return [destination.city || "", destination.country || ""].filter(Boolean).join(", ");
+    }
+    return String(destination || "Plan " + ((Number(index) || 0) + 1)).trim();
+  }
+
+  function readPlanLibraryRecords() {
+    return planOptions.slice();
+  }
+
+  async function syncActivePlanContext() {
+    var planId = "";
+    if (window.YatrifyPlanContext && typeof window.YatrifyPlanContext.resolvePlanId === "function") {
+      try {
+        planId = await window.YatrifyPlanContext.resolvePlanId();
+      } catch (_) {
+        planId = "";
+      }
+    }
+    if (!planId || !window.YatrifyPlanService) {
+      return { id: "", label: "Plan", planData: {} };
+    }
+    try {
+      var payload = await window.YatrifyPlanService.getPlan(planId);
+      var plan = payload && payload.plan ? payload.plan : {};
+      return { id: planId, label: getPlanDestinationLabel(plan, 0), planData: plan };
+    } catch (_) {
+      return { id: planId, label: "Plan", planData: {} };
+    }
+  }
+
+  async function ensurePlanListLoaded() {
+    if (!window.YatrifyPlanService) return [];
+    if (planList.length) return planList;
+    try {
+      var listPayload = await window.YatrifyPlanService.listPlans();
+      planList = Array.isArray(listPayload) ? listPayload : (listPayload && listPayload.plans ? listPayload.plans : []);
+    } catch (_) {
+      planList = [];
+    }
+    planOptions = planList.map(function (plan, index) {
+      return {
+        id: plan.id,
+        label: getPlanDestinationLabel(plan, index),
+        searchText: getPlanDestinationLabel(plan, index).toLowerCase()
+      };
+    });
+    return planList;
+  }
+
+  function getActivePlanSignature() {
+    return String(activePlanId || "").trim();
+  }
+
+  function updatePlanLibraryEntry() {
+    return;
+  }
+
+  function buildPlanAwareUrl(path, planId, hash) {
+    if (window.YatrifyPlanContext && typeof window.YatrifyPlanContext.buildPlanAwareUrl === "function") {
+      return window.YatrifyPlanContext.buildPlanAwareUrl(path, planId || activePlanId, hash);
+    }
+    var targetPath = String(path || GENERATED_PLAN_PATH).trim() || GENERATED_PLAN_PATH;
+    var safePlanId = String(planId || activePlanId || "").trim();
+    var hashValue = String(hash || "").trim();
+    var hashIndex = targetPath.indexOf("#");
+    if (hashIndex !== -1) targetPath = targetPath.slice(0, hashIndex);
+    if (safePlanId) {
+      targetPath += (targetPath.indexOf("?") === -1 ? "?" : "&") + "planId=" + encodeURIComponent(safePlanId);
+    }
+    if (hashValue) targetPath += "#" + hashValue;
+    return targetPath;
+  }
+
+  function stabilizeContentSpacing() {
+    var content = document.querySelector(".content");
+    if (!content) return;
+    var sidebar = document.querySelector(".sidebar");
+    var measuredHeight = 0;
+    Array.from(content.children || []).forEach(function (child) {
+      if (!child || child.nodeType !== 1) return;
+      measuredHeight = Math.max(measuredHeight, Math.ceil(child.scrollHeight || child.offsetHeight || 0));
+    });
+    if (sidebar) {
+      measuredHeight = Math.max(measuredHeight, Math.ceil(sidebar.scrollHeight || sidebar.offsetHeight || 0) + CONTENT_FOOTER_SPACER);
+    }
+    if (measuredHeight > 0) {
+      content.style.setProperty("--fixed-step-height", measuredHeight + "px");
+    }
+  }
+
+  function setupContentSpacing() {
+    stabilizeContentSpacing();
+    window.addEventListener("resize", stabilizeContentSpacing);
+  }
+
+  function makeSidebarLink(item) {
+    var href = item.href
+      ? buildPlanAwareUrl(item.href, getActivePlanSignature())
+      : buildPlanAwareUrl(GENERATED_PLAN_PATH, getActivePlanSignature(), item.id);
+    return (
+      '<a class="sidebar-link" href="' + href + '">' +
+      '<i data-lucide="' + item.icon + '" style="width:18px;height:18px;"></i>' +
+      "<span>" + escapeHtml(item.label) + "</span>" +
+      '<span class="dot" aria-hidden="true"></span>' +
+      "</a>"
+    );
+  }
+
+  function renderSidebarLinks(planId, controlId) {
+    var planNode = document.getElementById(planId);
+    var controlNode = document.getElementById(controlId);
+    if (planNode) planNode.innerHTML = PLAN_LINKS.map(makeSidebarLink).join("");
+    if (controlNode) controlNode.innerHTML = CONTROL_LINKS.map(makeSidebarLink).join("");
+  }
+
+  function markCurrentControlPage() {
+    var current = (window.location.pathname.split("/").pop() || "").toLowerCase();
+    Array.from(document.querySelectorAll('.sidebar-link[href^="/"]')).forEach(function (link) {
+      var href = String(link.getAttribute("href") || "").toLowerCase();
+      var hrefPath = href.split("#")[0].split("?")[0];
+      link.classList.toggle("active", hrefPath.endsWith("/" + current) || hrefPath.endsWith(current));
+    });
+  }
+
+  function setupMobileDrawer() {
+    var openBtn = document.getElementById("mobile-menu-btn");
+    var closeBtn = document.getElementById("mobile-close-btn");
+    var overlay = document.getElementById("mobile-overlay");
+    var drawer = document.getElementById("mobile-drawer");
+    if (!openBtn || !closeBtn || !overlay || !drawer) return;
+
+    openBtn.addEventListener("click", function () {
+      drawer.classList.add("open");
+      overlay.classList.add("open");
+      document.body.style.overflow = "hidden";
+    });
+
+    closeBtn.addEventListener("click", closeMobileDrawer);
+    overlay.addEventListener("click", closeMobileDrawer);
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") closeMobileDrawer();
+    });
+  }
+
+  function closeMobileDrawer() {
+    var drawer = document.getElementById("mobile-drawer");
+    var overlay = document.getElementById("mobile-overlay");
+    if (!drawer || !overlay) return;
+    drawer.classList.remove("open");
+    overlay.classList.remove("open");
+    document.body.style.overflow = "";
+  }
+
+  function setThemeMode(dark) {
+    document.documentElement.classList.toggle("dark", dark);
+    document.documentElement.classList.toggle("light", !dark);
+    document.documentElement.style.colorScheme = dark ? "dark" : "light";
+  }
+
+  function applyThemeMode() {
+    setThemeMode(localStorage.getItem("theme") === "dark");
+  }
+
+  function setupThemeToggle() {
+    var button = document.getElementById("theme-toggle-btn");
+    if (!button) return;
+    button.addEventListener("click", function () {
+      var dark = !document.documentElement.classList.contains("dark");
+      localStorage.setItem("theme", dark ? "dark" : "light");
+      setThemeMode(dark);
+    });
+  }
+
+  async function setupTopbarData() {
+    var creditsCount = document.getElementById("credits-count");
+    if (window.YatrifyPlanService) {
+      try {
+        var payload = await window.YatrifyPlanService.getUserMe();
+        var credits = Number(payload && payload.credits);
+        if (creditsCount) creditsCount.textContent = Number.isFinite(credits) ? String(credits) : "—";
+      } catch (_) {
+        if (creditsCount) creditsCount.textContent = "—";
+      }
+    }
+
+    var selectedLabel = document.getElementById("destination-selected-label");
+    if (!selectedLabel) return;
+    var destination = activePlanContext && activePlanContext.label
+      ? activePlanContext.label
+      : getPlanDestinationLabel(activePlanContext && activePlanContext.planData ? activePlanContext.planData : {}, 0);
+    selectedLabel.textContent = destination || "Destination";
+  }
+
+  async function setupHeaderPlanSearch() {
+    var wrap = document.getElementById("header-plan-search");
+    var trigger = document.getElementById("destination-trigger");
+    var searchInput = document.getElementById("destination-search-input");
+    var optionsNode = document.getElementById("destination-options");
+    var emptyNode = document.getElementById("destination-empty");
+    var selectedLabel = document.getElementById("destination-selected-label");
+    if (!wrap || !trigger || !searchInput || !optionsNode || !emptyNode || !selectedLabel) return;
+    await ensurePlanListLoaded();
+    var library = planOptions.slice();
+
+    function render(query) {
+      var q = String(query || "").toLowerCase().trim();
+      var list = library.filter(function (x) { return !q || x.searchText.indexOf(q) !== -1; });
+      optionsNode.innerHTML = "";
+      if (!list.length) {
+        emptyNode.style.display = "block";
+        return;
+      }
+      emptyNode.style.display = "none";
+      list.forEach(function (entry) {
+        var button = document.createElement("button");
+        button.type = "button";
+        button.className = "destination-option";
+        button.textContent = entry.label;
+        button.addEventListener("click", function () {
+          var nextUrl = buildPlanAwareUrl(CURRENT_PAGE_PATH, entry.id);
+          selectedLabel.textContent = entry.label;
+          wrap.classList.remove("open");
+          trigger.setAttribute("aria-expanded", "false");
+          window.location.href = nextUrl;
+        });
+        optionsNode.appendChild(button);
+      });
+    }
+
+    trigger.addEventListener("click", function () {
+      var open = wrap.classList.toggle("open");
+      trigger.setAttribute("aria-expanded", open ? "true" : "false");
+      if (open) {
+        searchInput.value = "";
+        render("");
+        setTimeout(function () { searchInput.focus(); }, 10);
+      }
+    });
+
+    searchInput.addEventListener("input", function () { render(searchInput.value); });
+    document.addEventListener("click", function (e) {
+      if (!wrap.contains(e.target)) {
+        wrap.classList.remove("open");
+        trigger.setAttribute("aria-expanded", "false");
+      }
+    });
+  }
+
+  function setupClerkHeaderProfile() {
+    var signInLink = document.getElementById("header-signin-link");
+    var profileWrap = document.getElementById("user-profile");
+    var profileBtn = document.getElementById("profile-btn");
+    var avatarImg = document.getElementById("user-avatar");
+    var avatarLetter = document.getElementById("user-avatar-letter");
+    var profileMenu = document.getElementById("profile-menu");
+    var profileName = document.getElementById("profile-name");
+    var profileEmail = document.getElementById("profile-email");
+    var manageBtn = document.getElementById("manage-account");
+    var signOutBtn = document.getElementById("signout-btn");
+
+    function markHeaderAuthReady() {
+    }
+
+    function closeProfileMenu() {
+      if (!profileMenu) return;
+      profileMenu.style.display = "none";
+      profileMenu.setAttribute("aria-hidden", "true");
+      if (profileBtn) profileBtn.setAttribute("aria-expanded", "false");
+    }
+
+    function openProfileMenu() {
+      if (!profileMenu) return;
+      profileMenu.style.display = "block";
+      profileMenu.setAttribute("aria-hidden", "false");
+      if (profileBtn) profileBtn.setAttribute("aria-expanded", "true");
+    }
+
+    function setGuest() {
+      if (signInLink) signInLink.style.display = "inline-flex";
+      if (profileWrap) profileWrap.style.display = "none";
+      markHeaderAuthReady();
+      closeProfileMenu();
+      if (avatarImg) {
+        avatarImg.style.display = "none";
+        avatarImg.removeAttribute("src");
+      }
+      if (avatarLetter) {
+        avatarLetter.textContent = "N";
+        avatarLetter.style.display = "inline-flex";
+      }
+      if (profileName) profileName.textContent = "Guest";
+      if (profileEmail) profileEmail.textContent = "";
+    }
+
+    function setUser(user) {
+      if (!user) {
+        setGuest();
+        return;
+      }
+      if (signInLink) signInLink.style.display = "none";
+      if (profileWrap) profileWrap.style.display = "inline-flex";
+      markHeaderAuthReady();
+
+      var email = user.primaryEmailAddress && user.primaryEmailAddress.emailAddress
+        ? user.primaryEmailAddress.emailAddress
+        : "";
+      var fullName = [user.firstName, user.lastName].filter(Boolean).join(" ").trim();
+      var seed = fullName || user.username || email || "N";
+      var initial = String(seed || "N").charAt(0).toUpperCase();
+      if (profileName) profileName.textContent = seed;
+      if (profileEmail) profileEmail.textContent = email || "No email address";
+
+      if (avatarLetter) avatarLetter.textContent = initial;
+      if (avatarImg) {
+        if (user.imageUrl) {
+          avatarImg.src = user.imageUrl;
+          avatarImg.onerror = function () {
+            avatarImg.style.display = "none";
+            if (avatarLetter) avatarLetter.style.display = "inline-flex";
+          };
+          avatarImg.style.display = "block";
+          if (avatarLetter) avatarLetter.style.display = "none";
+        } else {
+          avatarImg.style.display = "none";
+          if (avatarLetter) avatarLetter.style.display = "inline-flex";
+        }
+      }
+    }
+
+    if (!profileBtn || profileBtn.dataset.bound === "true") return;
+    profileBtn.dataset.bound = "true";
+    profileBtn.setAttribute("aria-haspopup", "menu");
+    profileBtn.setAttribute("aria-expanded", "false");
+    profileBtn.addEventListener("click", function (event) {
+      event.stopPropagation();
+      if (profileMenu && profileWrap && profileWrap.style.display !== "none") {
+        if (profileMenu.style.display === "block") {
+          closeProfileMenu();
+        } else {
+          openProfileMenu();
+        }
+        return;
+      }
+      if (signInLink) {
+        window.location.href = signInLink.getAttribute("href") || "/sign-in/";
+      }
+    });
+
+    if (profileMenu) {
+      profileMenu.addEventListener("click", function (event) {
+        event.stopPropagation();
+      });
+    }
+
+    document.addEventListener("click", function () {
+      if (!profileMenu || profileMenu.style.display !== "block") return;
+      closeProfileMenu();
+    });
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") closeProfileMenu();
+    });
+
+    if (manageBtn && manageBtn.dataset.bound !== "true") {
+      manageBtn.dataset.bound = "true";
+      manageBtn.addEventListener("click", function () {
+        closeProfileMenu();
+        if (window.Clerk && typeof window.Clerk.openUserProfile === "function" && window.Clerk.user) {
+          window.Clerk.openUserProfile();
+        } else if (signInLink) {
+          window.location.href = signInLink.getAttribute("href") || "/sign-in/";
+        }
+      });
+    }
+
+    if (signOutBtn && signOutBtn.dataset.bound !== "true") {
+      signOutBtn.dataset.bound = "true";
+      signOutBtn.addEventListener("click", function () {
+        closeProfileMenu();
+        if (window.Clerk && typeof window.Clerk.signOut === "function" && window.Clerk.user) {
+          window.Clerk.signOut({ redirectUrl: window.location.href });
+        }
+      });
+    }
+
+    function bindClerk(clerk) {
+      if (!clerk) {
+        setGuest();
+        return;
+      }
+      setUser(clerk.user || null);
+      if (typeof clerk.addListener === "function" && !clerk.__yatrifyHeaderListenerBound) {
+        clerk.__yatrifyHeaderListenerBound = true;
+        clerk.addListener(function () {
+          setUser(clerk.user || null);
+        });
+      }
+    }
+
+    if (window.Clerk && typeof window.Clerk.load === "function") {
+      window.Clerk.load().then(function () {
+        bindClerk(window.Clerk);
+      }).catch(function () {
+        setGuest();
+      });
+      return;
+    }
+
+    if (typeof window.__loadYatrifyClerk !== "function") {
+      setGuest();
+      return;
+    }
+
+    window.__loadYatrifyClerk(false).then(function (clerk) {
+      if (!clerk || typeof clerk.load !== "function") {
+        setGuest();
+        return;
+      }
+      clerk.load().then(function () {
+        bindClerk(window.Clerk || clerk);
+      }).catch(function () {
+        setGuest();
+      });
+    }).catch(function () {
+      setGuest();
+    });
+  }
+})();
+</script>
+
+<script>
+(async function () {
+  /* ── Banner close ─────────────────────────────── */
+  var banner = document.getElementById('refine-banner');
+  var bannerClose = document.getElementById('refine-banner-close');
+  var activePlanContext = { planData: {} };
+  var activePlanId = "";
+  if (bannerClose && banner) {
+    bannerClose.addEventListener('click', function () {
+      banner.style.display = 'none';
+    });
+  }
+
+  async function hydratePlanContext() {
+    if (!window.YatrifyPlanContext || !window.YatrifyPlanService) return;
+    try {
+      activePlanId = await window.YatrifyPlanContext.resolvePlanId();
+      if (!activePlanId) return;
+      var payload = await window.YatrifyPlanService.getPlan(activePlanId);
+      if (payload && payload.plan) {
+        activePlanContext = { id: activePlanId, planData: payload.plan };
+      }
+    } catch (_) {}
+  }
+
+  var hydratePromise = hydratePlanContext();
+
+  function getActivePlanSnapshot() {
+    return activePlanContext && activePlanContext.planData ? activePlanContext.planData : {};
+  }
+
+  /* Read current plan from API */
+  var rfPlanData = getActivePlanSnapshot();
+
+  /* ── Start city clear button ──────────────────── */
+  var startInput = document.getElementById('rf-start-city');
+  var startClear = document.getElementById('rf-start-city-clear');
+  if (startClear && startInput) {
+    startClear.addEventListener('click', function () {
+      startInput.value = '';
+      startInput.focus();
+    });
+  }
+
+  /* Pre-fill start city from current plan */
+  if (startInput) {
+    var rfPlanStartCity = (function() {
+      var sc = rfPlanData.startCity;
+      if (!sc) return '';
+      if (typeof sc === 'object') return [sc.city || '', sc.state || '', sc.country || ''].filter(Boolean).join(', ');
+      return String(sc).trim();
+    })();
+    if (rfPlanStartCity) startInput.value = rfPlanStartCity;
+  }
+
+  /* ── Chip toggle ──────────────────────────────── */
+  document.querySelectorAll('.chips').forEach(function (group) {
+    var multi = group.dataset.multi === 'true';
+    group.addEventListener('click', function (e) {
+      var chip = e.target.closest('.chip');
+      if (!chip || !group.contains(chip)) return;
+      if (multi) {
+        chip.classList.toggle('selected');
+      } else {
+        group.querySelectorAll('.chip').forEach(function (c) { c.classList.remove('selected'); });
+        chip.classList.add('selected');
+      }
+      updateRefineButtonState();
+    });
+  });
+
+  function applyChipSelection(field, values) {
+    var group = document.querySelector('.chips[data-field="' + field + '"]');
+    if (!group) return;
+    var list = Array.isArray(values) ? values : (values ? [values] : []);
+    var normalized = list.map(function (v) { return String(v || '').trim().toLowerCase(); }).filter(Boolean);
+    group.querySelectorAll('.chip').forEach(function (chip) {
+      var label = String(chip.textContent || '').trim().toLowerCase();
+      chip.classList.toggle('selected', normalized.indexOf(label) !== -1);
+    });
+  }
+
+  applyChipSelection('themes', rfPlanData.themes);
+  applyChipSelection('pace', rfPlanData.pace);
+  applyChipSelection('weather', rfPlanData.weather);
+  applyChipSelection('accommodation', rfPlanData.accommodation);
+  applyChipSelection('food', rfPlanData.food);
+  applyChipSelection('transport', rfPlanData.transport);
+
+  var rfPreferences = document.getElementById('rf-preferences');
+  if (rfPreferences && rfPlanData.preferences) {
+    rfPreferences.value = String(rfPlanData.preferences || '');
+  }
+
+  /* ── Add theme ────────────────────────────────── */
+  var addThemeBtn = document.getElementById('rf-add-theme-btn');
+  var addThemeRow = document.getElementById('rf-add-theme-row');
+  var saveThemeBtn = document.getElementById('rf-save-theme-btn');
+  var customThemeInput = document.getElementById('rf-custom-theme');
+
+  if (addThemeBtn && addThemeRow) {
+    addThemeBtn.addEventListener('click', function () {
+      addThemeRow.classList.toggle('visible');
+      if (addThemeRow.classList.contains('visible') && customThemeInput) customThemeInput.focus();
+    });
+  }
+
+  if (saveThemeBtn && customThemeInput) {
+    function saveCustomTheme() {
+      var val = customThemeInput.value.trim();
+      if (!val) return;
+      var themesGroup = document.querySelector('.chips[data-field="themes"]');
+      if (!themesGroup) return;
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'chip selected';
+      btn.textContent = val;
+      themesGroup.appendChild(btn);
+      customThemeInput.value = '';
+      addThemeRow.classList.remove('visible');
+      updateRefineButtonState();
+    }
+    saveThemeBtn.addEventListener('click', saveCustomTheme);
+    customThemeInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); saveCustomTheme(); }
+    });
+  }
+
+  /* ── Destination chips ────────────────────────── */
+  var destInput    = document.getElementById('rf-destination');
+  var destChipsWrap = document.getElementById('rf-dest-chips');
+  var destSuggest  = document.getElementById('rf-dest-suggestions');
+  var startSuggest = document.getElementById('rf-start-suggestions');
+
+  function rfPlanDestLabel(d) {
+    if (!d) return '';
+    if (typeof d === 'object') return [d.city || '', d.country || ''].filter(Boolean).join(', ');
+    return String(d).trim();
+  }
+
+  var selectedDests = (function() {
+    var dest = rfPlanDestLabel(rfPlanData.destination);
+    return dest ? [dest] : [];
+  })();
+
+  /* ── Destination chips render ─────────────────── */
+  function renderDestChips() {
+    if (!destChipsWrap) return;
+    destChipsWrap.innerHTML = '';
+    selectedDests.forEach(function (val) {
+      var span = document.createElement('span');
+      span.className = 'rf-dest-chip';
+      span.dataset.value = val;
+      span.innerHTML = escHtml(val) +
+        '<button type="button" class="rf-dest-chip-rm" aria-label="Remove destination">' +
+        '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
+        '</button>';
+      span.querySelector('.rf-dest-chip-rm').addEventListener('click', function () {
+        selectedDests = selectedDests.filter(function (d) { return d !== val; });
+        renderDestChips();
+        updateRefineButtonState();
+      });
+      destChipsWrap.appendChild(span);
+    });
+    updateRefineButtonState();
+  }
+
+  renderDestChips();
+
+  /* ── World city autocomplete ── */
+  var RF_API_BASE = (typeof window !== 'undefined' && (window.__YATRIFY_API_BASE_URL || window.YATRIFY_API_BASE_URL))
+    ? String(window.__YATRIFY_API_BASE_URL || window.YATRIFY_API_BASE_URL).replace(/\/+$/, '')
+    : 'http://localhost:4000';
+  var RF_CSC_BASE = RF_API_BASE + '/api/csc';
+
+  var AUTOCOMPLETE_MIN_CHARS   = 1;
+  var CITY_RENDER_BATCH_SIZE   = 120;
+  var WORLD_CITY_BATCH_WORKERS = 4;
+  var WORLD_CITY_PRIORITY_ISO  = ['US','IN','GB','FR','DE','IT','ES','CA','AU','AE','SG','JP','CH','NL','TH','MY','ID','BR','MX','TR','ZA','NZ','SA','KR'];
+
+  var worldCityIndex       = [];
+  var worldCitySeen        = {};
+  var worldCityLoaderState = { started:false, completed:false, countriesLoaded:0, totalCountries:0, activeWorkers:0, nextCountryIndex:0 };
+  var worldCityLoaderPromise = null;
+  var worldCityLoaderResolve = null;
+  var rfCountriesCache       = null;
+  var rfCountriesPromise     = null;
+  var rfCitiesCache          = {};
+  var rfCitiesPromise        = {};
+  var autocompleteTimers     = {};
+  var autocompletePollTimers = {};
+  var autocompleteSequence   = { startCity:0, destination:0 };
+  var autocompleteState      = {
+    startCity:   { items:[], activeIndex:-1, renderedCount:0 },
+    destination: { items:[], activeIndex:-1, renderedCount:0 }
+  };
+
+  /* ── Static fallback cities (shown immediately, no server needed) ── */
+  var RF_STATIC_CITIES = [
+    // India
+    "Mumbai, Maharashtra, India","Delhi, National Capital Territory of Delhi, India","Bengaluru, Karnataka, India",
+    "Hyderabad, Telangana, India","Ahmedabad, Gujarat, India","Chennai, Tamil Nadu, India",
+    "Kolkata, West Bengal, India","Surat, Gujarat, India","Pune, Maharashtra, India",
+    "Jaipur, Rajasthan, India","Lucknow, Uttar Pradesh, India","Kanpur, Uttar Pradesh, India",
+    "Nagpur, Maharashtra, India","Indore, Madhya Pradesh, India","Thane, Maharashtra, India",
+    "Bhopal, Madhya Pradesh, India","Visakhapatnam, Andhra Pradesh, India","Pimpri-Chinchwad, Maharashtra, India",
+    "Patna, Bihar, India","Vadodara, Gujarat, India","Ghaziabad, Uttar Pradesh, India",
+    "Ludhiana, Punjab, India","Agra, Uttar Pradesh, India","Nashik, Maharashtra, India",
+    "Faridabad, Haryana, India","Meerut, Uttar Pradesh, India","Rajkot, Gujarat, India",
+    "Varanasi, Uttar Pradesh, India","Srinagar, Jammu and Kashmir, India","Aurangabad, Maharashtra, India",
+    "Dhanbad, Jharkhand, India","Amritsar, Punjab, India","Allahabad, Uttar Pradesh, India",
+    "Ranchi, Jharkhand, India","Coimbatore, Tamil Nadu, India","Vijayawada, Andhra Pradesh, India",
+    "Jabalpur, Madhya Pradesh, India","Gwalior, Madhya Pradesh, India","Jodhpur, Rajasthan, India",
+    "Madurai, Tamil Nadu, India","Raipur, Chhattisgarh, India","Kota, Rajasthan, India",
+    "Chandigarh, Chandigarh, India","Guwahati, Assam, India","Solapur, Maharashtra, India",
+    "Hubli, Karnataka, India","Bareilly, Uttar Pradesh, India","Moradabad, Uttar Pradesh, India",
+    "Mysore, Karnataka, India","Gurugram, Haryana, India","Noida, Uttar Pradesh, India",
+    "Dehradun, Uttarakhand, India","Shimla, Himachal Pradesh, India","Manali, Himachal Pradesh, India",
+    "Udaipur, Rajasthan, India","Pushkar, Rajasthan, India","Panaji, Goa, India",
+    "Kochi, Kerala, India","Thiruvananthapuram, Kerala, India","Kozhikode, Kerala, India",
+    "Thrissur, Kerala, India","Ooty, Tamil Nadu, India","Pondicherry, Puducherry, India",
+    "Hampi, Karnataka, India","Munnar, Kerala, India","Darjeeling, West Bengal, India",
+    "Siliguri, West Bengal, India","Mehsana, Gujarat, India",
+    // USA
+    "New York, New York, United States","Los Angeles, California, United States",
+    "Chicago, Illinois, United States","Houston, Texas, United States","Phoenix, Arizona, United States",
+    "Philadelphia, Pennsylvania, United States","San Antonio, Texas, United States",
+    "San Diego, California, United States","Dallas, Texas, United States","San Jose, California, United States",
+    "Austin, Texas, United States","San Francisco, California, United States",
+    "Seattle, Washington, United States","Denver, Colorado, United States",
+    "Washington, District of Columbia, United States","Nashville, Tennessee, United States",
+    "Las Vegas, Nevada, United States","Miami, Florida, United States",
+    "Atlanta, Georgia, United States","Boston, Massachusetts, United States",
+    "Portland, Oregon, United States","Honolulu, Hawaii, United States",
+    // UK
+    "London, England, United Kingdom","Birmingham, England, United Kingdom","Manchester, England, United Kingdom",
+    "Glasgow, Scotland, United Kingdom","Liverpool, England, United Kingdom","Leeds, England, United Kingdom",
+    "Edinburgh, Scotland, United Kingdom","Bristol, England, United Kingdom",
+    "Oxford, England, United Kingdom","Cambridge, England, United Kingdom","Bath, England, United Kingdom",
+    // Europe
+    "Paris, Ile-de-France, France","Lyon, Auvergne-Rhone-Alpes, France","Marseille, Provence-Alpes-Cote d'Azur, France","Nice, Provence-Alpes-Cote d'Azur, France",
+    "Berlin, Berlin, Germany","Munich, Bavaria, Germany","Hamburg, Hamburg, Germany","Frankfurt, Hesse, Germany","Cologne, North Rhine-Westphalia, Germany",
+    "Madrid, Community of Madrid, Spain","Barcelona, Catalonia, Spain","Seville, Andalusia, Spain","Valencia, Valencian Community, Spain",
+    "Rome, Lazio, Italy","Milan, Lombardy, Italy","Florence, Tuscany, Italy","Venice, Veneto, Italy","Naples, Campania, Italy",
+    "Amsterdam, North Holland, Netherlands","Rotterdam, South Holland, Netherlands",
+    "Zurich, Zurich, Switzerland","Geneva, Geneva, Switzerland","Bern, Bern, Switzerland",
+    "Vienna, Vienna, Austria","Prague, Prague, Czech Republic","Budapest, Budapest, Hungary",
+    "Warsaw, Masovian Voivodeship, Poland","Krakow, Lesser Poland Voivodeship, Poland",
+    "Brussels, Brussels, Belgium","Lisbon, Lisbon, Portugal","Porto, Porto, Portugal",
+    "Athens, Attica, Greece","Santorini, South Aegean, Greece",
+    "Dubrovnik, Dubrovnik-Neretva County, Croatia","Zagreb, City of Zagreb, Croatia",
+    "Stockholm, Stockholm, Sweden","Copenhagen, Capital Region of Denmark, Denmark","Oslo, Oslo, Norway","Helsinki, Uusimaa, Finland",
+    "Reykjavik, Capital Region, Iceland",
+    // Middle East
+    "Dubai, Dubai, United Arab Emirates","Abu Dhabi, Abu Dhabi, United Arab Emirates","Sharjah, Sharjah, United Arab Emirates",
+    "Riyadh, Riyadh, Saudi Arabia","Jeddah, Makkah, Saudi Arabia",
+    "Doha, Ad Dawhah, Qatar","Kuwait City, Al Asimah, Kuwait","Muscat, Muscat, Oman",
+    "Beirut, Beirut, Lebanon","Amman, Amman, Jordan","Tel Aviv, Tel Aviv, Israel","Jerusalem, Jerusalem, Israel",
+    // Asia Pacific
+    "Tokyo, Tokyo, Japan","Osaka, Osaka, Japan","Kyoto, Kyoto, Japan","Hiroshima, Hiroshima, Japan","Sapporo, Hokkaido, Japan",
+    "Beijing, Beijing, China","Shanghai, Shanghai, China","Guangzhou, Guangdong, China","Shenzhen, Guangdong, China","Chengdu, Sichuan, China",
+    "Seoul, Seoul, South Korea","Busan, Busan, South Korea","Incheon, Incheon, South Korea",
+    "Singapore, Singapore, Singapore",
+    "Bangkok, Bangkok, Thailand","Chiang Mai, Chiang Mai, Thailand","Phuket, Phuket, Thailand","Pattaya, Chon Buri, Thailand",
+    "Kuala Lumpur, Kuala Lumpur, Malaysia","Penang, Penang, Malaysia","Langkawi, Kedah, Malaysia",
+    "Jakarta, Jakarta, Indonesia","Bali, Bali, Indonesia","Yogyakarta, Yogyakarta, Indonesia","Surabaya, East Java, Indonesia",
+    "Manila, Metro Manila, Philippines","Cebu, Cebu, Philippines","Davao, Davao, Philippines",
+    "Ho Chi Minh City, Ho Chi Minh, Vietnam","Hanoi, Hanoi, Vietnam","Da Nang, Da Nang, Vietnam","Hoi An, Quang Nam, Vietnam",
+    "Phnom Penh, Phnom Penh, Cambodia","Siem Reap, Siem Reap, Cambodia",
+    "Colombo, Western Province, Sri Lanka","Kandy, Central Province, Sri Lanka",
+    "Kathmandu, Bagmati, Nepal","Pokhara, Gandaki, Nepal",
+    "Dhaka, Dhaka, Bangladesh","Chittagong, Chittagong, Bangladesh",
+    "Taipei, Taipei City, Taiwan","Kaohsiung, Kaohsiung City, Taiwan",
+    "Hong Kong, Kowloon, Hong Kong",
+    // Australia / NZ
+    "Sydney, New South Wales, Australia","Melbourne, Victoria, Australia","Brisbane, Queensland, Australia",
+    "Perth, Western Australia, Australia","Adelaide, South Australia, Australia","Cairns, Queensland, Australia",
+    "Auckland, Auckland, New Zealand","Wellington, Wellington, New Zealand","Queenstown, Otago, New Zealand",
+    // Africa
+    "Cairo, Cairo, Egypt","Alexandria, Alexandria, Egypt","Luxor, Luxor, Egypt",
+    "Cape Town, Western Cape, South Africa","Johannesburg, Gauteng, South Africa","Durban, KwaZulu-Natal, South Africa",
+    "Nairobi, Nairobi, Kenya","Mombasa, Mombasa, Kenya",
+    "Lagos, Lagos, Nigeria","Abuja, Federal Capital Territory, Nigeria",
+    "Casablanca, Grand Casablanca-Settat, Morocco","Marrakech, Marrakesh-Safi, Morocco","Fez, Fez-Meknes, Morocco",
+    "Addis Ababa, Addis Ababa, Ethiopia","Dar es Salaam, Dar es Salaam, Tanzania",
+    "Accra, Greater Accra, Ghana","Tunis, Tunis, Tunisia",
+    // Americas
+    "Toronto, Ontario, Canada","Vancouver, British Columbia, Canada","Montreal, Quebec, Canada","Calgary, Alberta, Canada",
+    "Mexico City, Mexico City, Mexico","Cancun, Quintana Roo, Mexico","Guadalajara, Jalisco, Mexico",
+    "Sao Paulo, Sao Paulo, Brazil","Rio de Janeiro, Rio de Janeiro, Brazil","Brasilia, Federal District, Brazil","Salvador, Bahia, Brazil",
+    "Buenos Aires, Buenos Aires, Argentina","Cordoba, Cordoba, Argentina",
+    "Lima, Lima, Peru","Cusco, Cusco, Peru",
+    "Bogota, Bogota D.C., Colombia","Medellin, Antioquia, Colombia","Cartagena, Bolivar, Colombia",
+    "Santiago, Santiago Metropolitan Region, Chile",
+    "Quito, Pichincha, Ecuador","Guayaquil, Guayas, Ecuador",
+    "La Paz, La Paz, Bolivia",
+    "Havana, La Habana, Cuba",
+    "Panama City, Panama, Panama","San Jose, San Jose, Costa Rica"
+  ];
+
+  /* Load static fallback immediately so autocomplete always works */
+  (function() {
+    RF_STATIC_CITIES.forEach(function(label) {
+      var key = label.toLowerCase();
+      if (worldCitySeen[key]) return;
+      worldCitySeen[key] = true;
+      var cityName = label.split(',')[0].trim();
+      worldCityIndex.push({ label:label, value:label, cityLower:cityName.toLowerCase(), labelLower:key });
+    });
+    worldCityLoaderState.completed = true;
+  })();
+
+  /* ── CSC API functions (exact copy from plans-newplan) ── */
+  async function fetchCSCJson(path) {
+    var response = await fetch(RF_CSC_BASE + path, { method: 'GET' });
+    if (!response.ok) throw new Error('CSC API request failed: ' + response.status);
+    var payload = await response.json();
+    if (Array.isArray(payload)) return payload;
+    if (payload && Array.isArray(payload.data)) return payload.data;
+    return [];
+  }
+
+  async function getCountries() {
+    if (rfCountriesCache) return rfCountriesCache;
+    if (!rfCountriesPromise) {
+      rfCountriesPromise = fetchCSCJson('/countries').then(function(countries) {
+        rfCountriesCache = (countries || [])
+          .map(function(c) { return { name: String(c && c.name ? c.name : '').trim(), iso2: String(c && c.iso2 ? c.iso2 : '').trim().toUpperCase() }; })
+          .filter(function(c) { return c.name && c.iso2; })
+          .sort(function(a,b) { return a.name.localeCompare(b.name); });
+        return rfCountriesCache;
+      }).catch(function(err) { rfCountriesPromise = null; throw err; });
+    }
+    return rfCountriesPromise;
+  }
+
+  async function getCitiesByCountry(iso2) {
+    var normalizedIso = String(iso2 || '').trim().toUpperCase();
+    if (!normalizedIso) return [];
+    if (rfCitiesCache[normalizedIso]) return rfCitiesCache[normalizedIso];
+    if (!rfCitiesPromise[normalizedIso]) {
+      rfCitiesPromise[normalizedIso] = fetchCSCJson('/countries/' + encodeURIComponent(normalizedIso) + '/cities')
+        .then(function(cities) {
+          var normalized = (cities || [])
+            .map(function(c) { return { name: String(c && c.name ? c.name : '').trim() }; })
+            .filter(function(c) { return c.name; })
+            .sort(function(a,b) { return a.name.localeCompare(b.name); });
+          rfCitiesCache[normalizedIso] = normalized;
+          return normalized;
+        }).catch(function() { delete rfCitiesPromise[normalizedIso]; return []; });
+    }
+    return rfCitiesPromise[normalizedIso];
+  }
+
+  function getMatchRank(text, query, assumeLowerCase) {
+    var source = String(text || '');
+    var target = String(query || '');
+    if (!assumeLowerCase) { source = source.toLowerCase(); target = target.toLowerCase(); }
+    if (!target) return 99;
+    if (source === target) return 0;
+    if (source.indexOf(target) === 0) return 1;
+    if (source.indexOf(' ' + target) !== -1) return 2;
+    if (source.indexOf(target) !== -1) return 3;
+    return 99;
+  }
+
+  function orderCountriesForWorldIndex(countries) {
+    var byIso = {};
+    countries.forEach(function(c) { byIso[c.iso2] = c; });
+    var ordered = [], seen = {};
+    WORLD_CITY_PRIORITY_ISO.forEach(function(iso2) {
+      var c = byIso[iso2];
+      if (!c || seen[iso2]) return;
+      seen[iso2] = true; ordered.push(c);
+    });
+    countries.forEach(function(c) {
+      if (seen[c.iso2]) return;
+      seen[c.iso2] = true; ordered.push(c);
+    });
+    return ordered;
+  }
+
+  function addCitiesToWorldIndex(country, cities) {
+    if (!country || !Array.isArray(cities)) return;
+    cities.forEach(function(city) {
+      var cityName = String(city && city.name ? city.name : '').trim();
+      if (!cityName) return;
+      var value = cityName + ', ' + country.name;
+      var key = value.toLowerCase();
+      if (worldCitySeen[key]) return;
+      worldCitySeen[key] = true;
+      worldCityIndex.push({ label:value, value:value, cityLower:cityName.toLowerCase(), labelLower:key });
+    });
+  }
+
+  async function runWorldCityWorker(orderedCountries) {
+    while (worldCityLoaderState.nextCountryIndex < orderedCountries.length) {
+      var countryIndex = worldCityLoaderState.nextCountryIndex;
+      worldCityLoaderState.nextCountryIndex += 1;
+      var country = orderedCountries[countryIndex];
+      try { var cities = await getCitiesByCountry(country.iso2); addCitiesToWorldIndex(country, cities); }
+      catch(e) {}
+      finally { worldCityLoaderState.countriesLoaded += 1; }
+    }
+  }
+
+  function startWorldCityIndexBuild() {
+    if (worldCityLoaderPromise) return worldCityLoaderPromise;
+    worldCityLoaderState.started = true;
+    worldCityLoaderState.completed = false;
+    worldCityLoaderPromise = new Promise(function(resolve) { worldCityLoaderResolve = resolve; });
+    getCountries().then(function(countries) {
+      var orderedCountries = orderCountriesForWorldIndex(countries);
+      worldCityLoaderState.totalCountries = orderedCountries.length;
+      var workerCount = Math.min(WORLD_CITY_BATCH_WORKERS, orderedCountries.length);
+      var workers = [];
+      for (var i = 0; i < workerCount; i += 1) workers.push(runWorldCityWorker(orderedCountries));
+      worldCityLoaderState.activeWorkers = workerCount;
+      Promise.all(workers).finally(function() {
+        worldCityLoaderState.completed = true;
+        worldCityLoaderState.activeWorkers = 0;
+        if (worldCityLoaderResolve) worldCityLoaderResolve(worldCityIndex);
+      });
+    }).catch(function() {
+      worldCityLoaderState.completed = true;
+      if (worldCityLoaderResolve) worldCityLoaderResolve(worldCityIndex);
+    });
+    return worldCityLoaderPromise;
+  }
+
+  async function buildCitySuggestions(query) {
+    var normalizedCityQuery = String(query || '').trim().toLowerCase();
+    if (normalizedCityQuery.length < AUTOCOMPLETE_MIN_CHARS) return [];
+    var cityResults = [];
+    for (var i = 0; i < worldCityIndex.length; i += 1) {
+      var entry = worldCityIndex[i];
+      var rank = getMatchRank(entry.cityLower, normalizedCityQuery, true);
+      if (rank >= 99) rank = getMatchRank(entry.labelLower, normalizedCityQuery, true);
+      if (rank >= 99) continue;
+      cityResults.push({ label:entry.label, value:entry.value, rank:rank });
+    }
+    cityResults.sort(function(a,b) { return a.rank !== b.rank ? a.rank - b.rank : a.label.localeCompare(b.label); });
+    return cityResults;
+  }
+
+  function clearAutocompletePoll(inputId) {
+    if (autocompletePollTimers[inputId]) { clearTimeout(autocompletePollTimers[inputId]); autocompletePollTimers[inputId] = null; }
+  }
+
+  function getSuggestionsElement(inputId) { return inputId === 'startCity' ? startSuggest : destSuggest; }
+  function getInputElement(inputId)      { return inputId === 'startCity' ? startInput  : destInput; }
+
+  function appendSuggestionBatch(inputId) {
+    var state = autocompleteState[inputId];
+    var listEl = getSuggestionsElement(inputId);
+    if (!state || !listEl || !state.items.length) return;
+    var start = state.renderedCount || 0;
+    if (start >= state.items.length) return;
+    var end = Math.min(start + CITY_RENDER_BATCH_SIZE, state.items.length);
+    var chunk = '';
+    for (var i = start; i < end; i += 1) {
+      chunk += '<button type="button" class="rf-suggest-item" data-index="' + i + '">' + escHtml(state.items[i].label) + '</button>';
+    }
+    if (start === 0) listEl.innerHTML = chunk; else listEl.insertAdjacentHTML('beforeend', chunk);
+    state.renderedCount = end;
+  }
+
+  function renderSuggestionList(inputId, suggestions, message) {
+    var state = autocompleteState[inputId];
+    var listEl = getSuggestionsElement(inputId);
+    if (!state || !listEl) return;
+    state.items = suggestions || [];
+    state.activeIndex = -1;
+    state.renderedCount = 0;
+    if (!state.items.length) {
+      if (!message) { listEl.classList.remove('open'); listEl.innerHTML = ''; return; }
+      listEl.innerHTML = '<div class="rf-suggest-item" style="color:var(--muted);cursor:default;">' + escHtml(message) + '</div>';
+      listEl.classList.add('open');
+      return;
+    }
+    listEl.innerHTML = '';
+    appendSuggestionBatch(inputId);
+    listEl.classList.add('open');
+  }
+
+  function hideSuggestionList(inputId) {
+    clearAutocompletePoll(inputId);
+    var state = autocompleteState[inputId];
+    var listEl = getSuggestionsElement(inputId);
+    if (state) { state.items = []; state.activeIndex = -1; state.renderedCount = 0; }
+    if (listEl) { listEl.classList.remove('open'); listEl.innerHTML = ''; }
+  }
+
+  function rfSelectItem(inputId, suggestion) {
+    if (!suggestion) return;
+    if (inputId === 'startCity') {
+      var inp = getInputElement(inputId);
+      if (inp) inp.value = suggestion.value;
+    } else {
+      if (selectedDests.indexOf(suggestion.value) === -1) selectedDests.push(suggestion.value);
+      renderDestChips();
+      var dInp = getInputElement(inputId);
+      if (dInp) dInp.value = '';
+    }
+    hideSuggestionList(inputId);
+  }
+
+  function updateActiveSuggestion(inputId) {
+    var listEl = getSuggestionsElement(inputId);
+    var state = autocompleteState[inputId];
+    if (!listEl || !state) return;
+    while (state.activeIndex >= state.renderedCount) {
+      appendSuggestionBatch(inputId);
+      if (state.renderedCount >= state.items.length) break;
+    }
+    var activeEl = null;
+    Array.from(listEl.querySelectorAll('.rf-suggest-item')).forEach(function(itemEl) {
+      var itemIndex = Number(itemEl.getAttribute('data-index'));
+      var isActive = itemIndex === state.activeIndex;
+      itemEl.classList.toggle('active', isActive);
+      if (isActive) activeEl = itemEl;
+    });
+    if (activeEl) activeEl.scrollIntoView({ block:'nearest' });
+  }
+
+  async function runAutocompleteSearch(inputId, query) {
+    clearAutocompletePoll(inputId);
+    var normalizedQuery = String(query || '').trim();
+    if (normalizedQuery.length < AUTOCOMPLETE_MIN_CHARS) { hideSuggestionList(inputId); return; }
+    autocompleteSequence[inputId] = (autocompleteSequence[inputId] || 0) + 1;
+    var requestId = autocompleteSequence[inputId];
+    try {
+      var citySuggestions = await buildCitySuggestions(normalizedQuery);
+      if (autocompleteSequence[inputId] !== requestId) return;
+      if (citySuggestions.length) { renderSuggestionList(inputId, citySuggestions, ''); return; }
+      if (!worldCityLoaderState.completed) {
+        hideSuggestionList(inputId);
+        autocompletePollTimers[inputId] = setTimeout(function() {
+          var inputEl = getInputElement(inputId);
+          if (!inputEl) return;
+          var latestValue = String(inputEl.value || '').trim();
+          if (latestValue !== normalizedQuery) return;
+          runAutocompleteSearch(inputId, latestValue);
+        }, 220);
+        return;
+      }
+      renderSuggestionList(inputId, [], 'No matching city found.');
+    } catch(error) {
+      if (autocompleteSequence[inputId] !== requestId) return;
+      renderSuggestionList(inputId, [], 'Unable to fetch locations right now.');
+    }
+  }
+
+  function setupLocationAutocomplete(inputId) {
+    var inputEl = getInputElement(inputId);
+    var listEl  = getSuggestionsElement(inputId);
+    if (!inputEl || !listEl) return;
+
+    listEl.addEventListener('mousedown', function(event) {
+      var suggestionEl = event.target.closest('.rf-suggest-item[data-index]');
+      if (!suggestionEl) return;
+      event.preventDefault();
+      var index = Number(suggestionEl.getAttribute('data-index'));
+      var state = autocompleteState[inputId];
+      if (!state || isNaN(index) || !state.items[index]) return;
+      rfSelectItem(inputId, state.items[index]);
+    });
+
+    listEl.addEventListener('scroll', function() {
+      var state = autocompleteState[inputId];
+      if (!state || !state.items.length || state.renderedCount >= state.items.length) return;
+      if (listEl.scrollTop + listEl.clientHeight >= listEl.scrollHeight - 30) appendSuggestionBatch(inputId);
+    });
+
+    inputEl.addEventListener('input', function() {
+      var value = inputEl.value || '';
+      clearAutocompletePoll(inputId);
+      if (autocompleteTimers[inputId]) clearTimeout(autocompleteTimers[inputId]);
+      autocompleteTimers[inputId] = setTimeout(function() { runAutocompleteSearch(inputId, value); }, 260);
+    });
+
+    inputEl.addEventListener('focus', function() {
+      var value = inputEl.value || '';
+      if (value.trim().length >= AUTOCOMPLETE_MIN_CHARS) runAutocompleteSearch(inputId, value);
+    });
+
+    inputEl.addEventListener('keydown', function(event) {
+      var state = autocompleteState[inputId];
+      if (!state || !state.items.length || !listEl.classList.contains('open')) return;
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        state.activeIndex = state.activeIndex + 1;
+        if (state.activeIndex >= state.items.length) state.activeIndex = 0;
+        updateActiveSuggestion(inputId);
+        return;
+      }
+      if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        state.activeIndex = state.activeIndex <= 0 ? state.items.length - 1 : state.activeIndex - 1;
+        updateActiveSuggestion(inputId);
+        return;
+      }
+      if (event.key === 'Enter' && state.activeIndex >= 0) {
+        event.preventDefault();
+        rfSelectItem(inputId, state.items[state.activeIndex]);
+        return;
+      }
+      if (event.key === 'Escape') hideSuggestionList(inputId);
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!inputEl.contains(e.target) && !listEl.contains(e.target)) hideSuggestionList(inputId);
+    });
+  }
+
+  /* Start world city build in background — adds API cities on top of static ones */
+  startWorldCityIndexBuild();
+
+  setupLocationAutocomplete('startCity');
+  setupLocationAutocomplete('destination');
+
+  /* ── Calendar / date range picker ───────────────── */
+  var rfDateBtn = document.getElementById('rf-date-btn');
+  var rfCalPop = document.getElementById('rf-cal-popover');
+  var rfDateLabel = document.getElementById('rf-date-label');
+  var rfCalPrev = document.getElementById('rf-cal-prev');
+  var rfCalNext = document.getElementById('rf-cal-next');
+  var rfCalMonth = document.getElementById('rf-cal-month');
+  var rfCalYear = document.getElementById('rf-cal-year');
+  var rfCalWeek = document.getElementById('rf-cal-week');
+  var rfCalGrid = document.getElementById('rf-cal-grid');
+  var rfCalReset = document.getElementById('rf-cal-reset');
+  var rfCalHint = document.getElementById('rf-cal-hint');
+
+  var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var WEEKDAYS = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+  var MAX_DAYS = 15;
+
+  var today = new Date();
+
+  /* Read dates from plan data */
+  var selStart = (function() {
+    var d = rfPlanData.startDate;
+    if (!d) return null;
+    var p = new Date(d);
+    return isNaN(p.getTime()) ? null : p;
+  })();
+  var selEnd = (function() {
+    var d = rfPlanData.endDate;
+    if (!d) return null;
+    var p = new Date(d);
+    return isNaN(p.getTime()) ? null : p;
+  })();
+  var calView = selStart
+    ? { year: selStart.getFullYear(), month: selStart.getMonth() }
+    : { year: today.getFullYear(), month: today.getMonth() };
+
+  function fmtDate(d) {
+    if (!d) return '';
+    return d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+  }
+
+  /* Set initial date label from plan data immediately */
+  (function() {
+    if (!rfDateLabel) return;
+    if (selStart && selEnd) {
+      rfDateLabel.textContent = fmtDate(selStart) + ' \u2013 ' + fmtDate(selEnd);
+    } else if (selStart) {
+      rfDateLabel.textContent = fmtDate(selStart) + ' \u2013 select end date';
+    }
+  })();
+
+  function updateDateLabel() {
+    if (!rfDateLabel) return;
+    if (selStart && selEnd) {
+      rfDateLabel.textContent = fmtDate(selStart) + ' \u2013 ' + fmtDate(selEnd);
+    } else if (selStart) {
+      rfDateLabel.textContent = fmtDate(selStart) + ' \u2013 select end date';
+    } else {
+      rfDateLabel.textContent = 'Select date range...';
+    }
+  }
+
+  function buildCalMonthYear() {
+    if (!rfCalMonth || !rfCalYear) return;
+    rfCalMonth.innerHTML = '';
+    MONTHS.forEach(function (m, i) {
+      var o = document.createElement('option');
+      o.value = i; o.textContent = m;
+      if (i === calView.month) o.selected = true;
+      rfCalMonth.appendChild(o);
+    });
+    rfCalYear.innerHTML = '';
+    var yr = today.getFullYear();
+    for (var y = yr; y <= yr + 5; y++) {
+      var o = document.createElement('option');
+      o.value = y; o.textContent = y;
+      if (y === calView.year) o.selected = true;
+      rfCalYear.appendChild(o);
+    }
+  }
+
+  function buildCalWeekdays() {
+    if (!rfCalWeek) return;
+    rfCalWeek.innerHTML = '';
+    WEEKDAYS.forEach(function (d) {
+      var s = document.createElement('div');
+      s.className = 'rf-cal-weekday';
+      s.textContent = d;
+      rfCalWeek.appendChild(s);
+    });
+  }
+
+  function isSameDay(a, b) {
+    return a && b && a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
+  }
+
+  function buildCalGrid() {
+    if (!rfCalGrid) return;
+    rfCalGrid.innerHTML = '';
+    var first = new Date(calView.year, calView.month, 1);
+    var last = new Date(calView.year, calView.month + 1, 0);
+    var startDow = first.getDay();
+    // blank cells
+    for (var i = 0; i < startDow; i++) {
+      var blank = document.createElement('div');
+      rfCalGrid.appendChild(blank);
+    }
+    for (var d = 1; d <= last.getDate(); d++) {
+      var date = new Date(calView.year, calView.month, d);
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'rf-cal-day';
+      btn.textContent = d;
+      if (date < new Date(today.getFullYear(), today.getMonth(), today.getDate())) btn.classList.add('disabled');
+      if (isSameDay(date, today)) btn.classList.add('today');
+      if (selStart && selEnd) {
+        if (isSameDay(date, selStart) || isSameDay(date, selEnd)) btn.classList.add('selected');
+        else if (date > selStart && date < selEnd) btn.classList.add('in-range');
+      } else if (selStart && isSameDay(date, selStart)) {
+        btn.classList.add('selected');
+      }
+      btn.addEventListener('click', function (ev) {
+        var clickedDate = new Date(calView.year, calView.month, parseInt(ev.currentTarget.textContent));
+        if (!selStart || (selStart && selEnd)) {
+          selStart = clickedDate; selEnd = null;
+          if (rfCalHint) rfCalHint.textContent = 'Now select end date (max 15 days).';
+        } else {
+          if (clickedDate < selStart) { selEnd = selStart; selStart = clickedDate; }
+          else {
+            var diff = Math.round((clickedDate - selStart) / 86400000);
+            if (diff > MAX_DAYS) { clickedDate = new Date(selStart.getTime() + MAX_DAYS * 86400000); }
+            selEnd = clickedDate;
+          }
+          if (rfCalHint) rfCalHint.textContent = '';
+          updateDateLabel();
+        }
+        buildCalGrid();
+        updateDateLabel();
+        updateRefineButtonState();
+      });
+      rfCalGrid.appendChild(btn);
+    }
+  }
+
+  function renderCal() {
+    buildCalMonthYear();
+    buildCalWeekdays();
+    buildCalGrid();
+  }
+
+  if (rfDateBtn && rfCalPop) {
+    rfDateBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var open = rfCalPop.classList.toggle('open');
+      rfDateBtn.classList.toggle('active', open);
+      if (open) renderCal();
+    });
+
+    document.addEventListener('click', function (e) {
+      if (rfCalPop && rfCalPop.classList.contains('open')) {
+        if (!rfCalPop.contains(e.target) && !rfDateBtn.contains(e.target)) {
+          rfCalPop.classList.remove('open');
+          rfDateBtn.classList.remove('active');
+        }
+      }
+    });
+  }
+
+  if (rfCalPrev) rfCalPrev.addEventListener('click', function () { calView.month--; if (calView.month < 0) { calView.month = 11; calView.year--; } renderCal(); });
+  if (rfCalNext) rfCalNext.addEventListener('click', function () { calView.month++; if (calView.month > 11) { calView.month = 0; calView.year++; } renderCal(); });
+  if (rfCalMonth) rfCalMonth.addEventListener('change', function () { calView.month = parseInt(rfCalMonth.value); buildCalGrid(); });
+  if (rfCalYear) rfCalYear.addEventListener('change', function () { calView.year = parseInt(rfCalYear.value); buildCalGrid(); });
+  if (rfCalReset) rfCalReset.addEventListener('click', function () { selStart = null; selEnd = null; buildCalGrid(); updateDateLabel(); updateRefineButtonState(); });
+
+  updateDateLabel();
+
+  /* ── Currency catalog (full list, same as plans-newplan) ─── */
+  var CURRENCY_BACKUP_CODES = [
+    "AED","AFN","ALL","AMD","ANG","AOA","ARS","AUD","AWG","AZN",
+    "BAM","BBD","BDT","BGN","BHD","BIF","BMD","BND","BOB","BOV",
+    "BRL","BSD","BTN","BWP","BYN","BZD","CAD","CDF","CHE","CHF",
+    "CHW","CLF","CLP","CNY","COP","COU","CRC","CUP","CVE","CZK",
+    "DJF","DKK","DOP","DZD","EGP","ERN","ETB","EUR","FJD","FKP",
+    "GBP","GEL","GHS","GIP","GMD","GNF","GTQ","GYD","HKD","HNL",
+    "HTG","HUF","IDR","ILS","INR","IQD","IRR","ISK","JMD","JOD",
+    "JPY","KES","KGS","KHR","KMF","KPW","KRW","KWD","KYD","KZT",
+    "LAK","LBP","LKR","LRD","LSL","LYD","MAD","MDL","MGA","MKD",
+    "MMK","MNT","MOP","MRU","MUR","MVR","MWK","MXN","MXV","MYR",
+    "MZN","NAD","NGN","NIO","NOK","NPR","NZD","OMR","PAB","PEN",
+    "PGK","PHP","PKR","PLN","PYG","QAR","RON","RSD","RUB","RWF",
+    "SAR","SBD","SCR","SDG","SEK","SGD","SHP","SLE","SOS","SRD",
+    "SSP","STN","SVC","SYP","SZL","THB","TJS","TMT","TND","TOP",
+    "TRY","TTD","TWD","TZS","UAH","UGX","USD","USN","UYI","UYU",
+    "UYW","UZS","VED","VES","VND","VUV","WST","XAF","XCD","XCG",
+    "XDR","XOF","XPF","YER","ZAR","ZMW","ZWG"
+  ];
+
+  var CURRENCY_FALLBACK_NAMES = {
+    INR:"Indian Rupee",   USD:"US Dollar",         EUR:"Euro",
+    GBP:"British Pound",  JPY:"Japanese Yen",       CNY:"Chinese Yuan",
+    AED:"UAE Dirham",     AUD:"Australian Dollar",  CAD:"Canadian Dollar",
+    CHF:"Swiss Franc",    SGD:"Singapore Dollar",   THB:"Thai Baht",
+    MYR:"Malaysian Ringgit", HKD:"Hong Kong Dollar", NZD:"New Zealand Dollar",
+    SEK:"Swedish Krona",  NOK:"Norwegian Krone",    DKK:"Danish Krone",
+    ZAR:"South African Rand", BRL:"Brazilian Real", MXN:"Mexican Peso",
+    KRW:"South Korean Won",   IDR:"Indonesian Rupiah", TRY:"Turkish Lira",
+    SAR:"Saudi Riyal",    QAR:"Qatari Riyal",       KWD:"Kuwaiti Dinar",
+    BHD:"Bahraini Dinar", OMR:"Omani Rial",          JOD:"Jordanian Dinar",
+    EGP:"Egyptian Pound", PKR:"Pakistani Rupee",    BDT:"Bangladeshi Taka",
+    LKR:"Sri Lankan Rupee", NPR:"Nepalese Rupee",   PHP:"Philippine Peso",
+    VND:"Vietnamese Dong"
+  };
+
+  function getCurrencyDisplayName(code, dn) {
+    var iso = String(code || '').toUpperCase();
+    if (!iso) return '';
+    if (dn) { try { var n = dn.of(iso); if (n && n !== iso) return n; } catch(e) {} }
+    try {
+      var parts = new Intl.NumberFormat('en', {
+        style:'currency', currency:iso, currencyDisplay:'name',
+        minimumFractionDigits:0, maximumFractionDigits:0
+      }).formatToParts(1);
+      var cp = parts.find(function(p) { return p.type === 'currency'; });
+      if (cp && cp.value) return cp.value;
+    } catch(e) {}
+    return CURRENCY_FALLBACK_NAMES[iso] || iso;
+  }
+
+  function buildRfCurrencyCatalog() {
+    var codeList = [];
+    if (typeof Intl !== 'undefined' && typeof Intl.supportedValuesOf === 'function') {
+      try { codeList = Intl.supportedValuesOf('currency') || []; } catch(e) {}
+    }
+    if (!codeList.length) codeList = CURRENCY_BACKUP_CODES.slice();
+    if (codeList.indexOf('INR') === -1) codeList.push('INR');
+
+    var seen = {}, deduped = [];
+    codeList.forEach(function(raw) {
+      var c = String(raw || '').toUpperCase();
+      if (!/^[A-Z]{3}$/.test(c) || seen[c]) return;
+      seen[c] = true; deduped.push(c);
+    });
+    deduped.sort();
+
+    var dn = null;
+    if (typeof Intl !== 'undefined' && typeof Intl.DisplayNames === 'function') {
+      try { dn = new Intl.DisplayNames(['en'], { type:'currency' }); } catch(e) {}
+    }
+    return deduped.map(function(c) {
+      var name = getCurrencyDisplayName(c, dn);
+      return { code:c, name:name, label:c + ' - ' + name };
+    });
+  }
+
+  /* ── Currency picker (full plans-newplan parity) ─ */
+  var CURRENCIES = buildRfCurrencyCatalog();
+
+  var rfCurPicker  = document.getElementById('rf-currency-picker');
+  var rfCurTrigger = document.getElementById('rf-currency-trigger');
+  var rfCurMenu    = document.getElementById('rf-currency-menu');
+  var rfCurOptions = document.getElementById('rf-currency-options');
+  var rfCurLabel   = document.getElementById('rf-currency-label');
+  var rfCurVal     = document.getElementById('rf-currency-val');
+  var rfCurUp      = document.getElementById('rf-cur-up');
+  var rfCurDown    = document.getElementById('rf-cur-down');
+  var rfBudgetPill     = document.getElementById('rf-budget-pill');
+  var rfBudgetCurLabel = document.getElementById('rf-budget-cur-label');
+
+  var rfCurSelected    = 'INR';
+  var rfCurHoverTimer  = null;
+  var rfTypeaheadBuf   = '';
+  var rfTypeaheadTimer = null;
+  var rfTypeaheadMatch = '';
+
+  /* render all options via innerHTML (fast, event-delegated) */
+  function rfRenderCurrencyOptions(activeCode) {
+    if (!rfCurOptions) return;
+    var code = String(activeCode || '').toUpperCase();
+    rfCurOptions.innerHTML = CURRENCIES.map(function (cur) {
+      var sel = cur.code === code;
+      return '<button type="button" class="rf-currency-option' + (sel ? ' selected' : '') + '"' +
+             ' data-currency="' + escHtml(cur.code) + '"' +
+             ' role="option" aria-selected="' + (sel ? 'true' : 'false') + '">' +
+             '<svg class="rf-currency-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' +
+             '<span>' + escHtml(cur.label) + '</span>' +
+             '</button>';
+    }).join('');
+  }
+
+  function rfScrollToSelected() {
+    if (!rfCurOptions) return;
+    var sel = rfCurOptions.querySelector('.rf-currency-option.selected');
+    if (sel && typeof sel.scrollIntoView === 'function') sel.scrollIntoView({ block: 'center' });
+  }
+
+  function rfOpenCurrency() {
+    if (!rfCurMenu) return;
+    rfRenderCurrencyOptions(rfCurSelected);
+    rfCurMenu.hidden = false;
+    rfCurPicker.classList.add('open');
+    rfCurTrigger.setAttribute('aria-expanded', 'true');
+    rfScrollToSelected();
+    rfResetTypeahead(true);
+  }
+
+  function rfCloseCurrency() {
+    rfStopHoverScroll();
+    rfResetTypeahead(true);
+    if (rfCurMenu) rfCurMenu.hidden = true;
+    if (rfCurPicker) rfCurPicker.classList.remove('open');
+    if (rfCurTrigger) rfCurTrigger.setAttribute('aria-expanded', 'false');
+  }
+
+  function rfSelectCurrency(code) {
+    var wanted = String(code || '').toUpperCase();
+    var found = null;
+    for (var i = 0; i < CURRENCIES.length; i++) {
+      if (CURRENCIES[i].code === wanted) { found = CURRENCIES[i]; break; }
+    }
+    if (!found) found = CURRENCIES[0];
+    if (!found) return;
+    rfCurSelected = found.code;
+    if (rfCurLabel) rfCurLabel.textContent = found.label;
+    if (rfCurVal)   rfCurVal.value = found.code;
+    if (rfBudgetPill)     rfBudgetPill.textContent = found.code;
+    if (rfBudgetCurLabel) rfBudgetCurLabel.textContent = found.code;
+    /* update placeholder to match currency */
+    var rfBudgetInput2 = document.getElementById('rf-budget');
+    if (rfBudgetInput2) rfBudgetInput2.placeholder = 'e.g. ' + found.code + ' 1000';
+    rfRenderCurrencyOptions(found.code);
+    updateRefineButtonState();
+  }
+
+  if (rfPlanData.currency) {
+    rfSelectCurrency(rfPlanData.currency);
+  }
+
+  /* typeahead search */
+  function rfResetTypeahead(clearMatch) {
+    rfTypeaheadBuf = '';
+    if (rfTypeaheadTimer) { clearTimeout(rfTypeaheadTimer); rfTypeaheadTimer = null; }
+    if (clearMatch) {
+      rfTypeaheadMatch = '';
+      rfClearMatchHighlight();
+    }
+  }
+
+  function rfClearMatchHighlight() {
+    if (!rfCurOptions) return;
+    rfCurOptions.querySelectorAll('.rf-currency-option.match').forEach(function (el) {
+      el.classList.remove('match');
+      el.removeAttribute('aria-current');
+    });
+  }
+
+  function rfHighlightOption(code) {
+    if (!rfCurOptions) return;
+    rfClearMatchHighlight();
+    rfTypeaheadMatch = '';
+    if (!code) return;
+    var opt = rfCurOptions.querySelector('.rf-currency-option[data-currency="' + code + '"]');
+    if (!opt) return;
+    opt.classList.add('match');
+    opt.setAttribute('aria-current', 'true');
+    rfTypeaheadMatch = code;
+    if (typeof opt.scrollIntoView === 'function') opt.scrollIntoView({ block: 'nearest' });
+  }
+
+  function rfFindTypeaheadMatch(query) {
+    var needle = query.trim().toLowerCase();
+    if (!needle) return null;
+    var fallback = null;
+    for (var i = 0; i < CURRENCIES.length; i++) {
+      var item = CURRENCIES[i];
+      var c = item.code.toLowerCase(), n = item.name.toLowerCase(), l = item.label.toLowerCase();
+      if (c.indexOf(needle) === 0 || n.indexOf(needle) === 0 || l.indexOf(needle) === 0) return item;
+      if (!fallback && (c.indexOf(needle) !== -1 || n.indexOf(needle) !== -1)) fallback = item;
+    }
+    return fallback;
+  }
+
+  function rfHandleTypeaheadKey(e) {
+    var key = e.key;
+    if (key === 'Escape') { rfCloseCurrency(); return; }
+    if (key === 'Enter') {
+      if (rfTypeaheadMatch) { rfSelectCurrency(rfTypeaheadMatch); rfCloseCurrency(); }
+      return;
+    }
+    if (!/^[a-z0-9 ]$/i.test(key)) return;
+    e.preventDefault();
+    if (rfCurMenu.hidden) rfOpenCurrency();
+    rfTypeaheadBuf += key.toLowerCase();
+    var match = rfFindTypeaheadMatch(rfTypeaheadBuf);
+    rfHighlightOption(match ? match.code : '');
+    if (rfTypeaheadTimer) clearTimeout(rfTypeaheadTimer);
+    rfTypeaheadTimer = setTimeout(function () { rfTypeaheadBuf = ''; }, 900);
+  }
+
+  /* hover-scroll arrows (continuous scroll on hold) */
+  function rfStopHoverScroll() {
+    if (rfCurHoverTimer) { clearInterval(rfCurHoverTimer); rfCurHoverTimer = null; }
+  }
+
+  function rfStartHoverScroll(dir) {
+    rfStopHoverScroll();
+    if (!rfCurOptions) return;
+    rfCurHoverTimer = setInterval(function () { rfCurOptions.scrollTop += dir * 8; }, 16);
+  }
+
+  function rfBindArrow(el, dir) {
+    if (!el) return;
+    el.addEventListener('mouseenter', function () { rfStartHoverScroll(dir); });
+    el.addEventListener('mouseleave', rfStopHoverScroll);
+    el.addEventListener('focus',     function () { rfStartHoverScroll(dir); });
+    el.addEventListener('blur',      rfStopHoverScroll);
+    el.addEventListener('click',     function (e) { e.preventDefault(); if (rfCurOptions) rfCurOptions.scrollTop += dir * 60; });
+    el.addEventListener('mousedown', function (e) { e.preventDefault(); });
+  }
+
+  /* wire everything up */
+  if (rfCurTrigger && rfCurMenu) {
+    rfSelectCurrency('INR'); /* initial render */
+
+    rfCurTrigger.addEventListener('click', function () {
+      rfCurMenu.hidden ? rfOpenCurrency() : rfCloseCurrency();
+    });
+    rfCurTrigger.addEventListener('keydown', rfHandleTypeaheadKey);
+    if (rfCurMenu) rfCurMenu.addEventListener('keydown', rfHandleTypeaheadKey);
+
+    /* event-delegated option click */
+    if (rfCurOptions) {
+      rfCurOptions.addEventListener('click', function (e) {
+        var opt = e.target.closest('.rf-currency-option');
+        if (!opt) return;
+        var code = opt.getAttribute('data-currency');
+        rfSelectCurrency(code);
+        rfCloseCurrency();
+      });
+    }
+
+    rfBindArrow(rfCurUp,   -1);
+    rfBindArrow(rfCurDown,  1);
+
+    document.addEventListener('click', function (e) {
+      if (rfCurPicker && !rfCurPicker.contains(e.target)) rfCloseCurrency();
+    });
+  }
+
+  /* ── Budget slider sync ───────────────────────── */
+  var rfSlider = document.getElementById('rf-budget-slider');
+  var rfBudgetInput = document.getElementById('rf-budget');
+
+  if (rfBudgetInput && rfPlanData.budget) {
+    var initialBudget = parseInt(rfPlanData.budget, 10);
+    if (Number.isFinite(initialBudget) && initialBudget > 0) {
+      rfBudgetInput.value = String(initialBudget);
+      if (rfSlider) rfSlider.value = String(Math.min(initialBudget, parseInt(rfSlider.max, 10) || initialBudget));
+    }
+  }
+
+  function updateSliderFill() {
+    if (!rfSlider) return;
+    var pct = ((rfSlider.value - rfSlider.min) / (rfSlider.max - rfSlider.min)) * 100;
+    rfSlider.style.setProperty('--rf-fill', pct + '%');
+  }
+
+  if (rfSlider && rfBudgetInput) {
+    rfSlider.addEventListener('input', function () {
+      rfBudgetInput.value = rfSlider.value > 0 ? rfSlider.value : '';
+      updateSliderFill();
+      updateRefineButtonState();
+    });
+    rfBudgetInput.addEventListener('input', function () {
+      var v = parseInt(rfBudgetInput.value) || 0;
+      rfSlider.value = Math.min(v, parseInt(rfSlider.max));
+      updateSliderFill();
+      updateRefineButtonState();
+    });
+  }
+
+  updateSliderFill();
+
+  /* ── Passenger picker ─────────────────────────── */
+  var rfPassPicker = document.getElementById('rf-passenger-picker');
+  var rfPassTrigger = document.getElementById('rf-passenger-trigger');
+  var rfPassMenu = document.getElementById('rf-passenger-menu');
+  var rfPassLabel = document.getElementById('rf-pass-label');
+  var rfPassVal = document.getElementById('rf-passengers-val');
+  var rfPassApply = document.getElementById('rf-pass-apply');
+  var rfPassNote = document.getElementById('rf-pass-note');
+
+  var pax = { adults: 1, children: 0, infants: 0 };
+
+  function parsePassengerCount(label, token) {
+    var re = new RegExp('(\\d+)\\s*' + token);
+    var match = re.exec(String(label || '').toLowerCase());
+    return match ? parseInt(match[1], 10) : null;
+  }
+
+  if (rfPlanData.passengers) {
+    var passengerLabel = String(rfPlanData.passengers || '').toLowerCase();
+    var pa = parsePassengerCount(passengerLabel, 'adult');
+    var pc = parsePassengerCount(passengerLabel, 'child');
+    var pi = parsePassengerCount(passengerLabel, 'infant');
+    if (Number.isFinite(pa)) pax.adults = Math.max(1, pa);
+    if (Number.isFinite(pc)) pax.children = Math.max(0, pc);
+    if (Number.isFinite(pi)) pax.infants = Math.max(0, pi);
+  }
+
+  function passengerLabel() {
+    var parts = [];
+    if (pax.adults) parts.push(pax.adults + ' adult' + (pax.adults > 1 ? 's' : ''));
+    if (pax.children) parts.push(pax.children + ' child' + (pax.children > 1 ? 'ren' : ''));
+    if (pax.infants) parts.push(pax.infants + ' infant' + (pax.infants > 1 ? 's' : ''));
+    return parts.join(', ') || '1 adult';
+  }
+
+  function updatePaxUI() {
+    ['adults','children','infants'].forEach(function (type) {
+      var countEl = document.getElementById('rf-count-' + type);
+      if (countEl) countEl.textContent = pax[type];
+      var decBtn = rfPassMenu && rfPassMenu.querySelector('[data-type="' + type + '"][data-action="decrease"]');
+      if (decBtn) decBtn.disabled = (type === 'adults' ? pax.adults <= 1 : pax[type] <= 0);
+    });
+    if (rfPassNote) {
+      var warn = pax.infants > pax.adults;
+      rfPassNote.style.color = warn ? '#dc2626' : '';
+    }
+  }
+
+  updatePaxUI();
+  if (rfPlanData.passengers && rfPassLabel && rfPassVal) {
+    var lblInit = passengerLabel();
+    rfPassLabel.textContent = lblInit;
+    rfPassVal.value = lblInit;
+  }
+
+  if (rfPassMenu) {
+    rfPassMenu.querySelectorAll('.rf-pass-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var type = btn.dataset.type;
+        var action = btn.dataset.action;
+        if (action === 'increase') pax[type]++;
+        else if (action === 'decrease') pax[type] = Math.max(type === 'adults' ? 1 : 0, pax[type] - 1);
+        updatePaxUI();
+        updateRefineButtonState();
+      });
+    });
+  }
+
+  if (rfPassTrigger && rfPassMenu) {
+    rfPassTrigger.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var open = !rfPassPicker.classList.contains('open');
+      rfPassPicker.classList.toggle('open', open);
+      rfPassMenu.hidden = !open;
+      rfPassTrigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+      updatePaxUI();
+    });
+    document.addEventListener('click', function (e) {
+      if (rfPassPicker && !rfPassPicker.contains(e.target)) {
+        rfPassPicker.classList.remove('open');
+        rfPassMenu.hidden = true;
+        rfPassTrigger.setAttribute('aria-expanded','false');
+      }
+    });
+  }
+
+  if (rfPassApply) {
+    rfPassApply.addEventListener('click', function () {
+      var lbl = passengerLabel();
+      if (rfPassLabel) rfPassLabel.textContent = lbl;
+      if (rfPassVal) rfPassVal.value = lbl;
+      rfPassPicker.classList.remove('open');
+      rfPassMenu.hidden = true;
+      rfPassTrigger.setAttribute('aria-expanded','false');
+      updateRefineButtonState();
+    });
+  }
+
+  if (startInput) {
+    startInput.addEventListener('input', updateRefineButtonState);
+  }
+  if (destInput) {
+    destInput.addEventListener('input', updateRefineButtonState);
+  }
+  if (rfPreferences) {
+    rfPreferences.addEventListener('input', updateRefineButtonState);
+  }
+
+  function applyPlanDataToForm(planData) {
+    var data = planData && typeof planData === 'object' ? planData : {};
+    rfPlanData = data;
+
+    if (startInput) {
+      var rfPlanStartCity = (function() {
+        var sc = data.startCity;
+        if (!sc) return '';
+        if (typeof sc === 'object') return [sc.city || '', sc.state || '', sc.country || ''].filter(Boolean).join(', ');
+        return String(sc).trim();
+      })();
+      if (rfPlanStartCity) startInput.value = rfPlanStartCity;
+    }
+
+    if (destInput && data.destination) {
+      var destLabel = rfPlanDestLabel(data.destination);
+      if (destLabel) {
+        selectedDests = [destLabel];
+        renderDestChips();
+      }
+    }
+
+    applyChipSelection('themes', data.themes);
+    applyChipSelection('pace', data.pace);
+    applyChipSelection('weather', data.weather);
+    applyChipSelection('accommodation', data.accommodation);
+    applyChipSelection('food', data.food);
+    applyChipSelection('transport', data.transport);
+
+    if (rfPreferences) {
+      rfPreferences.value = data.preferences ? String(data.preferences || '') : '';
+    }
+
+    if (data.currency && typeof rfSelectCurrency === 'function') {
+      rfSelectCurrency(data.currency);
+    }
+
+    if (rfBudgetInput) {
+      var initialBudget = parseInt(data.budget, 10);
+      if (Number.isFinite(initialBudget) && initialBudget > 0) {
+        rfBudgetInput.value = String(initialBudget);
+        if (rfSlider) rfSlider.value = String(Math.min(initialBudget, parseInt(rfSlider.max, 10) || initialBudget));
+        updateSliderFill();
+      }
+    }
+
+    if (data.passengers) {
+      var passengerLabelText = String(data.passengers || '').toLowerCase();
+      var pa = parsePassengerCount(passengerLabelText, 'adult');
+      var pc = parsePassengerCount(passengerLabelText, 'child');
+      var pi = parsePassengerCount(passengerLabelText, 'infant');
+      if (Number.isFinite(pa)) pax.adults = Math.max(1, pa);
+      if (Number.isFinite(pc)) pax.children = Math.max(0, pc);
+      if (Number.isFinite(pi)) pax.infants = Math.max(0, pi);
+      updatePaxUI();
+      if (rfPassLabel && rfPassVal) {
+        var lbl = passengerLabel();
+        rfPassLabel.textContent = lbl;
+        rfPassVal.value = lbl;
+      }
+    }
+
+    if (data.startDate || data.endDate) {
+      var startDate = data.startDate ? new Date(data.startDate) : null;
+      var endDate = data.endDate ? new Date(data.endDate) : null;
+      selStart = (startDate && !isNaN(startDate.getTime())) ? startDate : null;
+      selEnd = (endDate && !isNaN(endDate.getTime())) ? endDate : null;
+      calView = selStart
+        ? { year: selStart.getFullYear(), month: selStart.getMonth() }
+        : { year: today.getFullYear(), month: today.getMonth() };
+      buildCalMonthYear();
+      buildCalWeekdays();
+      buildCalGrid();
+      updateDateLabel();
+    }
+    initialRefineSignature = buildRefineSignature(collectRefinePayload());
+    updateRefineButtonState();
+  }
+
+  if (hydratePromise && typeof hydratePromise.then === 'function') {
+    hydratePromise.then(function () {
+      applyPlanDataToForm(getActivePlanSnapshot());
+    }).catch(function () {});
+  }
+
+  function normalizeStringValue(value) {
+    return String(value || '').trim();
+  }
+
+  function normalizeArrayValue(list) {
+    if (!Array.isArray(list)) return [];
+    return list
+      .map(function (item) { return normalizeStringValue(item); })
+      .filter(Boolean)
+      .sort();
+  }
+
+  function normalizeDateValue(value) {
+    if (!value) return '';
+    if (value instanceof Date && !isNaN(value.getTime())) return toIsoDate(value);
+    var parsed = new Date(value);
+    if (!isNaN(parsed.getTime())) return toIsoDate(parsed);
+    return normalizeStringValue(value);
+  }
+
+  function collectRefinePayload() {
+    var destinationValue = (selectedDests && selectedDests.length)
+      ? selectedDests[0]
+      : (destInput ? destInput.value.trim() : '');
+    var startCityValue = startInput ? startInput.value.trim() : '';
+    return {
+      startCity: startCityValue || rfPlanData.startCity || '',
+      destination: destinationValue || rfPlanData.destination || '',
+      startDate: normalizeDateValue(selStart),
+      endDate: normalizeDateValue(selEnd),
+      themes: getSelectedChips('themes'),
+      pace: (getSelectedChips('pace')[0] || ''),
+      weather: (getSelectedChips('weather')[0] || ''),
+      accommodation: getSelectedChips('accommodation'),
+      food: getSelectedChips('food'),
+      transport: getSelectedChips('transport'),
+      currency: (rfCurVal ? rfCurVal.value : rfPlanData.currency || 'INR'),
+      budget: (rfBudgetInput && rfBudgetInput.value ? String(rfBudgetInput.value) : rfPlanData.budget || ''),
+      passengers: (rfPassVal ? rfPassVal.value : rfPlanData.passengers || ''),
+      preferences: (rfPreferences ? rfPreferences.value.trim() : rfPlanData.preferences || '')
+    };
+  }
+
+  function buildRefineSignature(payload) {
+    var normalized = {
+      startCity: normalizeStringValue(payload.startCity),
+      destination: normalizeStringValue(payload.destination),
+      startDate: normalizeDateValue(payload.startDate),
+      endDate: normalizeDateValue(payload.endDate),
+      themes: normalizeArrayValue(payload.themes),
+      pace: normalizeStringValue(payload.pace),
+      weather: normalizeStringValue(payload.weather),
+      accommodation: normalizeArrayValue(payload.accommodation),
+      food: normalizeArrayValue(payload.food),
+      transport: normalizeArrayValue(payload.transport),
+      currency: normalizeStringValue(payload.currency || 'INR'),
+      budget: normalizeStringValue(payload.budget),
+      passengers: normalizeStringValue(payload.passengers),
+      preferences: normalizeStringValue(payload.preferences),
+    };
+    return JSON.stringify(normalized);
+  }
+
+  var initialRefineSignature = '';
+  var refineInFlight = false;
+
+  function updateRefineButtonState() {
+    var actionBtn = document.getElementById('rf-submit-btn');
+    if (!actionBtn) return;
+    if (refineInFlight) {
+      actionBtn.disabled = true;
+      actionBtn.dataset.disabledReason = 'loading';
+      return;
+    }
+    if (!initialRefineSignature) {
+      actionBtn.disabled = true;
+      actionBtn.dataset.disabledReason = 'no-change';
+      return;
+    }
+    var currentSignature = buildRefineSignature(collectRefinePayload());
+    var changed = currentSignature !== initialRefineSignature;
+    actionBtn.disabled = !changed;
+    actionBtn.dataset.disabledReason = changed ? '' : 'no-change';
+  }
+
+  function getSelectedChips(field) {
+    var group = document.querySelector('.chips[data-field="' + field + '"]');
+    if (!group) return [];
+    return Array.from(group.querySelectorAll('.chip.selected')).map(function (chip) {
+      return String(chip.textContent || '').trim();
+    }).filter(Boolean);
+  }
+
+  function toIsoDate(dateObj) {
+    if (!dateObj || !(dateObj instanceof Date) || isNaN(dateObj.getTime())) return '';
+    return dateObj.toISOString().slice(0, 10);
+  }
+
+  async function persistRefinePlan() {
+    var refineBody = document.querySelector(".refine-body");
+    var refineLoading = document.getElementById("refine-loading");
+    var actionBtn = document.getElementById('rf-submit-btn');
+    var contentArea = document.querySelector(".content");
+    var mainGrid = document.querySelector(".main-grid");
+    if (refineInFlight) return;
+    if (actionBtn && actionBtn.disabled && actionBtn.dataset.disabledReason === 'no-change') return;
+    var loadingTimer = null;
+    refineInFlight = true;
+    updateRefineButtonState();
+    if (typeof window.scrollTo === "function") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+    if (contentArea) {
+      if (contentArea.dataset.prevFixedHeight === undefined) {
+        contentArea.dataset.prevFixedHeight = contentArea.style.getPropertyValue("--fixed-step-height") || "";
+      }
+      contentArea.style.setProperty("--fixed-step-height", "0px");
+      contentArea.classList.add("is-loading");
+    }
+    if (mainGrid) mainGrid.classList.add("is-loading");
+    if (refineBody) refineBody.classList.add("is-loading");
+    if (refineLoading) {
+      refineLoading.classList.remove("is-step-two");
+      loadingTimer = setTimeout(function () {
+        refineLoading.classList.add("is-step-two");
+      }, 3200);
+    }
+    if (actionBtn) {
+      actionBtn.disabled = true;
+      actionBtn.setAttribute("aria-busy", "true");
+    }
+    if (!window.YatrifyPlanService) {
+      if (loadingTimer) clearTimeout(loadingTimer);
+      if (refineLoading) refineLoading.classList.remove("is-step-two");
+      if (refineBody) refineBody.classList.remove("is-loading");
+      if (contentArea) {
+        contentArea.classList.remove("is-loading");
+        contentArea.style.setProperty("--fixed-step-height", contentArea.dataset.prevFixedHeight || "");
+        delete contentArea.dataset.prevFixedHeight;
+      }
+      if (mainGrid) mainGrid.classList.remove("is-loading");
+      refineInFlight = false;
+      if (actionBtn) {
+        actionBtn.disabled = false;
+        actionBtn.removeAttribute("aria-busy");
+      }
+      updateRefineButtonState();
+      alert("Please sign in to refine this plan.");
+      return;
+    }
+    if (!activePlanId && window.YatrifyPlanContext && typeof window.YatrifyPlanContext.resolvePlanId === "function") {
+      try {
+        activePlanId = await window.YatrifyPlanContext.resolvePlanId();
+      } catch (_) {}
+    }
+    if (!activePlanId) {
+      if (loadingTimer) clearTimeout(loadingTimer);
+      if (refineLoading) refineLoading.classList.remove("is-step-two");
+      if (refineBody) refineBody.classList.remove("is-loading");
+      if (contentArea) {
+        contentArea.classList.remove("is-loading");
+        contentArea.style.setProperty("--fixed-step-height", contentArea.dataset.prevFixedHeight || "");
+        delete contentArea.dataset.prevFixedHeight;
+      }
+      if (mainGrid) mainGrid.classList.remove("is-loading");
+      refineInFlight = false;
+      if (actionBtn) {
+        actionBtn.disabled = false;
+        actionBtn.removeAttribute("aria-busy");
+      }
+      updateRefineButtonState();
+      alert("Please select a plan to refine.");
+      return;
+    }
+    var payload = collectRefinePayload();
+
+    try {
+      var requestStart = Date.now();
+      var response = await window.YatrifyPlanService.refinePlan(activePlanId, payload);
+      var nextId = response && response.plan && response.plan.id ? response.plan.id : activePlanId;
+      var nextUrl = "";
+      if (window.YatrifyPlanContext && typeof window.YatrifyPlanContext.buildPlanAwareUrl === "function") {
+        nextUrl = window.YatrifyPlanContext.buildPlanAwareUrl("/generated-plan.html", nextId);
+      } else {
+        nextUrl = "/generated-plan.html?planId=" + encodeURIComponent(nextId || "");
+      }
+      var elapsed = Date.now() - requestStart;
+      var minTotal = 6400;
+      var delay = Math.max(0, minTotal - elapsed);
+      setTimeout(function () {
+        window.location.href = nextUrl;
+      }, delay);
+    } catch (error) {
+      if (loadingTimer) clearTimeout(loadingTimer);
+      if (refineLoading) refineLoading.classList.remove("is-step-two");
+      if (refineBody) refineBody.classList.remove("is-loading");
+      if (contentArea) {
+        contentArea.classList.remove("is-loading");
+        contentArea.style.setProperty("--fixed-step-height", contentArea.dataset.prevFixedHeight || "");
+        delete contentArea.dataset.prevFixedHeight;
+      }
+      if (mainGrid) mainGrid.classList.remove("is-loading");
+      refineInFlight = false;
+      if (actionBtn) {
+        actionBtn.disabled = false;
+        actionBtn.removeAttribute("aria-busy");
+      }
+      updateRefineButtonState();
+      var msg = "Unable to refine plan.";
+      if (error && error.response && typeof error.response.json === "function") {
+        try {
+          var body = await error.response.json();
+          if (body && body.error) msg = String(body.error);
+          if (body && body.detail) msg += " (" + String(body.detail).slice(0, 180) + "...)";
+          if (body && body.limit) msg += " Max " + body.limit + " days.";
+        } catch (_) {}
+      }
+      alert(msg);
+      console.warn("Unable to refine plan.", error);
+    }
+  }
+  window.YatrifyPersistRefinePlan = persistRefinePlan;
+
+  var submitBtn = document.getElementById('rf-submit-btn');
+  if (submitBtn) {
+    submitBtn.addEventListener('click', function () {
+      persistRefinePlan();
+    });
+  }
+  var refineForm = document.getElementById('refine-form');
+  if (refineForm) {
+    refineForm.addEventListener('submit', function (event) {
+      event.preventDefault();
+      persistRefinePlan();
+    });
+  }
+
+  /* ── Utility ──────────────────────────────────── */
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  /* ── Re-run lucide for new icons ──────────────── */
+  if (window.lucide && typeof window.lucide.createIcons === 'function') {
+    window.lucide.createIcons();
+  }
+})();
+</script>
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

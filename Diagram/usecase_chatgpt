@@ -1,0 +1,78 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+' ================= ACTORS =================
+actor User
+actor Collaborator
+actor "AI Service" as AI
+actor "Image Service (Unsplash API)" as IMG
+actor "Booking Service" as BOOK
+
+' ================= SYSTEM =================
+rectangle "Yatrify – AI Travel Planner" {
+
+    ' Authentication
+    User --> (Sign Up)
+    User --> (Sign In)
+    User --> (Sign Out)
+
+    ' Dashboard
+    User --> (View Dashboard)
+
+    ' Travel Plan Creation
+    User --> (Create Travel Plan)
+    User --> (Enter Trip Details)
+    User --> (Generate AI Travel Plan)
+
+    ' AI Integration
+    AI --> (Generate AI Travel Plan)
+
+    (Generate AI Travel Plan) --> (Trip Highlights)
+    (Generate AI Travel Plan) --> (Weather Insights)
+    (Generate AI Travel Plan) --> (Day-by-Day Itinerary)
+    (Generate AI Travel Plan) --> (Estimated Budget)
+    (Generate AI Travel Plan) --> (Packing Checklist)
+    (Generate AI Travel Plan) --> (Food Suggestions)
+    (Generate AI Travel Plan) --> (Local Experiences)
+
+    ' Trip Dashboard
+    User --> (View Trip Dashboard)
+
+    ' Refinement
+    User --> (Refine Plan)
+    (Refine Plan) --> (Change Destination)
+    (Refine Plan) --> (Change Dates)
+    (Refine Plan) --> (Adjust Budget)
+    AI --> (Refine Plan)
+
+    ' Collaboration
+    User --> (Invite Collaborator)
+    Collaborator --> (Edit Trip)
+
+    ' Expense Tracking
+    User --> (Track Expenses)
+    (Track Expenses) --> (Add Expense)
+    (Track Expenses) --> (View Total Cost)
+
+    ' Publishing
+    User --> (Publish Plan)
+    User --> (Unpublish Plan)
+
+    ' Community
+    User --> (View Community Plans)
+    User --> (View Published Plan)
+
+    ' Image Integration
+    IMG --> (Fetch Destination Image)
+
+    ' Booking Integration
+    BOOK --> (View Booking Links)
+
+    ' Payment / Credits
+    User --> (Purchase Credits)
+    User --> (Use Credits)
+
+}
+
+@enduml

@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en" class="light" style="color-scheme: light;">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Yatrify - Help Center</title>
+  <link rel="stylesheet" href="/css/2a2e7898d4f6aad7.css" />
+  <link rel="icon" href="/images/favicon.ico" type="image/x-icon" sizes="16x16" />
+  <style>
+    .help-hero {
+      background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 50%, #e0e7ff 100%);
+      padding: 60px 20px 50px;
+      text-align: center;
+    }
+    .dark .help-hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+    }
+    .help-hero h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      color: #0f172a;
+    }
+    .dark .help-hero h1 {
+      color: #f1f5f9;
+    }
+    .help-hero p {
+      color: #64748b;
+      font-size: 1.1rem;
+      max-width: 520px;
+      margin: 0 auto 28px;
+    }
+    .dark .help-hero p {
+      color: #94a3b8;
+    }
+    .search-box {
+      max-width: 520px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .search-box input {
+      width: 100%;
+      padding: 14px 18px 14px 48px;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      font-size: 1rem;
+      background: #fff;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .search-box input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 4px 20px rgba(59,130,246,0.12);
+    }
+    .dark .search-box input {
+      background: #1e293b;
+      border-color: #334155;
+      color: #f1f5f9;
+    }
+    .dark .search-box input:focus {
+      border-color: #3b82f6;
+    }
+    .search-box svg {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+      width: 20px;
+      height: 20px;
+    }
+
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 48px;
+    }
+    @media (max-width: 768px) {
+      .category-grid { grid-template-columns: 1fr; }
+      .help-hero h1 { font-size: 2rem; }
+    }
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .category-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    .category-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 28px 24px;
+      background: #fff;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .category-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    }
+    .dark .category-card {
+      background: #1e293b;
+      border-color: #334155;
+    }
+    .dark .category-card:hover {
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    }
+    .category-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(59,130,246,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      color: #3b82f6;
+    }
+    .category-card h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #0f172a;
+    }
+    .dark .category-card h3 { color: #f1f5f9; }
+    .category-card p {
+      font-size: 0.875rem;
+      color: #64748b;
+      line-height: 1.5;
+    }
+    .dark .category-card p { color: #94a3b8; }
+
+    .faq-section { margin-bottom: 40px; }
+    .faq-section h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #0f172a;
+    }
+    .dark .faq-section h2 { color: #f1f5f9; }
+
+    .faq-item {
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .dark .faq-item {
+      background: #1e293b;
+      border-color: #334155;
+    }
+    .faq-question {
+      width: 100%;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #0f172a;
+      text-align: left;
+      transition: background 0.2s ease;
+    }
+    .faq-question:hover { background: #f8fafc; }
+    .dark .faq-question { color: #f1f5f9; }
+    .dark .faq-question:hover { background: #334155; }
+    .faq-question svg {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      transition: transform 0.2s ease;
+      color: #94a3b8;
+    }
+    .faq-item.open .faq-question svg { transform: rotate(180deg); }
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+    }
+    .faq-item.open .faq-answer {
+      max-height: 600px;
+    }
+    .faq-answer-inner {
+      padding: 0 20px 18px;
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: #64748b;
+    }
+    .dark .faq-answer-inner { color: #94a3b8; }
+    .faq-answer-inner a {
+      color: #3b82f6;
+      text-decoration: none;
+    }
+    .faq-answer-inner a:hover { text-decoration: underline; }
+
+    .contact-banner {
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      border-radius: 20px;
+      padding: 48px 32px;
+      text-align: center;
+      color: #fff;
+      margin-top: 16px;
+    }
+    .contact-banner h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .contact-banner p {
+      font-size: 0.95rem;
+      opacity: 0.9;
+      margin-bottom: 24px;
+      max-width: 460px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .contact-banner a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff;
+      color: #3b82f6;
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 12px 28px;
+      border-radius: 10px;
+      text-decoration: none;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .contact-banner a:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+  </style>
+</head>
+<body class="__className_fff05e bg-background text-foreground">
+  <header class="w-full border-b bottom-2 border-border/40 z-50 sticky top-0 bg-background backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <nav class="lg:px-20 px-5 py-3 mx-auto">
+      <div class="flex items-center justify-between">
+        <a href="/" class="flex items-center">
+          <img alt="logo" loading="lazy" width="100" height="50" decoding="async" class="dark:hidden" src="/images/image.png" />
+          <img alt="logo" loading="lazy" width="100" height="50" decoding="async" class="hidden dark:flex" src="/images/image_2.png" />
+        </a>
+        <div class="hidden md:flex items-center gap-8 text-sm">
+          <a href="/#how-it-works" class="hover:underline hover:underline-offset-4">How it works</a>
+          <a href="/#why-choose-Yatrify" class="hover:underline hover:underline-offset-4">Why Choose Yatrify</a>
+          <a href="/#public-plans" class="hover:underline hover:underline-offset-4">Community Plans</a>
+          <a href="/#pricing" class="hover:underline hover:underline-offset-4">Pricing</a>
+        </div>
+        <div class="flex items-center gap-3">
+          <a id="dashboard-link" href="/dashboard.html" style="display:none;font-size:14px;font-weight:500;color:#6b7280;text-decoration:none;transition:color 0.2s ease;padding:6px 10px;border-radius:8px;" class="hover:text-foreground hover:bg-gray-100 dark:hover:bg-gray-800">Dashboard</a>
+          <div id="user-profile" style="display:none;position:relative;z-index:10002;">
+            <button id="profile-btn" type="button" style="border:0;background:transparent;padding:0;cursor:pointer;pointer-events:auto;border-radius:50%;overflow:hidden;width:36px;height:36px;display:flex;align-items:center;justify-content:center;">
+              <img id="user-avatar" alt="user" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid #e2e8f0;" />
+            </button>
+          </div>
+          <a id="signin-link" href="/sign-in/" class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 h-9 px-3 py-1.5 text-sm font-semibold bg-blue-500 text-white hover:bg-blue-600">Sign in</a>
+          <a id="signup-link" href="/sign-up/" class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 h-9 px-3 py-1.5 text-sm font-semibold border border-blue-500 text-blue-600 hover:bg-blue-50">Sign up</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="help-hero">
+    <h1>How can we help you?</h1>
+    <p>Find answers to common questions about planning trips, managing your account, billing, and more.</p>
+    <div class="search-box">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+      </svg>
+      <input type="text" id="faq-search" placeholder="Search for answers..." autocomplete="off" />
+    </div>
+  </section>
+
+  <main class="min-h-[calc(100svh-4rem)] w-full px-5 py-10">
+    <div class="max-w-4xl mx-auto">
+
+      <!-- Category Cards -->
+      <div class="category-grid">
+        <div class="category-card" onclick="scrollToSection('getting-started')">
+          <div class="category-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="24" height="24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" />
+            </svg>
+          </div>
+          <h3>Getting Started</h3>
+          <p>Learn how to create your first trip plan and explore Yatrify's features.</p>
+        </div>
+        <div class="category-card" onclick="scrollToSection('account')">
+          <div class="category-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="24" height="24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+            </svg>
+          </div>
+          <h3>Account & Profile</h3>
+          <p>Manage your account settings, profile, and preferences.</p>
+        </div>
+        <div class="category-card" onclick="scrollToSection('billing')">
+          <div class="category-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="24" height="24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
+            </svg>
+          </div>
+          <h3>Billing & Plans</h3>
+          <p>Questions about pricing, subscriptions, payments, and refunds.</p>
+        </div>
+        <div class="category-card" onclick="scrollToSection('trip-planning')">
+          <div class="category-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="24" height="24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z" />
+            </svg>
+          </div>
+          <h3>Trip Planning</h3>
+          <p>Get help with creating, editing, and sharing your travel itineraries.</p>
+        </div>
+        <div class="category-card" onclick="scrollToSection('community')">
+          <div class="category-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="24" height="24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+            </svg>
+          </div>
+          <h3>Community</h3>
+          <p>Learn about community plans, sharing trips, and collaborating with others.</p>
+        </div>
+        <div class="category-card" onclick="scrollToSection('troubleshooting')">
+          <div class="category-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="24" height="24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.049.58.025 1.193-.14 1.743" />
+            </svg>
+          </div>
+          <h3>Troubleshooting</h3>
+          <p>Fix common issues with loading, errors, or unexpected behavior.</p>
+        </div>
+      </div>
+
+      <!-- Getting Started FAQ -->
+      <div id="getting-started" class="faq-section">
+        <h2>Getting Started</h2>
+        <div class="faq-item">
+          <button type="button" class="faq-question" onclick="toggleFaq(this)">
+            <span>What is Yatrify?</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">Yatrify is an AI-powered travel planning platform that helps you create personalized trip itineraries. Simply enter your destination, travel dates, and preferences, and Yatrify generates a detailed day-by-day plan tailored to your style.</div></div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-question" onclick="toggleFaq(this)">
+            <span>How do I create my first trip plan?</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">After signing up, go to your <a href="/dashboard.html">Dashboard</a> and click "Create New Plan." Enter your destination, travel dates, number of travelers, budget range, and any interests or preferences. Yatrify will generate a complete itinerary for you within seconds.</div></div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-question" onclick="toggleFaq(this)">
+            <span>Is Yatrify free to use?</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">Yatrify offers a free tier that lets you create a limited number of trip plans. For unlimited plans and premium features, you can upgrade to one of our paid plans. Visit the <a href="/#pricing">Pricing</a> section for details.</div></div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-question" onclick="toggleFaq(this)">
+            <span>Do I need an account to use Yatrify?</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">Yes, you need to create a free account to generate and save trip plans. You can <a href="/sign-up/">sign up</a> using your email address or through a social login provider. Creating an account takes just a few seconds.</div></div>
+        </div>
+      </div>
+
+      <!-- Account & Profile FAQ -->
+      <div id="account" class="faq-section">
+        <h2>Account & Profile</h2>
+        <div class="faq-item">
+          <button type="button" class="faq-question" onclick="toggleFaq(this)">
+            <span>How do I update my profile information?</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">Click on your profile avatar in the top right corner of the page. From there you can update your name, profile picture, and other account details through your account settings.</div></div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-question" onclick="toggleFaq(this)">
+            <span>How do I change my password?</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">Navigate to your profile settings by clicking your avatar. Select "Security" and then "Change Password." You will be asked to verify your current password before setting a new one. If you signed up via a social login provider, you can add a password through the same security settings.</div></div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-question" onclick="toggleFaq(this)">
+            <span>Can I delete my account?</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">Yes. If you wish to delete your account, please <a href="/contact-us">contact our support team</a>. We will process your request and permanently remove your data in accordance with our <a href="/privacy-policy">Privacy Policy</a>. Please note that this action is irreversible.</div></div>
+        </div>
+      </div>
+
+      <!-- Billing & Plans FAQ -->
+      <div id="billing" class="faq-section">
+        <h2>Billing & Plans</h2>
+        <div class="faq-item">
+          <button type="button" class="faq-question" onclick="toggleFaq(this)">
+            <span>What payment methods do you accept?</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">We accept all major credit and debit cards including Visa, Mastercard, and American Express. Payments are securely processed and your card details are never stored on our servers.</div></div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-question" onclick="toggleFaq(this)">
+            <span>How do I upgrade or downgrade my plan?</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">You can change your subscription plan at any time from your Dashboard under "Subscription" settings. When upgrading, the price difference is prorated. When downgrading, the change takes effect at the end of your current billing cycle.</div></div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-question" onclick="toggleFaq(this)">
+            <span>Can I get a refund?</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">If you are not satisfied with your purchase, you can request a refund within 7 days of your payment. Please <a href="/contact-us">contact our support team</a> with your account email and reason for the refund. Refunds are typically processed within 5-10 business days.</div></div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-question" onclick="toggleFaq(this)">
+            <span>How do I cancel my subscription?</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">Go to your Dashboard, navigate to "Subscription" settings, and click "Cancel Subscription." You will continue to have access to premium features until the end of your current billing period. Your saved trip plans will remain accessible on the free tier.</div></div>
+        </div>
+      </div>
+
+      <!-- Trip Planning FAQ -->
+      <div id="trip-planning" class="faq-section">
+        <h2>Trip Planning</h2>
+        <div class="faq-item">
+          <button type="button" class="faq-question" onclick="toggleFaq(this)">
+            <span>Can I edit a generated itinerary?</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">Yes, all generated itineraries are fully customizable. You can add, remove, or rearrange activities, change timings, and update any details to match your preferences. Your changes are saved automatically.</div></div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-question" onclick="toggleFaq(this)">
+            <span>How do I share my trip plan with others?</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">Open the trip plan you want to share and click the "Share" button. You can generate a shareable link to send to friends or family. You can also make your plan public so it appears in the <a href="/community-plans/">Community Plans</a> section for other travelers to discover.</div></div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-question" onclick="toggleFaq(this)">
+            <span>Can I plan trips for multiple destinations?</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">Yes, Yatrify supports multi-destination trips. When creating a new plan, you can add multiple cities or locations. The AI will generate a connected itinerary with suggested travel routes between destinations.</div></div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-question" onclick="toggleFaq(this)">
+            <span>Does Yatrify support international destinations?</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">Yatrify supports destinations worldwide. Whether you are planning a trip within your country or an international adventure, our AI can generate itineraries for virtually any location. Popular destinations include cities across Asia, Europe, the Americas, and more.</div></div>
+        </div>
+      </div>
+
+      <!-- Community FAQ -->
+      <div id="community" class="faq-section">
+        <h2>Community</h2>
+        <div class="faq-item">
+          <button type="button" class="faq-question" onclick="toggleFaq(this)">
+            <span>What are Community Plans?</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">Community Plans are trip itineraries shared publicly by other Yatrify users. You can browse these plans for inspiration, copy them to your own dashboard, and customize them to suit your needs. Visit the <a href="/community-plans/">Community Plans</a> page to explore.</div></div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-question" onclick="toggleFaq(this)">
+            <span>How do I make my plan public?</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">Open your trip plan and look for the visibility settings. Toggle "Make Public" to share your itinerary with the Yatrify community. You can switch it back to private at any time. Public plans help other travelers discover great trip ideas.</div></div>
+        </div>
+      </div>
+
+      <!-- Troubleshooting FAQ -->
+      <div id="troubleshooting" class="faq-section">
+        <h2>Troubleshooting</h2>
+        <div class="faq-item">
+          <button type="button" class="faq-question" onclick="toggleFaq(this)">
+            <span>My itinerary is not loading. What should I do?</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">Try refreshing the page first. If the issue persists, clear your browser cache and cookies, then try again. Make sure you have a stable internet connection. If the problem continues, please <a href="/contact-us">contact support</a> with details about your browser and device.</div></div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-question" onclick="toggleFaq(this)">
+            <span>I can't sign in to my account.</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">Double-check that you are using the correct email address and password. If you forgot your password, use the "Forgot Password" link on the sign-in page to reset it. If you signed up using a social login (Google, etc.), make sure you are using the same provider. If issues persist, <a href="/contact-us">reach out to our support team</a>.</div></div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-question" onclick="toggleFaq(this)">
+            <span>The AI-generated plan does not match my preferences.</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">Try being more specific with your preferences when creating a plan. Include details like your interests (adventure, culture, food, relaxation), budget level, and pace preference. You can also regenerate the plan or manually edit individual activities to better suit your needs.</div></div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-question" onclick="toggleFaq(this)">
+            <span>Which browsers does Yatrify support?</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+          </button>
+          <div class="faq-answer"><div class="faq-answer-inner">Yatrify works best on the latest versions of Chrome, Firefox, Safari, and Edge. We recommend keeping your browser up to date for the best experience. Mobile browsers on iOS and Android are also fully supported.</div></div>
+        </div>
+      </div>
+
+      <!-- Contact Banner -->
+      <div class="contact-banner">
+        <h2>Still need help?</h2>
+        <p>Our support team is here to assist you. Reach out and we'll get back to you as soon as possible.</p>
+        <a href="/contact-us">
+          Contact Support
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
+        </a>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="py-5 mt-10 bg-blue-50 dark:bg-slate-900 dark:text-gray-200 relative z-[1000]">
+    <div class="lg:px-20 px-5 py-2 grid grid-cols-4 justify-between gap-10 lg:grid-cols-6 lg:text-left">
+      <div class="col-span-4 flex w-full flex-col gap-6 lg:col-span-2">
+        <div class="flex items-center gap-2 lg:justify-start">
+          <div class="hidden md:flex gap-10 items-center justify-start flex-1">
+            <a href="/">
+              <div class="flex justify-center items-center leading-5 font-bold text-xl">
+                <img alt="logo" loading="lazy" width="100" height="50" decoding="async" class="dark:hidden" src="/images/image.png" />
+                <img alt="logo" loading="lazy" width="100" height="50" decoding="async" class="hidden dark:block" src="/images/image_2.png" />
+              </div>
+            </a>
+          </div>
+        </div>
+        <p class="text-muted-foreground dark:text-gray-400">Your perfect trip, built for you. Effortlessly plan personalized itineraries that match your travel style.</p>
+        <ul class="flex items-center space-x-6">
+          <li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300">
+            <a href="#">
+              <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                <path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"></path>
+              </svg>
+            </a>
+          </li>
+          <li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300">
+            <a href="#">
+              <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                <path d="M504 256C504 119 393 8 256 8S8 119 8 256c0 123.78 90.69 226.38 209.25 245V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.28c-30.8 0-40.41 19.12-40.41 38.73V256h68.78l-11 71.69h-57.78V501C413.31 482.38 504 379.78 504 256z"></path>
+              </svg>
+            </a>
+          </li>
+          <li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300">
+            <a href="#">
+              <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                <path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path>
+              </svg>
+            </a>
+          </li>
+          <li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300">
+            <a href="#">
+              <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                <path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"></path>
+              </svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="col-span-2 md:col-span-1">
+        <h3 class="mb-5 font-medium">Support</h3>
+        <ul class="space-y-4 text-sm text-muted-foreground dark:text-gray-400">
+          <li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/help-center">Help Center</a></li>
+          <li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/contact-us">Contact Us</a></li>
+          <li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/privacy-policy">Privacy Policy</a></li>
+          <li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/terms-of-service">Terms of Service</a></li>
+        </ul>
+      </div>
+      <div class="col-span-2 md:col-span-1">
+        <h3 class="mb-5 font-medium">Company</h3>
+        <ul class="space-y-4 text-sm text-muted-foreground dark:text-gray-400">
+          <li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/about-us">About Us</a></li>
+          <li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/partners">Partners</a></li>
+        </ul>
+      </div>
+      <div class="col-span-4 md:col-span-2">
+        <h3 class="mb-2 font-medium">Newsletter</h3>
+        <form class="grid gap-1">
+          <div class="flex justify-evenly w-full space-x-2">
+            <input type="email" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-slate-800 dark:border-slate-700" data-slot="input" placeholder="Email" required="" value="" />
+            <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 px-4 py-2 dark:bg-slate-700 dark:hover:bg-slate-600" data-slot="button" type="submit">Subscribe</button>
+          </div>
+        </form>
+        <p class="mt-2 ml-1 text-xs font-medium text-muted-foreground dark:text-gray-400">By submitting, you agree to our<a href="/privacy-policy" class="ml-1 text-primary dark:text-blue-400 hover:underline">Privacy Policy</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/clerk-loader.js"></script>
+  <script src="/js/clerk-init.js"></script>
+  <script>
+    // Auth header logic
+    (function () {
+      var dashboardLink = document.getElementById('dashboard-link');
+      var signInLink = document.getElementById('signin-link');
+      var signUpLink = document.getElementById('signup-link');
+      var profile = document.getElementById('user-profile');
+      var avatar = document.getElementById('user-avatar');
+
+      function updateHeader() {
+        if (!window.Clerk || !window.Clerk.user) {
+          if (dashboardLink) dashboardLink.style.display = 'none';
+          if (profile) profile.style.display = 'none';
+          if (signInLink) signInLink.style.display = 'inline-flex';
+          if (signUpLink) signUpLink.style.display = 'inline-flex';
+          return;
+        }
+        if (dashboardLink) dashboardLink.style.display = 'inline-block';
+        if (profile) profile.style.display = 'inline-flex';
+        if (signInLink) signInLink.style.display = 'none';
+        if (signUpLink) signUpLink.style.display = 'none';
+        if (avatar) avatar.src = window.Clerk.user.imageUrl || '';
+      }
+
+      if (!window.Clerk) return;
+      window.Clerk.load().then(function () {
+        updateHeader();
+        window.Clerk.addListener(updateHeader);
+      });
+    })();
+
+    // FAQ accordion toggle
+    function toggleFaq(btn) {
+      var item = btn.closest('.faq-item');
+      var isOpen = item.classList.contains('open');
+      // Close all items in the same section
+      var section = item.closest('.faq-section');
+      section.querySelectorAll('.faq-item.open').forEach(function (el) {
+        el.classList.remove('open');
+      });
+      if (!isOpen) {
+        item.classList.add('open');
+      }
+    }
+
+    // Scroll to section
+    function scrollToSection(id) {
+      var el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    // Search/filter FAQs
+    document.getElementById('faq-search').addEventListener('input', function () {
+      var query = this.value.toLowerCase().trim();
+      var allItems = document.querySelectorAll('.faq-item');
+      var allSections = document.querySelectorAll('.faq-section');
+
+      if (!query) {
+        allItems.forEach(function (item) { item.style.display = ''; });
+        allSections.forEach(function (sec) { sec.style.display = ''; });
+        return;
+      }
+
+      allSections.forEach(function (section) {
+        var hasVisible = false;
+        section.querySelectorAll('.faq-item').forEach(function (item) {
+          var questionText = item.querySelector('.faq-question span').textContent.toLowerCase();
+          var answerText = item.querySelector('.faq-answer-inner').textContent.toLowerCase();
+          if (questionText.includes(query) || answerText.includes(query)) {
+            item.style.display = '';
+            hasVisible = true;
+          } else {
+            item.style.display = 'none';
+          }
+        });
+        section.style.display = hasVisible ? '' : 'none';
+      });
+    });
+  </script>
+</body>
+</html>

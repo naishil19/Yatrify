@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en" class="light" style="color-scheme: light;">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Yatrify - Contact Us</title>
+  <link rel="stylesheet" href="/css/2a2e7898d4f6aad7.css" />
+  <link rel="icon" href="/images/favicon.ico" type="image/x-icon" sizes="16x16" />
+  <style>
+    html,
+    body {
+      min-height: 100%;
+    }
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header,
+    footer {
+      flex-shrink: 0;
+    }
+    main {
+      flex: 1 0 auto;
+    }
+
+    /* Hero */
+    .contact-hero {
+      background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 50%, #e0e7ff 100%);
+      padding: 64px 20px 56px;
+      text-align: center;
+    }
+    .dark .contact-hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+    }
+    .contact-hero h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 10px;
+    }
+    .dark .contact-hero h1 { color: #f1f5f9; }
+    .contact-hero p {
+      color: #64748b;
+      font-size: 1.1rem;
+      max-width: 520px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+    .dark .contact-hero p { color: #94a3b8; }
+    @media (max-width: 768px) {
+      .contact-hero h1 { font-size: 2rem; }
+    }
+
+    /* Contact cards row */
+    .contact-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      max-width: 800px;
+      margin: -36px auto 0;
+      position: relative;
+      z-index: 2;
+      padding: 0 20px;
+    }
+    @media (max-width: 768px) {
+      .contact-cards { grid-template-columns: 1fr; margin-top: -24px; }
+    }
+    .contact-card-item {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 28px 24px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .contact-card-item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    }
+    .dark .contact-card-item {
+      background: #1e293b;
+      border-color: #334155;
+    }
+    .dark .contact-card-item:hover {
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    }
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(59,130,246,0.1);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 14px;
+      color: #3b82f6;
+    }
+    .contact-card-item h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #0f172a;
+      margin-bottom: 6px;
+    }
+    .dark .contact-card-item h3 { color: #f1f5f9; }
+    .contact-card-item p {
+      font-size: 0.875rem;
+      color: #64748b;
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+    .dark .contact-card-item p { color: #94a3b8; }
+    .contact-card-item a {
+      color: #3b82f6;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-decoration: none;
+    }
+    .contact-card-item a:hover { text-decoration: underline; }
+
+    /* Main content layout */
+    .contact-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      margin-top: 48px;
+      align-items: start;
+    }
+    @media (max-width: 768px) {
+      .contact-layout { grid-template-columns: 1fr; gap: 32px; }
+    }
+
+    /* Contact form */
+    .form-section h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 6px;
+    }
+    .dark .form-section h2 { color: #f1f5f9; }
+    .form-section > p {
+      color: #64748b;
+      font-size: 0.9rem;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+    .dark .form-section > p { color: #94a3b8; }
+    .contact-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 480px) {
+      .form-row { grid-template-columns: 1fr; }
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .form-group label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #0f172a;
+    }
+    .dark .form-group label { color: #f1f5f9; }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      padding: 12px 14px;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      background: #fff;
+      color: #0f172a;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      font-family: inherit;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+    }
+    .dark .form-group input,
+    .dark .form-group select,
+    .dark .form-group textarea {
+      background: #1e293b;
+      border-color: #334155;
+      color: #f1f5f9;
+    }
+    .form-group textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+    .form-submit {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 13px 28px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      width: 100%;
+    }
+    .form-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(59,130,246,0.3);
+    }
+
+    /* Info side */
+    .info-section h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 6px;
+    }
+    .dark .info-section h2 { color: #f1f5f9; }
+    .info-section > p {
+      color: #64748b;
+      font-size: 0.9rem;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+    .dark .info-section > p { color: #94a3b8; }
+    .info-list {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+    .info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+    .info-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: rgba(59,130,246,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: #3b82f6;
+    }
+    .info-item h4 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #0f172a;
+      margin-bottom: 2px;
+    }
+    .dark .info-item h4 { color: #f1f5f9; }
+    .info-item p {
+      font-size: 0.85rem;
+      color: #64748b;
+      line-height: 1.5;
+    }
+    .dark .info-item p { color: #94a3b8; }
+    .info-item a {
+      color: #3b82f6;
+      text-decoration: none;
+    }
+    .info-item a:hover { text-decoration: underline; }
+
+    /* Social links */
+    .social-section h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #0f172a;
+      margin-bottom: 12px;
+    }
+    .dark .social-section h3 { color: #f1f5f9; }
+    .social-links {
+      display: flex;
+      gap: 12px;
+    }
+    .social-link {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #64748b;
+      transition: all 0.2s ease;
+    }
+    .social-link:hover {
+      background: rgba(59,130,246,0.1);
+      border-color: #3b82f6;
+      color: #3b82f6;
+    }
+    .dark .social-link {
+      border-color: #334155;
+      color: #94a3b8;
+    }
+    .dark .social-link:hover {
+      background: rgba(59,130,246,0.15);
+      color: #60a5fa;
+      border-color: #60a5fa;
+    }
+
+    /* Help banner */
+    .help-banner {
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      border-radius: 20px;
+      padding: 40px 32px;
+      text-align: center;
+      color: #fff;
+      margin-top: 56px;
+    }
+    .help-banner h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .help-banner p {
+      font-size: 0.95rem;
+      opacity: 0.9;
+      margin-bottom: 20px;
+      max-width: 440px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .help-banner a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff;
+      color: #3b82f6;
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 12px 28px;
+      border-radius: 10px;
+      text-decoration: none;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .help-banner a:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+
+    /* Success message */
+    .form-success {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .form-success.show {
+      display: block;
+    }
+    .success-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: rgba(34,197,94,0.1);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #22c55e;
+      margin-bottom: 16px;
+    }
+    .form-success h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 8px;
+    }
+    .dark .form-success h3 { color: #f1f5f9; }
+    .form-success p {
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+    .dark .form-success p { color: #94a3b8; }
+  </style>
+</head>
+<body class="__className_fff05e bg-background text-foreground">
+  <header class="w-full border-b bottom-2 border-border/40 z-50 sticky top-0 bg-background backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <nav class="lg:px-20 px-5 py-3 mx-auto">
+      <div class="flex items-center justify-between">
+        <a href="/" class="flex items-center">
+          <img alt="logo" loading="lazy" width="100" height="50" decoding="async" class="dark:hidden" src="/images/image.png" />
+          <img alt="logo" loading="lazy" width="100" height="50" decoding="async" class="hidden dark:flex" src="/images/image_2.png" />
+        </a>
+        <div class="hidden md:flex items-center gap-8 text-sm">
+          <a href="/#how-it-works" class="hover:underline hover:underline-offset-4">How it works</a>
+          <a href="/#why-choose-Yatrify" class="hover:underline hover:underline-offset-4">Why Choose Yatrify</a>
+          <a href="/#public-plans" class="hover:underline hover:underline-offset-4">Community Plans</a>
+          <a href="/#pricing" class="hover:underline hover:underline-offset-4">Pricing</a>
+        </div>
+        <div class="flex items-center gap-3">
+          <a id="dashboard-link" href="/dashboard.html" style="display:none;font-size:14px;font-weight:500;color:#6b7280;text-decoration:none;transition:color 0.2s ease;padding:6px 10px;border-radius:8px;" class="hover:text-foreground hover:bg-gray-100 dark:hover:bg-gray-800">Dashboard</a>
+          <div id="user-profile" style="display:none;position:relative;z-index:10002;">
+            <button id="profile-btn" type="button" style="border:0;background:transparent;padding:0;cursor:pointer;pointer-events:auto;border-radius:50%;overflow:hidden;width:36px;height:36px;display:flex;align-items:center;justify-content:center;">
+              <img id="user-avatar" alt="user" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid #e2e8f0;" />
+            </button>
+          </div>
+          <a id="signin-link" href="/sign-in/" class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 h-9 px-3 py-1.5 text-sm font-semibold bg-blue-500 text-white hover:bg-blue-600">Sign in</a>
+          <a id="signup-link" href="/sign-up/" class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 h-9 px-3 py-1.5 text-sm font-semibold border border-blue-500 text-blue-600 hover:bg-blue-50">Sign up</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Hero -->
+  <section class="contact-hero">
+    <h1>Get in Touch</h1>
+    <p>Have a question, suggestion, or need help? We'd love to hear from you. Our team typically responds within 24 hours.</p>
+  </section>
+
+  <!-- Contact Cards -->
+  <div class="contact-cards">
+    <div class="contact-card-item">
+      <div class="card-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="22" height="22"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" /></svg>
+      </div>
+      <h3>Email Us</h3>
+      <p>For general inquiries and support</p>
+      <a href="mailto:support.yatrify@gmail.com">support.yatrify@gmail.com</a>
+    </div>
+    <div class="contact-card-item">
+      <div class="card-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="22" height="22"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z" /></svg>
+      </div>
+      <h3>Call Us</h3>
+      <p>Mon - Sat, 10 AM to 7 PM IST</p>
+      <a href="tel:+919898247877">+91 98982 47877</a>
+    </div>
+    <div class="contact-card-item">
+      <div class="card-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="22" height="22"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" /></svg>
+      </div>
+      <h3>Visit Us</h3>
+      <p>Our office location</p>
+      <a href="#">Ahmedabad, India</a>
+    </div>
+  </div>
+
+  <main class="w-full px-5 py-10">
+    <div class="max-w-4xl mx-auto">
+
+      <!-- Contact Form + Info Layout -->
+      <div class="contact-layout">
+
+        <!-- Form -->
+        <div class="form-section">
+          <h2>Send Us a Message</h2>
+          <p>Fill out the form below and we'll get back to you as soon as possible.</p>
+
+          <form class="contact-form" id="contact-form" onsubmit="handleSubmit(event)">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" placeholder="John Doe" required />
+              </div>
+              <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="john@example.com" required />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="subject">Subject</label>
+              <select id="subject" name="subject" required>
+                <option value="" disabled selected>Select a topic</option>
+                <option value="general">General Inquiry</option>
+                <option value="support">Technical Support</option>
+                <option value="billing">Billing & Payments</option>
+                <option value="partnership">Partnership Inquiry</option>
+                <option value="feedback">Feedback & Suggestions</option>
+                <option value="bug">Report a Bug</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="message">Message</label>
+              <textarea id="message" name="message" placeholder="Tell us how we can help..." required></textarea>
+            </div>
+            <button type="submit" class="form-submit">
+              Send Message
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" /></svg>
+            </button>
+          </form>
+
+          <div class="form-success" id="form-success">
+            <div class="success-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="32" height="32"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+            </div>
+            <h3>Message Sent!</h3>
+            <p>Thank you for reaching out. Our team will get back to you within 24 hours.</p>
+          </div>
+        </div>
+
+        <!-- Info Side -->
+        <div class="info-section">
+          <h2>Other Ways to Reach Us</h2>
+          <p>Choose the method that works best for you.</p>
+
+          <div class="info-list">
+            <div class="info-item">
+              <div class="info-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" /></svg>
+              </div>
+              <div>
+                <h4>Email Support</h4>
+                <p>For detailed inquiries, email us at <a href="mailto:support.yatrify@gmail.com">support.yatrify@gmail.com</a>. We respond within 24 hours on business days.</p>
+              </div>
+            </div>
+            <div class="info-item">
+              <div class="info-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z" /></svg>
+              </div>
+              <div>
+                <h4>Phone Support</h4>
+                <p>Call us at <a href="tel:+919898247877">+91 98982 47877</a>. Available Monday to Saturday, 10 AM - 7 PM IST.</p>
+              </div>
+            </div>
+            <div class="info-item">
+              <div class="info-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" /></svg>
+              </div>
+              <div>
+                <h4>Help Center</h4>
+                <p>Browse our <a href="/help-center">Help Center</a> for answers to frequently asked questions about accounts, billing, and trip planning.</p>
+              </div>
+            </div>
+            <div class="info-item">
+              <div class="info-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg>
+              </div>
+              <div>
+                <h4>Partnerships</h4>
+                <p>Interested in partnering with Yatrify? Visit our <a href="/partners">Partners page</a> or email <a href="mailto:support.yatrify@gmail.com">support.yatrify@gmail.com</a>.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Social Links -->
+          <div class="social-section">
+            <h3>Follow Us</h3>
+            <div class="social-links">
+              <a href="#" class="social-link" aria-label="Instagram">
+                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" width="18" height="18" xmlns="http://www.w3.org/2000/svg"><path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"></path></svg>
+              </a>
+              <a href="#" class="social-link" aria-label="Facebook">
+                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" width="18" height="18" xmlns="http://www.w3.org/2000/svg"><path d="M504 256C504 119 393 8 256 8S8 119 8 256c0 123.78 90.69 226.38 209.25 245V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.28c-30.8 0-40.41 19.12-40.41 38.73V256h68.78l-11 71.69h-57.78V501C413.31 482.38 504 379.78 504 256z"></path></svg>
+              </a>
+              <a href="#" class="social-link" aria-label="Twitter">
+                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" width="18" height="18" xmlns="http://www.w3.org/2000/svg"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path></svg>
+              </a>
+              <a href="#" class="social-link" aria-label="LinkedIn">
+                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" width="18" height="18" xmlns="http://www.w3.org/2000/svg"><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"></path></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Help Banner -->
+      <div class="help-banner">
+        <h2>Looking for Quick Answers?</h2>
+        <p>Check our Help Center for instant answers to the most commonly asked questions.</p>
+        <a href="/help-center">
+          Visit Help Center
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
+        </a>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="py-5 mt-10 bg-blue-50 dark:bg-slate-900 dark:text-gray-200 relative z-[1000]">
+    <div class="lg:px-20 px-5 py-2 grid grid-cols-4 justify-between gap-10 lg:grid-cols-6 lg:text-left">
+      <div class="col-span-4 flex w-full flex-col gap-6 lg:col-span-2">
+        <div class="flex items-center gap-2 lg:justify-start">
+          <div class="hidden md:flex gap-10 items-center justify-start flex-1">
+            <a href="/">
+              <div class="flex justify-center items-center leading-5 font-bold text-xl">
+                <img alt="logo" loading="lazy" width="100" height="50" decoding="async" class="dark:hidden" src="/images/image.png" />
+                <img alt="logo" loading="lazy" width="100" height="50" decoding="async" class="hidden dark:block" src="/images/image_2.png" />
+              </div>
+            </a>
+          </div>
+        </div>
+        <p class="text-muted-foreground dark:text-gray-400">Your perfect trip, built for you. Effortlessly plan personalized itineraries that match your travel style.</p>
+        <ul class="flex items-center space-x-6">
+          <li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300">
+            <a href="#">
+              <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                <path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"></path>
+              </svg>
+            </a>
+          </li>
+          <li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300">
+            <a href="#">
+              <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                <path d="M504 256C504 119 393 8 256 8S8 119 8 256c0 123.78 90.69 226.38 209.25 245V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.28c-30.8 0-40.41 19.12-40.41 38.73V256h68.78l-11 71.69h-57.78V501C413.31 482.38 504 379.78 504 256z"></path>
+              </svg>
+            </a>
+          </li>
+          <li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300">
+            <a href="#">
+              <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                <path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path>
+              </svg>
+            </a>
+          </li>
+          <li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300">
+            <a href="#">
+              <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                <path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"></path>
+              </svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="col-span-2 md:col-span-1">
+        <h3 class="mb-5 font-medium">Support</h3>
+        <ul class="space-y-4 text-sm text-muted-foreground dark:text-gray-400">
+          <li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/help-center">Help Center</a></li>
+          <li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/contact-us">Contact Us</a></li>
+          <li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/privacy-policy">Privacy Policy</a></li>
+          <li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/terms-of-service">Terms of Service</a></li>
+        </ul>
+      </div>
+      <div class="col-span-2 md:col-span-1">
+        <h3 class="mb-5 font-medium">Company</h3>
+        <ul class="space-y-4 text-sm text-muted-foreground dark:text-gray-400">
+          <li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/about-us">About Us</a></li>
+          <li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/partners">Partners</a></li>
+        </ul>
+      </div>
+      <div class="col-span-4 md:col-span-2">
+        <h3 class="mb-2 font-medium">Newsletter</h3>
+        <form class="grid gap-1">
+          <div class="flex justify-evenly w-full space-x-2">
+            <input type="email" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-slate-800 dark:border-slate-700" data-slot="input" placeholder="Email" required="" value="" />
+            <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 px-4 py-2 dark:bg-slate-700 dark:hover:bg-slate-600" data-slot="button" type="submit">Subscribe</button>
+          </div>
+        </form>
+        <p class="mt-2 ml-1 text-xs font-medium text-muted-foreground dark:text-gray-400">By submitting, you agree to our<a href="/privacy-policy" class="ml-1 text-primary dark:text-blue-400 hover:underline">Privacy Policy</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/clerk-loader.js"></script>
+  <script src="/js/clerk-init.js"></script>
+  <script>
+    // Auth header
+    (function () {
+      var dashboardLink = document.getElementById('dashboard-link');
+      var signInLink = document.getElementById('signin-link');
+      var signUpLink = document.getElementById('signup-link');
+      var profile = document.getElementById('user-profile');
+      var avatar = document.getElementById('user-avatar');
+
+      function updateHeader() {
+        if (!window.Clerk || !window.Clerk.user) {
+          if (dashboardLink) dashboardLink.style.display = 'none';
+          if (profile) profile.style.display = 'none';
+          if (signInLink) signInLink.style.display = 'inline-flex';
+          if (signUpLink) signUpLink.style.display = 'inline-flex';
+          return;
+        }
+        if (dashboardLink) dashboardLink.style.display = 'inline-block';
+        if (profile) profile.style.display = 'inline-flex';
+        if (signInLink) signInLink.style.display = 'none';
+        if (signUpLink) signUpLink.style.display = 'none';
+        if (avatar) avatar.src = window.Clerk.user.imageUrl || '';
+      }
+
+      if (!window.Clerk) return;
+      window.Clerk.load().then(function () {
+        updateHeader();
+        window.Clerk.addListener(updateHeader);
+      });
+    })();
+
+    // Contact form handler
+    function handleSubmit(e) {
+      e.preventDefault();
+      var form = document.getElementById('contact-form');
+      var success = document.getElementById('form-success');
+      form.style.display = 'none';
+      success.classList.add('show');
+    }
+  </script>
+</body>
+</html>

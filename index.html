@@ -1,0 +1,1869 @@
+<!DOCTYPE html>
+<html lang="en" class="light" style="color-scheme: light;">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/2a2e7898d4f6aad7.css" data-precedence="next">
+  <title>Yatrify - Your Smart Travel Planner</title>
+  <meta name="description"
+    content="Yatrify is your AI-powered travel planner. Instantly generate personalized itineraries, discover destinations, and plan your perfect trip with ease.">
+  <meta name="keywords"
+    content="travel planner, AI travel planner, smart travel, travel suggestions, destination insights, personalized itineraries, trip planning, travel tips, vacation planning, Yatrify">
+  <link rel="canonical" href="https://www.Yatrify.com/">
+  <meta property="og:title" content="Yatrify - Your Smart Travel Planner">
+  <meta property="og:description"
+    content="Yatrify is your AI-powered travel planner. Instantly generate personalized itineraries, discover destinations, and plan your perfect trip with ease.">
+  <meta property="og:url" content="https://www.Yatrify.com/">
+  <meta property="og:site_name" content="Yatrify">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:image" content="images/opengraph-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Yatrify AI Travel Planner">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@Yatrify">
+  <meta name="twitter:title" content="Yatrify - Your Smart Travel Planner">
+  <meta name="twitter:description"
+    content="Yatrify is your AI-powered travel planner. Instantly generate personalized itineraries, discover destinations, and plan your perfect trip with ease.">
+  <meta name="twitter:image" content="https://www.Yatrify.com/opengraph-image.png">
+  <link rel="icon" href="images/favicon.ico" type="image/x-icon" sizes="16x16">
+  <meta name="next-size-adjust">
+  <style>
+    #user-profile {
+      display: inline-flex;
+      align-items: center;
+      position: relative;
+    }
+
+    #profile-btn {
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+
+    #profile-btn:hover {
+      transform: scale(1.05);
+      filter: brightness(0.9);
+    }
+
+    #profile-menu {
+      pointer-events: auto;
+      animation: slideDown 0.2s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-5px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    #manage-account,
+    #signout-btn {
+      opacity: 0.8;
+      transition: all 0.2s ease;
+    }
+
+    #manage-account:hover {
+      background-color: #f3f4f6 !important;
+      opacity: 1;
+    }
+
+    #signout-btn:hover {
+      background-color: #fee2e2 !important;
+      opacity: 1;
+    }
+
+    .theme-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      flex: 0 0 34px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      position: relative;
+      transition: color 0.2s ease, opacity 0.2s ease;
+    }
+
+    .theme-toggle:hover {
+      opacity: 0.9;
+    }
+
+    html.dark .theme-toggle {
+      color: #e5e7eb;
+    }
+
+    html.dark .theme-toggle:hover {
+      color: #ffffff;
+    }
+
+    .theme-toggle svg {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 24px;
+      height: 24px;
+      display: block;
+      transform: translate(-50%, -50%);
+      transform-origin: center;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    
+
+    html:not(.dark) .theme-toggle #moon-icon {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    html.dark .theme-toggle #sun-icon {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    html.dark .theme-toggle #moon-icon {
+      opacity: 1;
+    }
+
+    #dashboard-link {
+      color: #111827 !important;
+      text-decoration: none !important;
+      background: transparent !important;
+      padding: 0 !important;
+      border-radius: 0 !important;
+    }
+
+    #dashboard-link:hover {
+      color: #111827 !important;
+      text-decoration: underline !important;
+      text-underline-offset: 4px;
+      background: transparent !important;
+    }
+
+    html.dark #dashboard-link {
+      color: #e5e7eb !important;
+    }
+
+    html.dark #dashboard-link:hover {
+      color: #ffffff !important;
+    }
+  </style>
+</head>
+
+<body class="__className_fff05e">
+  <header
+    class="w-full border-b bottom-2 border-border/40 z-50 sticky top-0 bg-background backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <nav class="lg:px-20 px-5 py-3 mx-auto">
+      <div class="flex justify-evenly w-full">
+        <div class="hidden md:flex gap-10 items-center justify-start flex-1"><a href="/">
+            <div class="flex justify-center items-center leading-5 font-bold text-xl"><img alt="logo" loading="lazy"
+                width="100" height="50" decoding="async" data-nimg="1" class="dark:hidden" style="color:transparent"
+                srcset="images/image_3.png 1x, images/image.png 2x" src="images/image.png"><img alt="logo"
+                loading="lazy" width="100" height="50" decoding="async" data-nimg="1" class="hidden dark:flex"
+                style="color:transparent" srcset="images/image_4.png 1x, images/image_2.png 2x"
+                src="images/image_2.png"></div>
+          </a></div>
+        <div class="hidden md:flex items-center justify-center">
+          <ul class="flex gap-8 items-center text-sm">
+            <li
+              class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer  text-foreground">
+              <a href="/#how-it-works">How it works</a></li>
+            <li
+              class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer  text-foreground">
+              <a href="/#why-choose-Yatrify">Why Choose Yatrify</a></li>
+            <li
+              class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer  text-foreground">
+              <a href="/#public-plans">Community Plans</a></li>
+            <li
+              class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer  text-foreground">
+              <a href="/#pricing">Pricing</a></li>
+          </ul>
+        </div>
+        <div class="md:hidden flex gap-6 flex-1"><button
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary underline-offset-4 hover:underline h-10 px-4 py-2 text-xl"
+            aria-label="open side menu"><svg stroke="currentColor" fill="currentColor" stroke-width="0"
+              viewBox="0 0 1024 1024" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M904 160H120c-4.4 0-8 3.6-8 8v64c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-64c0-4.4-3.6-8-8-8zm0 624H120c-4.4 0-8 3.6-8 8v64c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-64c0-4.4-3.6-8-8-8zm0-312H120c-4.4 0-8 3.6-8 8v64c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-64c0-4.4-3.6-8-8-8z">
+              </path>
+            </svg></button>
+          <aside
+            class="fixed top-0 z-[100] bg-background w-[50%] border-r-2 border-neutral-200 h-full ease-in-out duration-700 left-[-100%] flex flex-col gap-2 min-h-[100svh]">
+            <div class="flex justify-between p-2"><a href="/">
+                <div class="flex flex-col leading-5 font-bold text-md p-1"><img alt="logo" loading="lazy" width="100"
+                    height="50" decoding="async" data-nimg="1" class="dark:hidden" style="color:transparent"
+                    srcset="images/image_3.png 1x, images/image.png 2x" src="images/image.png"><img alt="logo"
+                    loading="lazy" width="100" height="50" decoding="async" data-nimg="1" class="hidden dark:flex"
+                    style="color:transparent" srcset="images/image_4.png 1x, images/image_2.png 2x"
+                    src="images/image_2.png"></div>
+              </a><button
+                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary underline-offset-4 hover:underline h-10 px-4 py-2 text-xl"
+                aria-label="close menu"><svg stroke="currentColor" fill="currentColor" stroke-width="0"
+                  viewBox="0 0 1024 1024" fill-rule="evenodd" height="1em" width="1em"
+                  xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M799.855 166.312c.023.007.043.018.084.059l57.69 57.69c.041.041.052.06.059.084a.118.118 0 0 1 0 .069c-.007.023-.018.042-.059.083L569.926 512l287.703 287.703c.041.04.052.06.059.083a.118.118 0 0 1 0 .07c-.007.022-.018.042-.059.083l-57.69 57.69c-.041.041-.06.052-.084.059a.118.118 0 0 1-.069 0c-.023-.007-.042-.018-.083-.059L512 569.926 224.297 857.629c-.04.041-.06.052-.083.059a.118.118 0 0 1-.07 0c-.022-.007-.042-.018-.083-.059l-57.69-57.69c-.041-.041-.052-.06-.059-.084a.118.118 0 0 1 0-.069c.007-.023.018-.042.059-.083L454.073 512 166.371 224.297c-.041-.04-.052-.06-.059-.083a.118.118 0 0 1 0-.07c.007-.022.018-.042.059-.083l57.69-57.69c.041-.041.06-.052.084-.059a.118.118 0 0 1 .069 0c.023.007.042.018.083.059L512 454.073l287.703-287.702c.04-.041.06-.052.083-.059a.118.118 0 0 1 .07 0Z">
+                  </path>
+                </svg></button></div>
+            <ul class="w-full flex flex-col gap-7 justify-center items-start p-5  text-sm font-medium">
+              <li
+                class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer  text-foreground">
+                <a href="/#how-it-works">How it works</a></li>
+              <li
+                class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer  text-foreground">
+                <a href="/#why-choose-Yatrify">Why Choose Yatrify</a></li>
+              <li
+                class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer  text-foreground">
+                <a href="/#public-plans">Community Plans</a></li>
+              <li
+                class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer  text-foreground">
+                <a href="/#pricing">Pricing</a></li>
+            </ul>
+          </aside>
+        </div>
+        <div class="flex gap-5 justify-end items-center flex-1" style="position:relative;z-index:10005;"><button
+            type="button" id="open-signin"
+            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-9 px-3 py-1.5 text-sm font-semibold bg-blue-500 text-white hover:bg-blue-600">Sign
+            in</button><a id="dashboard-link" href="dashboard.html" onmouseover="this.style.textDecoration='underline'"
+            onmouseout="this.style.textDecoration='none'"
+            style="display:none;font-size:14px;font-weight:500;color:#111827;text-decoration:none;transition:color 0.2s ease;padding:0;border-radius:0;background:transparent;"
+            class="hover:underline hover:underline-offset-4">Dashboard</a><button id="theme-toggle-btn"
+            class="theme-toggle" title="Toggle theme"><svg id="sun-icon"
+              class="dark:hidden lucide lucide-sun-icon lucide-sun" xmlns="http://www.w3.org/2000/svg" width="24"
+              height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <circle cx="12" cy="12" r="4" />
+              <path d="M12 2v2" />
+              <path d="M12 20v2" />
+              <path d="m4.93 4.93 1.41 1.41" />
+              <path d="m17.66 17.66 1.41 1.41" />
+              <path d="M2 12h2" />
+              <path d="M20 12h2" />
+              <path d="m6.34 17.66-1.41 1.41" />
+              <path d="m19.07 4.93-1.41 1.41" />
+            </svg><svg id="moon-icon" class="hidden dark:block lucide lucide-moon-icon lucide-moon"
+              xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path
+                d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" />
+            </svg></button>
+          <div id="user-profile" style="display:none;position:relative;z-index:10002;">
+            <button id="profile-btn" type="button"
+              style="border:0;background:transparent;padding:0;cursor:pointer;pointer-events:auto;border-radius:50%;overflow:hidden;width:34px;height:34px;display:flex;align-items:center;justify-content:center;">
+              <img id="user-avatar" alt="user" style="width:34px;height:34px;border-radius:50%;object-fit:cover;">
+            </button>
+            <div id="profile-menu"
+              style="display:none;position:absolute;right:0;top:50px;min-width:240px;background:#fff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,0.15);padding:12px;z-index:10001;">
+              <div style="padding:12px 14px;border-bottom:1px solid #f3f4f6;margin-bottom:8px;">
+                <div id="profile-name" style="font-weight:700;font-size:15px;color:#111;letter-spacing:-0.3px;"></div>
+                <div id="profile-email" style="font-size:12px;color:#6b7280;word-break:break-all;margin-top:4px;"></div>
+              </div>
+              <button id="manage-account" type="button"
+                style="width:100%;text-align:left;border:0;background:transparent;padding:10px 12px;cursor:pointer;font-size:14px;font-weight:500;color:#374151;border-radius:8px;transition:all 0.2s ease;">&#9881;&#65039;
+                Manage account</button>
+              <button id="signout-btn" type="button"
+                style="width:100%;text-align:left;border:0;background:transparent;padding:10px 12px;cursor:pointer;font-size:14px;font-weight:500;color:#dc2626;border-radius:8px;margin-top:4px;transition:all 0.2s ease;">&#128682;
+                Sign out</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+  <main class="flex min-h-[calc(100svh-4rem)] flex-col items-center">
+    <div class="scroll-m-5 w-full">
+      <section
+        class="lg:px-20 px-5 py-2  bg-background w-full h-full flex lg:flex-row flex-col lg:justify-between justify-center items-center gap-5 min-h-[calc(100svh-4rem)]">
+        <article class="flex flex-col h-full justify-center items-center lg:flex-1 ">
+          <h1 class="font-bold lg:text-7xl md:text-5xl text-4xl font-sans text-left w-full">Your Perfect Trip, <br>
+            <span class="bg-gradient-to-r from-blue-500 to-blue-700 bg-clip-text text-transparent">Built For You</span>
+          </h1>
+          <div class="mt-5 rounded-md w-full text-left lg:text-lg md:text-md text-base">
+            <p
+              class="mt-5 mb-5  lg:text-md md:text-base text-sm text-muted-foreground font-medium tracking-wide md:max-w-xl  text-left">
+              Effortlessly plan personalized itineraries that match your travel style, budget, and time&mdash;so you
+              spend less time organizing and more time exploring.</p>
+          </div>
+          <div class="w-full flex justify-start"><button id="btn-try-now"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 bg-blue-500 text-white hover:bg-blue-600 hover:shadow-sm text-sm font-semibold rounded-lg"
+              aria-label="generate plan"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" class="lucide lucide-navigation h-4 w-4">
+                <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+              </svg>Try Now - 2 Free Credits</button></div>
+          <p class="text-muted-foreground text-sm pt-2 w-full text-left">Your dream trip is just a few clicks away. Plan
+            smarter, save time, and travel confidently.</p>
+        </article>
+        <figure class="h-full lg:flex-1 flex-1 overflow-hidden"><svg xmlns="http://www.w3.org/2000/svg"
+            data-name="Layer 1" class="h-full w-full" viewBox="0 0 865.57286 658.54932">
+            <path
+              d="M475.13088,273.95982a1.42065,1.42065,0,0,1-1.4157-1.32118,50.21123,50.21123,0,0,0-49.94074-46.52628c-1.51455,0-3.10558.077-4.72921.22892A1.42019,1.42019,0,0,1,417.68,225.633a59.66227,59.66227,0,0,0-109.10474,12.97625,1.41413,1.41413,0,0,1-1.39713,1.025l-.37773-.01145c-.1965-.00659-.39282-.01352-.59087-.01352a42.07839,42.07839,0,0,0-41.00433,33.223,1.42071,1.42071,0,0,1-1.3902,1.12763H168.63429a1.42073,1.42073,0,0,1,0-2.84145H262.678a44.94513,44.94513,0,0,1,43.48245-34.35058,62.50318,62.50318,0,0,1,113.52733-13.33317c1.39749-.10891,2.76844-.16371,4.08666-.16371a53.062,53.062,0,0,1,52.77525,49.16864,1.42061,1.42061,0,0,1-1.31788,1.5168C475.198,273.95878,475.16435,273.95982,475.13088,273.95982Z"
+              transform="translate(-167.21357 -120.72534)" fill="#cbcbcb"></path>
+            <path
+              d="M458.227,292.176H225.22826a1.42072,1.42072,0,1,1,0-2.84144H458.227a1.42072,1.42072,0,1,1,0,2.84144Z"
+              transform="translate(-167.21357 -120.72534)" fill="#cbcbcb"></path>
+            <path
+              d="M282.05722,312.77652H203.9174a1.42073,1.42073,0,1,1,0-2.84145h78.13982a1.42073,1.42073,0,0,1,0,2.84145Z"
+              transform="translate(-167.21357 -120.72534)" fill="#cbcbcb"></path>
+            <g class="animate-wiggle1-left-right">
+              <path
+                d="M355.11428,589.21139c0,57.75962-60.55444,85.39729-60.55444,85.39729s-61.17551-27.63767-62.41765-85.39729c-.73011-33.95,27.52824-61.48605,61.486-61.48605A61.486,61.486,0,0,1,355.11428,589.21139Z"
+                transform="translate(-167.21357 -120.72534)" fill="#e5e5e5"></path>
+              <polygon points="147.842 557.299 106.851 557.299 101.882 537.425 152.81 537.425 147.842 557.299"
+                fill="#cbcbcb"></polygon>
+              <rect x="108.24833" y="591.28757" width="38.19588" height="19.90489" fill="#fff"></rect>
+              <path d="M313.96832,732.22835h-38.817v-20.526h38.817Zm-38.19588-.62107h37.57481V712.32344H275.77244Z"
+                transform="translate(-167.21357 -120.72534)" fill="#cbcbcb"></path>
+              <polygon points="135.176 559.643 119.517 559.643 117.72 556.819 136.973 556.819 135.176 559.643"
+                fill="#cbcbcb"></polygon>
+              <rect x="107.16146" y="557.29923" width="0.62107" height="30.43249" fill="#cbcbcb"></rect>
+              <rect x="146.91002" y="557.29923" width="0.62107" height="30.43249" fill="#cbcbcb"></rect>
+              <path
+                d="M300.78526,657.81368l-.37922-.49189c17.94222-13.83627,39.33014-37.54008,39.33014-71.89a61.09179,61.09179,0,0,0-37.36337-56.36812l.242-.572a61.71164,61.71164,0,0,1,37.74244,56.94007C340.35725,620.034,318.8378,643.89219,300.78526,657.81368Z"
+                transform="translate(-167.21357 -120.72534)" fill="#cbcbcb" class="dark:fill-current dark:text-black">
+              </path>
+              <path
+                d="M280.91076,657.81383l-.37923-.49189c17.9423-13.83627,39.33037-37.54008,39.33037-71.8902A61.16369,61.16369,0,0,0,282.924,529.24542l.24624-.57012A61.78432,61.78432,0,0,1,320.483,585.43174C320.483,620.03417,298.96344,643.89249,280.91076,657.81383Z"
+                transform="translate(-167.21357 -120.72534)" fill="#cbcbcb" class="dark:fill-current dark:text-black">
+              </path>
+              <path
+                d="M306.34549,657.81368c-18.05254-13.92134-39.572-37.77951-39.572-72.38194a61.78407,61.78407,0,0,1,37.31325-56.7566l.24624.57013a61.16357,61.16357,0,0,0-36.93842,56.18647c0,34.35,21.38791,58.05378,39.33014,71.89Z"
+                transform="translate(-167.21357 -120.72534)" fill="#cbcbcb" class="dark:fill-current dark:text-black">
+              </path>
+              <path
+                d="M286.47128,657.81368c-18.05261-13.92134-39.57206-37.77936-39.57206-72.38194a61.66876,61.66876,0,0,1,37.99459-57.04606l.23943.57316a61.04905,61.04905,0,0,0-37.613,56.4729c0,34.35027,21.388,58.05393,39.33022,71.89Z"
+                transform="translate(-167.21357 -120.72534)" fill="#cbcbcb" class="dark:fill-current dark:text-black">
+              </path>
+              <rect x="126.10413" class="dark:fill-current dark:text-black" y="407" width="0.62107" height="130.42495"
+                fill="#cbcbcb"></rect>
+              <line x1="108.24833" y1="598.38284" x2="119.63694" y2="586.99424" fill="#fff"></line>
+              <rect x="273.10322" y="713.10337" width="16.10597" height="0.621"
+                transform="translate(-589.32461 287.0362) rotate(-45)" fill="#cbcbcb"></rect>
+              <line x1="108.24833" y1="604.60334" x2="125.17986" y2="586.80011" fill="#fff"></line>
+              <rect x="271.64323" y="716.11655" width="24.56889" height="0.62099"
+                transform="translate(-598.12788 307.80663) rotate(-46.44446)" fill="#cbcbcb"></rect>
+              <rect x="103.43503" y="586.80011" width="46.58034" height="5.58964" fill="#fff"></rect>
+              <path d="M317.53948,713.42563H270.33807v-6.21071h47.20141Zm-46.58034-.62107H316.9184V707.836H270.95914Z"
+                transform="translate(-167.21357 -120.72534)" fill="#cbcbcb"></path>
+            </g>
+            <g class="animate-wiggle2-left-right">
+              <path
+                d="M472.30444,442.83091c0,38.12387-39.96858,56.36594-39.96858,56.36594s-40.37851-18.24207-41.19838-56.36594c-.4819-22.40846,18.16984-40.58348,40.58348-40.58348A40.58348,40.58348,0,0,1,472.30444,442.83091Z"
+                transform="translate(-167.21357 -120.72534)" fill="#e5e5e5"></path>
+              <polygon points="278.65 380.726 251.594 380.726 248.315 367.608 281.93 367.608 278.65 380.726"
+                fill="#cbcbcb"></polygon>
+              <rect x="252.51682" y="403.15993" width="25.21095" height="13.1381" fill="#fff"></rect>
+              <path d="M445.1463,537.22835H419.52542v-13.548H445.1463Zm-25.21095-.40994h24.801V524.09024h-24.801Z"
+                transform="translate(-167.21357 -120.72534)" fill="#cbcbcb"></path>
+              <polygon points="270.29 382.273 259.954 382.273 258.768 380.409 271.476 380.409 270.29 382.273"
+                fill="#cbcbcb"></polygon>
+              <rect x="251.79943" y="380.72614" width="0.40993" height="20.08677" fill="#cbcbcb"></rect>
+              <rect x="278.03522" y="380.72614" width="0.40993" height="20.08677" fill="#cbcbcb"></rect>
+              <path
+                d="M436.44491,488.11141l-.2503-.32466c11.84265-9.13254,25.9596-24.7781,25.9596-47.45058a40.32325,40.32325,0,0,0-24.66145-37.20542l.15973-.37751a40.73238,40.73238,0,0,1,24.91166,37.58293C462.56415,463.17519,448.36037,478.92262,436.44491,488.11141Z"
+                transform="translate(-167.21357 -120.72534)" fill="#cbcbcb" class="dark:fill-current dark:text-black">
+              </path>
+              <path
+                d="M423.32687,488.11151l-.25031-.32466c11.84271-9.13254,25.95976-24.7781,25.95976-47.45068a40.3707,40.3707,0,0,0-24.38062-37.08542l.16253-.37631a40.78035,40.78035,0,0,1,24.628,37.46173C449.44626,463.17529,435.24243,478.92282,423.32687,488.11151Z"
+                transform="translate(-167.21357 -120.72534)" fill="#cbcbcb" class="dark:fill-current dark:text-black">
+              </path>
+              <path
+                d="M440.1149,488.11141c-11.91546-9.18869-26.11924-24.93612-26.11924-47.77524A40.78018,40.78018,0,0,1,438.624,402.87434l.16253.37631a40.37063,40.37063,0,0,0-24.381,37.08552c0,22.67248,14.117,38.318,25.95961,47.45058Z"
+                transform="translate(-167.21357 -120.72534)" fill="#cbcbcb" class="dark:fill-current dark:text-black">
+              </path>
+              <path
+                d="M426.99706,488.11141c-11.91551-9.18869-26.11929-24.936-26.11929-47.77524a40.704,40.704,0,0,1,25.07809-37.65288l.158.3783a40.295,40.295,0,0,0-24.82618,37.27458c0,22.67268,14.117,38.31814,25.95965,47.45058Z"
+                transform="translate(-167.21357 -120.72534)" fill="#cbcbcb" class="dark:fill-current dark:text-black">
+              </path>
+              <rect class="dark:fill-current dark:text-black" x="264.30242" y="281.52209" width="0.40993"
+                height="86.08616" fill="#cbcbcb"></rect>
+              <line x1="252.51682" y1="407.84313" x2="260.0338" y2="400.32615" fill="#fff"></line>
+              <rect x="418.17355" y="524.60503" width="10.63065" height="0.40989"
+                transform="translate(-414.27324 332.4398) rotate(-45)" fill="#cbcbcb"></rect>
+              <line x1="252.51682" y1="411.94892" x2="263.69236" y2="400.19802" fill="#fff"></line>
+              <rect x="417.2099" y="526.59386" width="16.21654" height="0.40988"
+                transform="translate(-416.73868 351.30978) rotate(-46.44446)" fill="#cbcbcb"></rect>
+              <rect x="249.33983" y="400.19802" width="30.74506" height="3.68941" fill="#fff"></rect>
+              <path d="M447.50342,524.81773h-31.155v-4.09934h31.155Zm-30.74506-.40993h30.33513v-3.27948H416.75836Z"
+                transform="translate(-167.21357 -120.72534)" fill="#cbcbcb"></path>
+            </g>
+            <path
+              d="M812.07517,494.95319a1.0183,1.0183,0,0,0,1.01475-.947,35.99077,35.99077,0,0,1,35.79689-33.34945c1.08561,0,2.226.05519,3.38985.16409a1.018,1.018,0,0,0,.97857-.50769,42.76517,42.76517,0,0,1,78.20491,9.30121,1.01364,1.01364,0,0,0,1.00145.73468l.27075-.00821c.14085-.00472.28157-.00969.42353-.00969a30.16126,30.16126,0,0,1,29.39139,23.81379,1.01834,1.01834,0,0,0,.99648.80827h68.22433a1.01836,1.01836,0,1,0,0-2.03671H964.35872a32.21611,32.21611,0,0,0-31.16767-24.62207,44.8015,44.8015,0,0,0-81.375-9.557c-1.0017-.07807-1.98438-.11735-2.92927-.11735a38.03414,38.03414,0,0,0-37.82863,35.24346,1.01828,1.01828,0,0,0,.94464,1.08723C812.02706,494.95245,812.05117,494.95319,812.07517,494.95319Z"
+              transform="translate(-167.21357 -120.72534)" fill="#cbcbcb"></path>
+            <path
+              d="M824.19165,508.01034H991.20223a1.01835,1.01835,0,1,0,0-2.03671H824.19165a1.01835,1.01835,0,0,0,0,2.03671Z"
+              transform="translate(-167.21357 -120.72534)" fill="#cbcbcb"></path>
+            <path
+              d="M950.46794,522.77652h56.00965a1.01836,1.01836,0,0,0,0-2.03671H950.46794a1.01835,1.01835,0,1,0,0,2.03671Z"
+              transform="translate(-167.21357 -120.72534)" fill="#cbcbcb"></path>
+            <g class="animate-wiggle3-left-right">
+              <polygon points="522.992 647.768 519.639 647.768 518.044 634.839 522.992 634.839 522.992 647.768"
+                fill="#9f616a"></polygon>
+              <path d="M691.06018,771.743H680.2515v-.13671a4.21189,4.21189,0,0,1,4.20717-4.20711h6.60151Z"
+                transform="translate(-167.21357 -120.72534)" fill="#2f2e41"></path>
+              <polygon points="566.219 641.416 563.345 643.143 555.319 632.881 559.56 630.333 566.219 641.416"
+                fill="#9f616a"></polygon>
+              <path
+                d="M726.57374,770.05331l-.07043-.11722a4.212,4.212,0,0,1,1.43949-5.773l5.65874-3.39979,2.23713,3.72341Z"
+                transform="translate(-167.21357 -120.72534)" fill="#2f2e41"></path>
+              <path
+                d="M691.07674,765.82538l-.05781-.00027a45.01358,45.01358,0,0,1-4.88046-.2809c-.61767-.061-1.28768-.12724-2.09494-.19346l-.0277-.0052c-.55079-.16368-.56608-5.32925-.33257-23.01079.11962-9.05639.25513-19.32089.09379-25.85785l-.0016-.06422.04853-.04232a24.5749,24.5749,0,0,1,21.62317-5.48959l.05908.01229.0307.05193c3.29451,5.57436,8.26883,13.60381,13.07932,21.369,11.04286,17.82547,14.20119,23.06793,13.855,23.46338l-.04172.03231c-.75406.377-1.3202.66727-1.80156.91413a59.40563,59.40563,0,0,1-5.86341,2.64453l-.08852.03645-.06455-.07076c-11.20473-12.27794-20.52907-25.9931-26.29656-38.67183-.67394,4.32847-1.49195,9.98054-2.35628,15.95249-2.48545,17.17288-4.16525,28.48088-4.84147,29.16938Z"
+                transform="translate(-167.21357 -120.72534)" fill="#2f2e41"></path>
+              <path
+                d="M694.09569,717.79784a58.69173,58.69173,0,0,1,19.62556,3.28577,44.67268,44.67268,0,0,0-10.01451-29.12533l-.04927-.05928.02523-.07276c1.76011-5.08572,3.57936-10.34247,5.205-15.57319l-.02463-.08785c-1.14009-4.05317-3.58723-8.14893-7.48106-12.52159a2.39636,2.39636,0,0,0-3.27122-.16568,30.476,30.476,0,0,0-9.82125,24.81008l.00253.0263-.00754.0255c-3.049,10.32965-4.15584,15.63527-5.13238,20.31633-.71234,3.41473-1.32914,6.37154-2.5675,10.59627A63.62216,63.62216,0,0,1,694.09569,717.79784Z"
+                transform="translate(-167.21357 -120.72534)" fill="#cbcbcb"></path>
+              <polygon points="536.719 564.419 526.8 586.013 521.133 580.277 536.719 564.419" opacity="0.1"></polygon>
+              <circle cx="532.47798" cy="533.75944" r="7.0569" fill="#9f616a"></circle>
+              <path
+                d="M691.13527,650.49848h11.20551V645.614c-2.45948-.97711-4.86621-1.80809-6.32106,0a4.88448,4.88448,0,0,0-4.88445,4.88445Z"
+                transform="translate(-167.21357 -120.72534)" fill="#2f2e41"></path>
+              <path
+                d="M702.96116,644.75206c6.69887,0,8.57389,8.39678,8.57389,13.13382,0,2.64179-1.19474,3.58667-3.07214,3.90638l-.663-3.53611-1.55291,3.68828c-.52736.00263-1.08138-.00758-1.65574-.01824l-.52652-1.08416-1.17412,1.06471c-4.70249.007-8.50318.69249-8.50318-4.02086C694.38741,653.14884,696.03179,644.75206,702.96116,644.75206Z"
+                transform="translate(-167.21357 -120.72534)" fill="#2f2e41"></path>
+              <path
+                d="M905.30444,318.72534c0,186-195,275-195,275s-197-89-201-275c-2.35112-109.3271,88.64762-198,198-198S905.30444,209.373,905.30444,318.72534Z"
+                transform="translate(-167.21357 -120.72534)" class="fill-blue-500"></path>
+              <polygon points="547.274 646.307 543.163 646.307 541.208 630.453 547.274 630.453 547.274 646.307"
+                fill="#ffb7b7"></polygon>
+              <path
+                d="M540.22741,645.13222h7.92694a0,0,0,0,1,0,0v4.991a0,0,0,0,1,0,0h-12.918a0,0,0,0,1,0,0v0A4.991,4.991,0,0,1,540.22741,645.13222Z"
+                fill="#2f2e41"></path>
+              <polygon points="562.696 646.307 558.586 646.307 556.63 630.453 562.697 630.453 562.696 646.307"
+                fill="#ffb7b7"></polygon>
+              <path
+                d="M555.64958,645.13222h7.927a0,0,0,0,1,0,0v4.991a0,0,0,0,1,0,0h-12.918a0,0,0,0,1,0,0v0A4.991,4.991,0,0,1,555.64958,645.13222Z"
+                fill="#2f2e41"></path>
+              <path
+                d="M729.40736,719.814a3.60166,3.60166,0,0,1-.69139-5.47924l-2.70642-38.40719,7.7959.75606.21413,37.61221a3.62116,3.62116,0,0,1-4.61222,5.51816Z"
+                transform="translate(-167.21357 -120.72534)" fill="#ffb7b7"></path>
+              <path
+                d="M714.293,759.04523l-4.52484-.21576a1.50837,1.50837,0,0,1-1.43691-1.49625l-.31578-45.78261a1.50905,1.50905,0,0,1,1.72543-1.50378l18.10216,2.62777a1.49992,1.49992,0,0,1,1.292,1.48184l2.32819,42.42243a1.50886,1.50886,0,0,1-1.50869,1.52015h-4.87812a1.50159,1.50159,0,0,1-1.49035-1.27427s-3.68464-31.82068-4.19057-31.802c-.5087.00949-3.53263,32.69486-3.53263,32.69486a1.51443,1.51443,0,0,1-1.49822,1.3296Q714.32906,759.04719,714.293,759.04523Z"
+                transform="translate(-167.21357 -120.72534)" fill="#2f2e41"></path>
+              <path
+                d="M727.77429,688.83291a1.50258,1.50258,0,0,1-.62316-1.14012l-.57124-10.35168a4.15682,4.15682,0,0,1,8.1625-1.31653l2.5093,9.255a1.51039,1.51039,0,0,1-1.06132,1.85092l-7.138,1.93533A1.50293,1.50293,0,0,1,727.77429,688.83291Z"
+                transform="translate(-167.21357 -120.72534)" fill="#3f3d56"></path>
+              <circle cx="553.89292" cy="535.27109" r="8.23444" fill="#ffb7b7"></circle>
+              <path
+                d="M726.93359,662.51115a2.65975,2.65975,0,0,1-4.58922-1.47757,2.70079,2.70079,0,0,1,.0034-.52157c.10335-.99022.67543-1.88923.53839-2.93477a1.539,1.539,0,0,0-.28165-.72045c-1.22414-1.63922-4.0977.73318-5.253-.75076-.7084-.90992.12432-2.34253-.4193-3.35952-.71748-1.34226-2.84264-.68012-4.17534-1.4152-1.48279-.81788-1.3941-3.0929-.418-4.47669a7.04185,7.04185,0,0,1,5.33854-2.71786,14.3202,14.3202,0,0,1,6.03218,1.17727,12.05493,12.05493,0,0,1,5.69972,3.95194,9.64786,9.64786,0,0,1,.97534,8.21456C729.88685,659.14346,728.188,661.17489,726.93359,662.51115Z"
+                transform="translate(-167.21357 -120.72534)" fill="#2f2e41"></path>
+              <path
+                d="M729.32568,669.73127q-.21461-.15422-.43757-.30285a10.84928,10.84928,0,0,0-2.54657-1.24859v-2.16367h-6.37v2.00746a11.17082,11.17082,0,0,0-8.101,9.2822L707.533,709.50825a1.50116,1.50116,0,0,0,.312,1.14036,1.48163,1.48163,0,0,0,1.02381.56085,22.7729,22.7729,0,0,1,8.60949,2.94895,12.78206,12.78206,0,0,0,6.27131,1.60069,15.11672,15.11672,0,0,0,5.10476-.90888,1.49748,1.49748,0,0,0,.97829-1.3427c.15618-3.4656,1.06964-21.304,3.7295-32.18507A11.12326,11.12326,0,0,0,729.32568,669.73127Z"
+                transform="translate(-167.21357 -120.72534)" fill="#3f3d56"></path>
+              <polygon points="609.091 484 477.091 484 461.091 420 625.091 420 609.091 484" fill="#3f3d56"></polygon>
+              <rect x="481.59087" y="593.4507" width="123" height="64.09859" fill="#fff"></rect>
+              <path d="M772.80444,779.27466h-125V713.176h125Zm-123-2h121V715.176h-121Z"
+                transform="translate(-167.21357 -120.72534)" fill="#3f3d56"></path>
+              <polygon points="568.304 491.547 517.878 491.547 512.091 482.453 574.091 482.453 568.304 491.547"
+                fill="#3f3d56"></polygon>
+              <rect x="478.09087" y="484" width="2" height="98" fill="#3f3d56"></rect>
+              <rect x="606.09087" y="484" width="2" height="98" fill="#3f3d56"></rect>
+              <path
+                d="M730.3518,539.64136l-1.22119-1.584C786.90893,493.50122,855.7832,417.16919,855.7832,306.554A196.7304,196.7304,0,0,0,735.46411,125.03491l.77929-1.84179A198.72645,198.72645,0,0,1,857.7832,306.554C857.7832,417.98169,788.48535,494.81079,730.3518,539.64136Z"
+                transform="translate(-167.21357 -120.72534)" fill="#3f3d56" class="dark:fill-current dark:text-white">
+              </path>
+              <path
+                d="M666.35107,539.64185l-1.22119-1.584C722.90844,493.50171,791.7832,417.16968,791.7832,306.554a196.96192,196.96192,0,0,0-118.949-180.9336l.793-1.83594A198.96056,198.96056,0,0,1,793.7832,306.554C793.7832,417.98218,724.4851,494.81177,666.35107,539.64185Z"
+                transform="translate(-167.21357 -120.72534)" fill="#3f3d56" class="dark:fill-current dark:text-white">
+              </path>
+              <path
+                d="M748.25707,539.64136C690.12353,494.81128,620.82568,417.98218,620.82568,306.554a198.95968,198.95968,0,0,1,120.15771-182.77l.793,1.83593A196.9616,196.9616,0,0,0,622.82568,306.554c0,110.61523,68.87427,186.94726,126.65259,231.50341Z"
+                transform="translate(-167.21357 -120.72534)" fill="#3f3d56" class="dark:fill-current dark:text-white">
+              </path>
+              <path
+                d="M684.25732,539.64136C626.12353,494.81128,556.82568,417.98267,556.82568,306.554a198.5883,198.5883,0,0,1,122.3518-183.70215l.771,1.8457A196.59273,196.59273,0,0,0,558.82568,306.554c0,110.61621,68.87451,186.94775,126.65283,231.50341Z"
+                transform="translate(-167.21357 -120.72534)" fill="#3f3d56" class="dark:fill-current dark:text-white">
+              </path>
+              <rect x="539.09087" width="2" height="420" fill="#3f3d56" class="dark:fill-current dark:text-white">
+              </rect>
+              <line x1="481.59087" y1="616.29921" x2="518.26494" y2="579.62514" fill="#fff"></line>
+              <rect x="641.2089" y="717.68761" width="51.86514" height="1.99979"
+                transform="translate(-480.00116 561.51361) rotate(-45)" fill="#3f3d56"></rect>
+              <line x1="481.59087" y1="636.33071" x2="536.11449" y2="579" fill="#fff"></line>
+              <rect x="636.50738" y="727.39076" width="79.1178" height="1.99973"
+                transform="translate(-484.86538 595.71211) rotate(-46.44446)" fill="#3f3d56"></rect>
+              <rect x="466.09087" y="579" width="150" height="18" fill="#fff"></rect>
+              <path d="M784.30444,718.72534h-152v-20h152Zm-150-2h148v-16h-148Z"
+                transform="translate(-167.21357 -120.72534)" fill="#3f3d56"></path>
+              <path
+                d="M681.81868,708.09726a2.74948,2.74948,0,0,0,2.47585-3.41248l8.17284-5.35471-4.661-2.01364-7.04648,5.39363a2.7644,2.7644,0,0,0,1.05884,5.3872Z"
+                transform="translate(-167.21357 -120.72534)" fill="#9f616a"></path>
+              <path
+                d="M689.68278,704.23969l-.10307-.0729c-1.94508-1.4316-4.10444-2.91207-6.19271-4.34382l-.12543-.086.0988-.11562c4.45717-5.21483,8.91914-10.66183,13.235-15.93112l-.00828-.019.04066-.0207.01722-.021.00921.00761.026-.01321-.11762.00907-1.3302-10.43178a6.6868,6.6868,0,0,1,.14305-7.165,5.67453,5.67453,0,0,1,7.38427-1.68608,4.84545,4.84545,0,0,1,2.12772,3.61847,4.37007,4.37007,0,0,1-1.15839,3.57842,150.47526,150.47526,0,0,1,.60806,15.22847l.00021.04766-.02951.03925c-4.601,5.84525-9.65484,11.6594-14.5423,17.28209Z"
+                transform="translate(-167.21357 -120.72534)" fill="#cbcbcb"></path>
+              <path
+                d="M691.2667,672.1745a3.52839,3.52839,0,0,1,.08022.54988L705.749,681.0329l3.50063-2.01525,3.73189,4.88556-7.48885,5.3376-16.43062-12.96222a3.51887,3.51887,0,1,1,2.20461-4.10409Z"
+                transform="translate(-167.21357 -120.72534)" fill="#ffb7b7"></path>
+              <path
+                d="M706.26342,680.32639a1.50256,1.50256,0,0,1,.43355-1.22484l7.33-7.33173a4.15681,4.15681,0,0,1,6.42637,5.202l-5.22,8.04373a1.51039,1.51039,0,0,1-2.08685.44426l-6.20383-4.026A1.503,1.503,0,0,1,706.26342,680.32639Z"
+                transform="translate(-167.21357 -120.72534)" fill="#3f3d56"></path>
+            </g>
+            <path
+              d="M606.53371,608.95319a1.01829,1.01829,0,0,1-1.01475-.947,35.99077,35.99077,0,0,0-35.7969-33.34945c-1.08561,0-2.226.05519-3.38984.16409a1.018,1.018,0,0,1-.97858-.50769,42.76517,42.76517,0,0,0-78.20491,9.30121,1.01364,1.01364,0,0,1-1.00145.73468l-.27075-.00821c-.14084-.00472-.28156-.00969-.42352-.00969a30.16126,30.16126,0,0,0-29.39139,23.81379,1.01836,1.01836,0,0,1-.99648.80827H386.8408a1.01836,1.01836,0,1,1,0-2.03671h67.40935a32.21612,32.21612,0,0,1,31.16768-24.62207,44.80149,44.80149,0,0,1,81.375-9.557c1.0017-.07807,1.98438-.11735,2.92927-.11735a38.03415,38.03415,0,0,1,37.82864,35.24346,1.01828,1.01828,0,0,1-.94464,1.08723C606.58182,608.95245,606.5577,608.95319,606.53371,608.95319Z"
+              transform="translate(-167.21357 -120.72534)" fill="#cbcbcb"></path>
+            <path
+              d="M594.41722,622.01034H427.40665a1.01836,1.01836,0,1,1,0-2.03671H594.41722a1.01835,1.01835,0,1,1,0,2.03671Z"
+              transform="translate(-167.21357 -120.72534)" fill="#cbcbcb"></path>
+            <path
+              d="M468.14093,636.77652H412.13129a1.01836,1.01836,0,1,1,0-2.03671h56.00964a1.01836,1.01836,0,1,1,0,2.03671Z"
+              transform="translate(-167.21357 -120.72534)" fill="#cbcbcb"></path>
+          </svg></figure>
+      </section>
+      <section id="how-it-works"
+        class="min-h-[100svh] bg-blue-100 dark:bg-gray-900 w-full  flex justify-center items-center px-5 md:px-0 py-10 md:py-0">
+        <div class="flex flex-col gap-20">
+          <section class="flex flex-col gap-5">
+            <h2 class="text-blue-500 text-center text-lg font-bold tracking-wide">How it works?</h2>
+            <h3 class="text-foreground text-center md:text-3xl text-xl font-bold ">Craft Your Ideal Journey in a few
+              easy steps</h3>
+          </section>
+          <section class="flex items-center justify-center gap-28 w-full h-full flex-col md:flex-row">
+            <article class="flex flex-col items-center justify-center gap-5 relative">
+              <div class="bg-muted w-24 h-24 rounded-2xl shadow-2xl items-center flex justify-center"><svg
+                  xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="lucide lucide-calendar-check h-8 w-8 text-blue-500 dark:text-foreground">
+                  <rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect>
+                  <line x1="16" x2="16" y1="2" y2="6"></line>
+                  <line x1="8" x2="8" y1="2" y2="6"></line>
+                  <line x1="3" x2="21" y1="10" y2="10"></line>
+                  <path d="m9 16 2 2 4-4"></path>
+                </svg></div><span class="font-bold tracking-wide text-lg mt-5">Plan</span><span
+                class="text-sm w-2/3 text-center text-muted-foreground">Use our tools to plan and organize
+                better</span><img alt="arrow" loading="lazy" width="100" height="100" decoding="async" data-nimg="1"
+                class="absolute -right-[120px] top-[15%] opacity-40 dark:filter dark:invert rotate-[202deg] hidden md:block"
+                style="color:transparent" srcset="images/image_5.png 1x, images/image_1.png 2x"
+                src="images/image_1.png">
+            </article>
+            <article class="flex flex-col items-center justify-center gap-5 relative">
+              <div class="bg-muted w-24 h-24 rounded-2xl shadow-2xl items-center flex justify-center"><svg
+                  xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="lucide lucide-repeat h-8 w-8 text-blue-500 dark:text-foreground">
+                  <path d="m17 2 4 4-4 4"></path>
+                  <path d="M3 11v-1a4 4 0 0 1 4-4h14"></path>
+                  <path d="m7 22-4-4 4-4"></path>
+                  <path d="M21 13v1a4 4 0 0 1-4 4H3"></path>
+                </svg></div><span class="font-bold tracking-wide text-lg mt-5">Refine</span><span
+                class="text-sm w-2/3 text-center text-muted-foreground">Refine your plans in collaboration with fellow
+                travelers.</span><img alt="arrow" loading="lazy" width="100" height="100" decoding="async" data-nimg="1"
+                class="absolute -right-[120px] top-[15%] opacity-40 dark:filter dark:invert transform rotate-[350deg] -scale-x-100 hidden md:block"
+                style="color:transparent" srcset="images/image_5.png 1x, images/image_1.png 2x"
+                src="images/image_1.png">
+            </article>
+            <article class="flex flex-col items-center justify-center gap-5 relative">
+              <div class="bg-muted w-24 h-24 rounded-2xl shadow-2xl items-center flex justify-center"><svg
+                  xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="lucide lucide-link h-8 w-8 text-blue-500 dark:text-foreground">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                </svg></div><span class="font-bold tracking-wide text-lg mt-5">Get Deals</span><span
+                class="text-sm w-2/3 text-center text-muted-foreground">Metasearch results for all your travels, in one
+                place.</span><img alt="arrow" loading="lazy" width="100" height="100" decoding="async" data-nimg="1"
+                class="absolute -right-[120px] top-[15%] opacity-40 dark:filter dark:invert hidden"
+                style="color:transparent" srcset="images/image_5.png 1x, images/image_1.png 2x"
+                src="images/image_1.png">
+            </article>
+          </section>
+        </div>
+      </section>
+      <section id="why-choose-Yatrify"
+        class="min-h-[100svh]  bg-blue-50 dark:bg-gray-800 w-full  flex justify-center items-center px-5 md:px-0 py-10 md:py-0">
+        <div class="flex flex-col gap-20">
+          <section class="flex flex-col gap-5">
+            <h2 class="text-blue-500 text-center text-lg font-bold tracking-wide">Why Choose Yatrify?</h2>
+            <h3 class="text-foreground text-center md:text-3xl text-xl font-bold max-w-[50%] mx-auto">Budget-friendly
+              travel planning made easy</h3>
+          </section>
+          <section class="w-full px-4 md:px-20">
+            <div class="flex flex-col md:flex-row gap-5 justify-center items-stretch max-w-7xl mx-auto">
+              <div
+                class="text-card-foreground group relative overflow-hidden transition-all duration-300 hover:shadow-xl flex-1 border-none bg-white dark:bg-gray-900 shadow-md border-2 border-gray-600 rounded-lg">
+                <div class="p-6">
+                  <div class="flex flex-col gap-4">
+                    <div class="flex items-start gap-3 flex-col justify-center">
+                      <div class="flex h-12 w-12 items-center justify-center rounded-full bg-blue-500 text-white"><svg
+                          xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                          class="lucide lucide-clock h-6 w-6">
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg></div>
+                      <h3 class="text-lg font-semibold tracking-tight">Never Miss a Moment</h3>
+                    </div>
+                    <p class="text-muted-foreground">Our smart tools optimize every hour of your trip, balancing
+                      must-see sights, hidden gems, and downtime &mdash; all while staying within your budget.</p>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="text-card-foreground group relative overflow-hidden transition-all duration-300 hover:shadow-xl flex-1 border-none bg-white dark:bg-gray-900 shadow-md border-2 border-gray-600 rounded-lg">
+                <div class="p-6">
+                  <div class="flex flex-col gap-4">
+                    <div class="flex items-start gap-3 flex-col justify-center">
+                      <div class="flex h-12 w-12 items-center justify-center rounded-full bg-blue-500 text-white"><svg
+                          xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                          class="lucide lucide-users h-6 w-6">
+                          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                          <circle cx="9" cy="7" r="4"></circle>
+                          <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg></div>
+                      <h3 class="text-lg font-semibold tracking-tight">Collaborate & Book Together, Instantly</h3>
+                    </div>
+                    <p class="text-muted-foreground">Sync with friends or family in real-time, agree on plans, and book
+                      flights, hotels, and activities in seconds &mdash; no more endless debates or tab-hopping.</p>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="text-card-foreground group relative overflow-hidden transition-all duration-300 hover:shadow-xl flex-1 border-none bg-white dark:bg-gray-900 shadow-md border-2 border-gray-600 rounded-lg">
+                <div class="p-6">
+                  <div class="flex flex-col gap-4">
+                    <div class="flex items-start gap-3 flex-col justify-center">
+                      <div class="flex h-12 w-12 items-center justify-center rounded-full bg-blue-500 text-white"><svg
+                          xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                          class="lucide lucide-tag h-6 w-6">
+                          <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z">
+                          </path>
+                          <path d="M7 7h.01"></path>
+                        </svg></div>
+                      <h3 class="text-lg font-semibold tracking-tight">Zero Effort, Cost Effective Deals</h3>
+                    </div>
+                    <p class="text-muted-foreground">We partner with trusted providers worldwide to bring real-time meta
+                      searched and curated offers, including cost effective multi-city or round-trip flight searches, so
+                      you save money without hunting for deals.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+      <section id="public-plans"
+        class="min-h-[100svh] bg-background/90 w-full  flex justify-center items-end px-5 md:px-0 py-10 md:py-0">
+        <div class="flex flex-col gap-2 w-full">
+          <h2 class="text-blue-500 text-center text-lg font-bold tracking-wide">Our Community's Favorite Trips</h2>
+          <div
+            class="grid grid-cols-1  md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 4xl:grid-cols-6 gap-2 p-10 justify-center">
+            <a role="article" class="flex justify-center items-center shadow-lg"
+              href="/plans/js7572mjjgfz0mrm3p1tgevgb97g9z9t/community-plan">
+              <div
+                class="border bg-card text-card-foreground shadow-sm w-64 md:w-72 flex-1 h-[250px] rounded-lg cursor-pointer overflow-hidden group/card hover:shadow-md">
+                <div class="w-full flex flex-col gap-4 h-full overflow-hidden">
+                  <div class="relative h-full w-full"><img role="figure" alt="travelpic" loading="lazy" decoding="async"
+                      data-nimg="fill"
+                      class="relative -z-1 object-cover rounded-t-lg w-full group-hover/card:scale-105 transition ease-in-out duration-500"
+                      style="position:absolute;height:100%;width:100%;left:0;top:0;right:0;bottom:0;color:transparent"
+                      sizes="(max-width: 768px) 256px, (max-width: 1200px) 288px, 288px"
+                      srcset="images/image_38.jpg 16w, images/image_12.jpg 32w, images/image_25.jpg 48w, images/image_28.jpg 64w, images/image_17.jpg 96w, images/image_27.jpg 128w, images/image_43.jpg 256w, images/image_9.jpg 384w, images/image_18.jpg 640w, images/image_40.jpg 750w, images/image_69.jpg 828w, images/image_31.jpg 1080w, images/image_83.jpg 1200w, images/image_72.jpg 1920w, images/image_117.jpg 2048w, images/image_1.jpg 3840w"
+                      src="images/image_1.jpg">
+                    <div
+                      class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4 text-white">
+                      <div class="flex items-center justify-between">
+                        <div class="space-y-1">
+                          <h3 class="text-lg font-semibold line-clamp-1">Georgia</h3>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a><a role="article" class="flex justify-center items-center shadow-lg"
+              href="/plans/js7cpmct64dz7gnvnqc3v63xxx7g4v85/community-plan">
+              <div
+                class="border bg-card text-card-foreground shadow-sm w-64 md:w-72 flex-1 h-[250px] rounded-lg cursor-pointer overflow-hidden group/card hover:shadow-md">
+                <div class="w-full flex flex-col gap-4 h-full overflow-hidden">
+                  <div class="relative h-full w-full"><img role="figure" alt="travelpic" loading="lazy" decoding="async"
+                      data-nimg="fill"
+                      class="relative -z-1 object-cover rounded-t-lg w-full group-hover/card:scale-105 transition ease-in-out duration-500"
+                      style="position:absolute;height:100%;width:100%;left:0;top:0;right:0;bottom:0;color:transparent"
+                      sizes="(max-width: 768px) 256px, (max-width: 1200px) 288px, 288px"
+                      srcset="images/image_54.jpg 16w, images/image_23.jpg 32w, images/image_60.jpg 48w, images/image_47.jpg 64w, images/image_48.jpg 96w, images/image_56.jpg 128w, images/image_121.jpg 256w, images/image_107.jpg 384w, images/image_106.jpg 640w, images/image_24.jpg 750w, images/image_77.jpg 828w, images/image_95.jpg 1080w, images/image_84.jpg 1200w, images/image_88.jpg 1920w, images/image_92.jpg 2048w, images/image_4.jpg 3840w"
+                      src="images/image_4.jpg">
+                    <div
+                      class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4 text-white">
+                      <div class="flex items-center justify-between">
+                        <div class="space-y-1">
+                          <h3 class="text-lg font-semibold line-clamp-1">Thailand | Vietnam | Cambodia</h3>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a><a role="article" class="flex justify-center items-center shadow-lg"
+              href="/plans/js76fzvft9fg7cr4h5zkhpnzgs7g4n0f/community-plan">
+              <div
+                class="border bg-card text-card-foreground shadow-sm w-64 md:w-72 flex-1 h-[250px] rounded-lg cursor-pointer overflow-hidden group/card hover:shadow-md">
+                <div class="w-full flex flex-col gap-4 h-full overflow-hidden">
+                  <div class="relative h-full w-full"><img role="figure" alt="travelpic" loading="lazy" decoding="async"
+                      data-nimg="fill"
+                      class="relative -z-1 object-cover rounded-t-lg w-full group-hover/card:scale-105 transition ease-in-out duration-500"
+                      style="position:absolute;height:100%;width:100%;left:0;top:0;right:0;bottom:0;color:transparent"
+                      sizes="(max-width: 768px) 256px, (max-width: 1200px) 288px, 288px"
+                      srcset="images/image_8.jpg 16w, images/image_20.jpg 32w, images/image_14.jpg 48w, images/image_15.jpg 64w, images/image_11.jpg 96w, images/image_10.jpg 128w, images/image_13.jpg 256w, images/image_16.jpg 384w, images/image_37.jpg 640w, images/image_103.jpg 750w, images/image_45.jpg 828w, images/image_36.jpg 1080w, images/image_26.jpg 1200w, images/image_62.jpg 1920w, images/image_39.jpg 2048w, images/image.jpg 3840w"
+                      src="images/image.jpg">
+                    <div
+                      class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4 text-white">
+                      <div class="flex items-center justify-between">
+                        <div class="space-y-1">
+                          <h3 class="text-lg font-semibold line-clamp-1">New Zealand | Bora-Bora, French Polynesia |
+                            Fiji</h3>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a><a role="article" class="flex justify-center items-center shadow-lg"
+              href="/plans/js726q0gdbqey6br9qgtebdpsh7g4835/community-plan">
+              <div
+                class="border bg-card text-card-foreground shadow-sm w-64 md:w-72 flex-1 h-[250px] rounded-lg cursor-pointer overflow-hidden group/card hover:shadow-md">
+                <div class="w-full flex flex-col gap-4 h-full overflow-hidden">
+                  <div class="relative h-full w-full"><img role="figure" alt="travelpic" loading="lazy" decoding="async"
+                      data-nimg="fill"
+                      class="relative -z-1 object-cover rounded-t-lg w-full group-hover/card:scale-105 transition ease-in-out duration-500"
+                      style="position:absolute;height:100%;width:100%;left:0;top:0;right:0;bottom:0;color:transparent"
+                      sizes="(max-width: 768px) 256px, (max-width: 1200px) 288px, 288px"
+                      srcset="images/image_68.jpg 16w, images/image_74.jpg 32w, images/image_29.jpg 48w, images/image_30.jpg 64w, images/image_34.jpg 96w, images/image_22.jpg 128w, images/image_35.jpg 256w, images/image_32.jpg 384w, images/image_55.jpg 640w, images/image_59.jpg 750w, images/image_76.jpg 828w, images/image_49.jpg 1080w, images/image_58.jpg 1200w, images/image_101.jpg 1920w, images/image_50.jpg 2048w, images/image_3.jpg 3840w"
+                      src="images/image_3.jpg">
+                    <div
+                      class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4 text-white">
+                      <div class="flex items-center justify-between">
+                        <div class="space-y-1">
+                          <h3 class="text-lg font-semibold line-clamp-1">South Africa | Zimbabwe</h3>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a><a role="article" class="flex justify-center items-center shadow-lg"
+              href="/plans/js7ba4cxjhmq4km7mp988evvns7g5yxv/community-plan">
+              <div
+                class="border bg-card text-card-foreground shadow-sm w-64 md:w-72 flex-1 h-[250px] rounded-lg cursor-pointer overflow-hidden group/card hover:shadow-md">
+                <div class="w-full flex flex-col gap-4 h-full overflow-hidden">
+                  <div class="relative h-full w-full"><img role="figure" alt="travelpic" loading="lazy" decoding="async"
+                      data-nimg="fill"
+                      class="relative -z-1 object-cover rounded-t-lg w-full group-hover/card:scale-105 transition ease-in-out duration-500"
+                      style="position:absolute;height:100%;width:100%;left:0;top:0;right:0;bottom:0;color:transparent"
+                      sizes="(max-width: 768px) 256px, (max-width: 1200px) 288px, 288px"
+                      srcset="images/image_44.jpg 16w, images/image_41.jpg 32w, images/image_63.jpg 48w, images/image_19.jpg 64w, images/image_21.jpg 96w, images/image_42.jpg 128w, images/image_33.jpg 256w, images/image_51.jpg 384w, images/image_116.jpg 640w, images/image_57.jpg 750w, images/image_81.jpg 828w, images/image_75.jpg 1080w, images/image_73.jpg 1200w, images/image_61.jpg 1920w, images/image_52.jpg 2048w, images/image_6.jpg 3840w"
+                      src="images/image_6.jpg">
+                    <div
+                      class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4 text-white">
+                      <div class="flex items-center justify-between">
+                        <div class="space-y-1">
+                          <h3 class="text-lg font-semibold line-clamp-1">Spain | France | Italy</h3>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a><a role="article" class="flex justify-center items-center shadow-lg"
+              href="/plans/js70h52tyfqhxzd32mfj7wah897g59qp/community-plan">
+              <div
+                class="border bg-card text-card-foreground shadow-sm w-64 md:w-72 flex-1 h-[250px] rounded-lg cursor-pointer overflow-hidden group/card hover:shadow-md">
+                <div class="w-full flex flex-col gap-4 h-full overflow-hidden">
+                  <div class="relative h-full w-full"><img role="figure" alt="travelpic" loading="lazy" decoding="async"
+                      data-nimg="fill"
+                      class="relative -z-1 object-cover rounded-t-lg w-full group-hover/card:scale-105 transition ease-in-out duration-500"
+                      style="position:absolute;height:100%;width:100%;left:0;top:0;right:0;bottom:0;color:transparent"
+                      sizes="(max-width: 768px) 256px, (max-width: 1200px) 288px, 288px"
+                      srcset="images/image_67.jpg 16w, images/image_70.jpg 32w, images/image_64.jpg 48w, images/image_115.jpg 64w, images/image_46.jpg 96w, images/image_91.jpg 128w, images/image_98.jpg 256w, images/image_96.jpg 384w, images/image_78.jpg 640w, images/image_89.jpg 750w, images/image_90.jpg 828w, images/image_104.jpg 1080w, images/image_85.jpg 1200w, images/image_126.jpg 1920w, images/image_97.jpg 2048w, images/image_2.jpg 3840w"
+                      src="images/image_2.jpg">
+                    <div
+                      class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4 text-white">
+                      <div class="flex items-center justify-between">
+                        <div class="space-y-1">
+                          <h3 class="text-lg font-semibold line-clamp-1">Buenos Aires, Argentina | Montevideo, Uruguay |
+                            Santiago, Chile</h3>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a><a role="article" class="flex justify-center items-center shadow-lg"
+              href="/plans/js74qpvf9s92b9pqm3axx01ta97g4ty6/community-plan">
+              <div
+                class="border bg-card text-card-foreground shadow-sm w-64 md:w-72 flex-1 h-[250px] rounded-lg cursor-pointer overflow-hidden group/card hover:shadow-md">
+                <div class="w-full flex flex-col gap-4 h-full overflow-hidden">
+                  <div class="relative h-full w-full"><img role="figure" alt="travelpic" loading="lazy" decoding="async"
+                      data-nimg="fill"
+                      class="relative -z-1 object-cover rounded-t-lg w-full group-hover/card:scale-105 transition ease-in-out duration-500"
+                      style="position:absolute;height:100%;width:100%;left:0;top:0;right:0;bottom:0;color:transparent"
+                      sizes="(max-width: 768px) 256px, (max-width: 1200px) 288px, 288px"
+                      srcset="images/image_102.jpg 16w, images/image_94.jpg 32w, images/image_86.jpg 48w, images/image_87.jpg 64w, images/image_100.jpg 96w, images/image_127.jpg 128w, images/image_111.jpg 256w, images/image_109.jpg 384w, images/image_108.jpg 640w, images/image_118.jpg 750w, images/image_105.jpg 828w, images/image_119.jpg 1080w, images/image_112.jpg 1200w, images/image_114.jpg 1920w, images/image_113.jpg 2048w, images/image_7.jpg 3840w"
+                      src="images/image_7.jpg">
+                    <div
+                      class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4 text-white">
+                      <div class="flex items-center justify-between">
+                        <div class="space-y-1">
+                          <h3 class="text-lg font-semibold line-clamp-1">Japan | South Korea</h3>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a><a role="article" class="flex justify-center items-center shadow-lg"
+              href="/plans/js78a01nqh88kkj1yggw50621h7g5e6k/community-plan">
+              <div
+                class="border bg-card text-card-foreground shadow-sm w-64 md:w-72 flex-1 h-[250px] rounded-lg cursor-pointer overflow-hidden group/card hover:shadow-md">
+                <div class="w-full flex flex-col gap-4 h-full overflow-hidden">
+                  <div class="relative h-full w-full"><img role="figure" alt="travelpic" loading="lazy" decoding="async"
+                      data-nimg="fill"
+                      class="relative -z-1 object-cover rounded-t-lg w-full group-hover/card:scale-105 transition ease-in-out duration-500"
+                      style="position:absolute;height:100%;width:100%;left:0;top:0;right:0;bottom:0;color:transparent"
+                      sizes="(max-width: 768px) 256px, (max-width: 1200px) 288px, 288px"
+                      srcset="images/image_122.jpg 16w, images/image_66.jpg 32w, images/image_65.jpg 48w, images/image_53.jpg 64w, images/image_120.jpg 96w, images/image_71.jpg 128w, images/image_99.jpg 256w, images/image_124.jpg 384w, images/image_93.jpg 640w, images/image_80.jpg 750w, images/image_110.jpg 828w, images/image_125.jpg 1080w, images/image_79.jpg 1200w, images/image_82.jpg 1920w, images/image_123.jpg 2048w, images/image_5.jpg 3840w"
+                      src="images/image_5.jpg">
+                    <div
+                      class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4 text-white">
+                      <div class="flex items-center justify-between">
+                        <div class="space-y-1">
+                          <h3 class="text-lg font-semibold line-clamp-1">Cairo, Egypt | Luxor, Egypt | Aswan, Egypt</h3>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a></div><a
+            class="flex gap-1 justify-center items-center w-fit mx-auto text-xs underline-offset-4 hover:text-primary hover:underline"
+            href="/community-plans"><span>View All Community Plans</span><svg xmlns="http://www.w3.org/2000/svg"
+              width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right size-4">
+              <path d="m9 18 6-6-6-6"></path>
+            </svg></a>
+        </div>
+      </section>
+      <section id="pricing"
+        class="min-h-[100svh] bg-background  w-full  flex flex-col gap-5 justify-center items-center px-5 md:px-0 py-10 md:py-0">
+        <div class="flex flex-col gap-2">
+          <h2 class="text-blue-500 text-center text-lg font-bold tracking-wide">Pricing</h2>
+          <h3 class="text-foreground text-center md:text-3xl text-xl font-bold ">Make your Travel Plan Today</h3>
+        </div>
+        <div class="flex gap-5 flex-col lg:flex-row mt-5">
+          <article class="flex flex-col justify-between flex-1 w-full max-w-xs
+        ring-1 ring-muted rounded-3xl p-4 shadow-xl transition-all duration-200
+        relative
+        
+       ">
+            <div class="flex flex-col mb-2">
+              <div class="text-xs font-semibold text-muted-foreground mb-0.5">Free Plan</div>
+              <h3 class="text-blue-500 text-xl font-extrabold leading-7">2 Credits</h3>
+              <p class="mt-2 flex items-baseline gap-x-1.5"><span
+                  class="line-through text-base font-sans text-muted-foreground/70">&#8377;400</span><span
+                  class="text-2xl font-bold tracking-tight text-foreground">&#8377;0</span></p>
+            </div>
+            <div class="flex flex-col flex-1">
+              <ul role="list" class="mt-4 space-y-2 text-sm leading-5 text-foreground">
+                <li class="flex gap-x-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="lucide lucide-check-circle2 h-4 w-4 flex-none text-blue-600">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>Top Spots Unveiled</li>
+                <li class="flex gap-x-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="lucide lucide-check-circle2 h-4 w-4 flex-none text-blue-600">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>Tailored Itineraries (up to 7 days)</li>
+                <li class="flex gap-x-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="lucide lucide-check-circle2 h-4 w-4 flex-none text-blue-600">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>Optimal Timing</li>
+                <li class="flex gap-x-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="lucide lucide-check-circle2 h-4 w-4 flex-none text-blue-600">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>Foodie Hotspots</li>
+                <li class="flex gap-x-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="lucide lucide-check-circle2 h-4 w-4 flex-none text-blue-600">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>Prime Experiences</li>
+                <li class="flex gap-x-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="lucide lucide-check-circle2 h-4 w-4 flex-none text-blue-600">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>Expense Tracking</li>
+                <li class="flex gap-x-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="lucide lucide-check-circle2 h-4 w-4 flex-none text-blue-600">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>Community Plans</li>
+                <li class="flex gap-x-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="lucide lucide-check-circle2 h-4 w-4 flex-none text-blue-600">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>City & Country Guides</li>
+                <li class="flex gap-x-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="lucide lucide-check-circle2 h-4 w-4 flex-none text-blue-600">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>Smart Travel Optimization</li>
+                <li class="flex gap-x-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="lucide lucide-check-circle2 h-4 w-4 flex-none text-blue-600">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>Invite Others (1 collaborator)</li>
+                <li class="flex gap-x-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="lucide lucide-check-circle2 h-4 w-4 flex-none text-blue-600">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>Aggregated, Meta-searched Booking Links (Flights, Hotels, Activities)</li>
+              </ul>
+              <p class="text-xs text-muted-foreground font-medium mt-3">Free Forever. No subscription required.</p>
+            </div>
+            <div class="mt-4"><button
+                class="inline-flex items-center justify-center gap-2 whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 bg-blue-500 text-white hover:bg-blue-600 hover:shadow-sm text-sm font-semibold rounded-lg w-full"
+                id="btn-try-now" aria-label="generate plan"><svg xmlns="http://www.w3.org/2000/svg" width="24"
+                  height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-navigation h-4 w-4">
+                  <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+                </svg>Try Now - 2 Free Credits</button></div>
+          </article>
+          <article class="flex flex-col justify-between flex-1 w-full max-w-xs
+        ring-1 ring-muted rounded-3xl p-4 shadow-xl transition-all duration-200
+        relative
+        border-2 border-blue-500 shadow-blue-200 dark:shadow-none scale-105 z-10
+       ">
+            <div
+              class="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-500 text-white text-xs font-bold px-3 py-0.5 rounded-full shadow-md">
+              Most Popular</div>
+            <div class="flex flex-col mb-2">
+              <div class="text-xs font-semibold text-muted-foreground mb-0.5">Paid Plan</div>
+              <h3 class="text-blue-500 text-xl font-extrabold leading-7">5 Credits</h3>
+              <p class="mt-2 flex items-baseline gap-x-1.5"><span
+                  class="line-through text-base font-sans text-muted-foreground/70">&#8377;1000</span><span
+                  class="text-2xl font-bold tracking-tight text-foreground">&#8377;250</span></p>
+            </div>
+            <div class="flex flex-col flex-1">
+              <ul role="list" class="mt-4 space-y-2 text-sm leading-5 text-foreground">
+                <li class="flex gap-x-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="lucide lucide-check-circle2 h-4 w-4 flex-none text-blue-600">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>Top Spots Unveiled</li>
+                <li class="flex gap-x-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="lucide lucide-check-circle2 h-4 w-4 flex-none text-blue-600">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>Tailored Itineraries (up to 30 days)</li>
+                <li class="flex gap-x-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="lucide lucide-check-circle2 h-4 w-4 flex-none text-blue-600">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>Optimal Timing</li>
+                <li class="flex gap-x-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="lucide lucide-check-circle2 h-4 w-4 flex-none text-blue-600">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>Foodie Hotspots</li>
+                <li class="flex gap-x-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="lucide lucide-check-circle2 h-4 w-4 flex-none text-blue-600">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>Prime Experiences</li>
+                <li class="flex gap-x-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="lucide lucide-check-circle2 h-4 w-4 flex-none text-blue-600">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>Expense Tracking</li>
+                <li class="flex gap-x-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="lucide lucide-check-circle2 h-4 w-4 flex-none text-blue-600">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>Community Plans</li>
+                <li class="flex gap-x-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="lucide lucide-check-circle2 h-4 w-4 flex-none text-blue-600">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>City & Country Guides</li>
+                <li class="flex gap-x-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="lucide lucide-check-circle2 h-4 w-4 flex-none text-blue-600">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>Smart Travel Optimization</li>
+                <li class="flex gap-x-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="lucide lucide-check-circle2 h-4 w-4 flex-none text-blue-600">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>Invite Others (up to 5 collaborators)</li>
+                <li class="flex gap-x-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="lucide lucide-check-circle2 h-4 w-4 flex-none text-blue-600">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>Aggregated, Meta-searched Booking Links (Flights, Hotels, Activities)</li>
+              </ul>
+              <p class="text-xs text-muted-foreground font-medium mt-3">One-time payment. No subscription required.</p>
+            </div>
+            <div class="mt-4"><button
+                class="inline-flex items-center justify-center gap-2 whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 bg-blue-500 text-white hover:bg-blue-600 hover:shadow-sm text-sm font-semibold rounded-lg w-full"
+                id="btn-buy-credits"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="lucide lucide-credit-card h-4 w-4 mr-2">
+                  <rect width="20" height="14" x="2" y="5" rx="2"></rect>
+                  <line x1="2" x2="22" y1="10" y2="10"></line>
+                </svg>Sign in to Buy Credits</button></div>
+          </article>
+          <article class="flex flex-col justify-between flex-1 w-full max-w-xs
+        ring-1 ring-muted rounded-3xl p-4 shadow-xl transition-all duration-200
+        relative
+        
+       ">
+            <div class="flex flex-col mb-2">
+              <div class="text-xs font-semibold text-muted-foreground mb-0.5">Business Plan</div>
+              <h3 class="text-blue-500 text-xl font-extrabold leading-7">Let's Talk</h3>
+              <p class="mt-2 flex items-baseline gap-x-1.5"><span
+                  class="line-through text-base font-sans text-muted-foreground/70"></span><span
+                  class="text-2xl font-bold tracking-tight text-foreground">Contact Us</span></p>
+            </div>
+            <div class="flex flex-col flex-1">
+              <ul role="list" class="mt-4 space-y-2 text-sm leading-5 text-foreground">
+                <li class="flex gap-x-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="lucide lucide-check-circle2 h-4 w-4 flex-none text-blue-600">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>All Paid Plan Features</li>
+                <li class="flex gap-x-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="lucide lucide-check-circle2 h-4 w-4 flex-none text-blue-600">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>Tailored Itineraries (30+ days, advanced constraints)</li>
+                <li class="flex gap-x-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="lucide lucide-check-circle2 h-4 w-4 flex-none text-blue-600">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>White-labeled Planning Experience</li>
+                <li class="flex gap-x-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="lucide lucide-check-circle2 h-4 w-4 flex-none text-blue-600">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>Bulk Credit Packages</li>
+                <li class="flex gap-x-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="lucide lucide-check-circle2 h-4 w-4 flex-none text-blue-600">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>API Access (on request)</li>
+                <li class="flex gap-x-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="lucide lucide-check-circle2 h-4 w-4 flex-none text-blue-600">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>Early Access to New Features</li>
+                <li class="flex gap-x-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="lucide lucide-check-circle2 h-4 w-4 flex-none text-blue-600">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>Custom Booking Flows</li>
+                <li class="flex gap-x-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="lucide lucide-check-circle2 h-4 w-4 flex-none text-blue-600">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>Dedicated Account Manager</li>
+                <li class="flex gap-x-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="lucide lucide-check-circle2 h-4 w-4 flex-none text-blue-600">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>Enhanced Analytics & Reporting</li>
+              </ul>
+              <p class="text-xs text-muted-foreground font-medium mt-3"> Perfect for travel agencies, influencer brands,
+                platforms, and enterprise partners.</p>
+            </div>
+            <div class="mt-4"><a href="/partners"
+                class="w-full text-center bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded-lg transition-colors flex items-center justify-center gap-2"><svg
+                  xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="lucide lucide-heart-handshake inline h-4 w-4 mr-2">
+                  <path
+                    d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z">
+                  </path>
+                  <path
+                    d="M12 5 9.04 7.96a2.17 2.17 0 0 0 0 3.08v0c.82.82 2.13.85 3 .07l2.07-1.9a2.82 2.82 0 0 1 3.79 0l2.96 2.66">
+                  </path>
+                  <path d="m18 15-2-2"></path>
+                  <path d="m15 18-2-2"></path>
+                </svg>Become a Partner</a></div>
+          </article>
+        </div>
+      </section>
+      <footer class="py-5 mt-10 bg-blue-50 dark:bg-slate-900 dark:text-gray-200 relative z-[1000]">
+        <div class="lg:px-20 px-5 py-2 grid grid-cols-4 justify-between gap-10 lg:grid-cols-6 lg:text-left">
+          <div class="col-span-4 flex w-full flex-col gap-6 lg:col-span-2">
+            <div class="flex items-center gap-2 lg:justify-start">
+              <div class="hidden md:flex gap-10 items-center justify-start flex-1"><a href="/">
+                  <div class="flex justify-center items-center leading-5 font-bold text-xl"><img alt="logo"
+                      loading="lazy" width="100" height="50" decoding="async" data-nimg="1" class="dark:hidden"
+                      style="color:transparent" srcset="images/image_3.png 1x, images/image.png 2x"
+                      src="images/image.png"><img alt="logo" loading="lazy" width="100" height="50" decoding="async"
+                      data-nimg="1" class="hidden dark:block" style="color:transparent"
+                      srcset="images/image_4.png 1x, images/image_2.png 2x" src="images/image_2.png"></div>
+                </a></div>
+            </div>
+            <p class="text-muted-foreground dark:text-gray-400">Your perfect trip, built for you. Effortlessly plan
+              personalized itineraries that match your travel style.</p>
+            <ul class="flex items-center space-x-6">
+              <li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300">
+                <a href="https://www.instagram.com/yatrify.ai" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512"
+                    class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z">
+                    </path>
+                  </svg></a></li>
+              <li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300">
+                <a href="https://www.facebook.com/profile.php?id=61577480754112" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512"
+                    class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M504 256C504 119 393 8 256 8S8 119 8 256c0 123.78 90.69 226.38 209.25 245V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.28c-30.8 0-40.41 19.12-40.41 38.73V256h68.78l-11 71.69h-57.78V501C413.31 482.38 504 379.78 504 256z">
+                    </path>
+                  </svg></a></li>
+              <li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300">
+                <a href="https://x.com/Yatrify_ai" target="_blank" rel="noopener noreferrer" aria-label="X"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512"
+                    class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8l165-188.5L26.7 48H172.3l100.7 132.1L389.2 48zm-24.8 373.8h39.1L151.1 88.1h-42l255.3 333.7z"></path>
+                  </svg></a></li>
+              <li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300">
+                <a href="https://www.linkedin.com/in/yatrify-ai" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512"
+                    class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z">
+                    </path>
+                  </svg></a></li>
+            </ul>
+          </div>
+          <div class="col-span-2 md:col-span-1">
+            <h3 class="mb-5 font-medium">Support</h3>
+            <ul class="space-y-4 text-sm text-muted-foreground dark:text-gray-400">
+              <li class="font-medium"><a
+                  class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
+                  href="/help-center">Help Center</a></li>
+              <li class="font-medium"><a
+                  class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
+                  href="/contact-us">Contact Us</a></li>
+              <li class="font-medium"><a
+                  class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
+                  href="/privacy-policy">Privacy Policy</a></li>
+              <li class="font-medium"><a
+                  class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
+                  href="/terms-of-service">Terms of Service</a></li>
+            </ul>
+          </div>
+          <div class="col-span-2 md:col-span-1">
+            <h3 class="mb-5 font-medium">Company</h3>
+            <ul class="space-y-4 text-sm text-muted-foreground dark:text-gray-400">
+              <li class="font-medium"><a
+                  class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
+                  href="/about-us">About Us</a></li>
+              <li class="font-medium"><a
+                  class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
+                  href="/partners">Partners</a></li>
+            </ul>
+          </div>
+          <div class="col-span-4 md:col-span-2">
+            <h3 class="mb-2 font-medium">Newsletter</h3>
+            <form class="grid gap-1">
+              <div class="flex justify-evenly w-full space-x-2"><input type="email"
+                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-slate-800 dark:border-slate-700"
+                  data-slot="input" placeholder="Email" required="" value=""><button
+                  class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 px-4 py-2 dark:bg-slate-700 dark:hover:bg-slate-600"
+                  data-slot="button" type="submit">Subscribe</button></div>
+            </form>
+            <p class="mt-2 ml-1 text-xs font-medium text-muted-foreground dark:text-gray-400">By submitting, you agree
+              to our<a href="/privacy-policy" class="ml-1 text-primary dark:text-blue-400 hover:underline">Privacy
+                Policy</a></p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </main><!--$-->
+  <style>
+    #nprogress {
+      pointer-events: none;
+    }
+
+    #nprogress .bar {
+      background: #0066FF;
+
+      position: fixed;
+      z-index: 1031;
+      top: 0;
+      left: 0;
+
+      width: 100%;
+      height: 4px;
+    }
+
+    /* Fancy blur effect */
+    #nprogress .peg {
+      display: block;
+      position: absolute;
+      right: 0px;
+      width: 100px;
+      height: 100%;
+      box-shadow: 0 0 10px #0066FF, 0 0 5px #0066FF;
+      opacity: 1.0;
+
+      -webkit-transform: rotate(3deg) translate(0px, -4px);
+      -ms-transform: rotate(3deg) translate(0px, -4px);
+      transform: rotate(3deg) translate(0px, -4px);
+    }
+
+    /* Remove these to get rid of the spinner */
+    #nprogress .spinner {
+      display: block;
+      position: fixed;
+      z-index: 1031;
+      top: 15px;
+      right: 15px;
+    }
+
+    #nprogress .spinner-icon {
+      width: 18px;
+      height: 18px;
+      box-sizing: border-box;
+
+      border: solid 2px transparent;
+      border-top-color: #0066FF;
+      border-left-color: #0066FF;
+      border-radius: 50%;
+
+      -webkit-animation: nprogress-spinner 400ms linear infinite;
+      animation: nprogress-spinner 400ms linear infinite;
+    }
+
+    .nprogress-custom-parent {
+      overflow: hidden;
+      position: relative;
+    }
+
+    .nprogress-custom-parent #nprogress .spinner,
+    .nprogress-custom-parent #nprogress .bar {
+      position: absolute;
+    }
+
+    @-webkit-keyframes nprogress-spinner {
+      0% {
+        -webkit-transform: rotate(0deg);
+      }
+
+      100% {
+        -webkit-transform: rotate(360deg);
+      }
+    }
+
+    @keyframes nprogress-spinner {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style><!--/$-->
+  <div role="region" aria-label="Notifications (F8)" tabindex="-1" style="pointer-events:none">
+    <ol tabindex="-1"
+      class="fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]">
+    </ol>
+  </div>
+  <div id="plan-modal"
+    style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55);z-index:9998;padding:16px;opacity:0;transition:opacity .2s ease;">
+    <div
+      style="max-width:640px;width:100%;background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.25);padding:20px 22px;position:relative;">
+      <button id="plan-close"
+        style="position:absolute;top:10px;right:10px;border:0;background:#f3f4f6;border-radius:10px;padding:6px 10px;cursor:pointer;">Close</button>
+      <h2 style="font-size:18px;font-weight:700;margin-bottom:10px;">Generate Your Trip Plan</h2>
+      <textarea id="plan-input" rows="4"
+        placeholder="Example: 4 days in Paris, budget-friendly, love art museums and cafes"
+        style="width:100%;border:1px solid #e5e7eb;border-radius:10px;padding:10px;font-size:14px;resize:vertical;"></textarea>
+      <button id="plan-generate"
+        style="margin-top:10px;width:100%;background:#2563eb;color:#fff;border:0;border-radius:10px;padding:10px;font-weight:600;cursor:pointer;">Generate
+        Plan</button>
+      <pre id="plan-output"
+        style="margin-top:12px;white-space:pre-wrap;font-size:13px;line-height:1.4;background:#f9fafb;border:1px solid #f3f4f6;border-radius:10px;padding:10px;min-height:120px;"></pre>
+    </div>
+  </div>
+  <div id="signin-modal"
+    style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(17,24,39,.62);z-index:9999;padding:20px;opacity:0;transition:opacity .25s ease;overflow-y:auto;font-family:inherit;">
+    <div
+      style="max-width:500px;width:100%;background:#fff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.28);padding:26px 34px 22px;position:relative;">
+      <button id="signin-close"
+        style="position:absolute;top:14px;right:16px;border:0;background:none;color:#6b7280;cursor:pointer;font-size:38px;line-height:1;"
+        title="Close">&times;</button>
+      <img src="/images/image.png" alt="Yatrify logo" style="width:94px;margin-bottom:12px;" class="dark:hidden" />
+      <img src="/images/image_2.png" alt="Yatrify logo" style="width:94px;margin-bottom:12px;"
+        class="hidden dark:block" />
+      <h2 id="auth-modal-title"
+        style="font-size:35px;line-height:1.02;font-weight:700;color:#0f172a;margin:0 0 6px;letter-spacing:-0.02em;">
+        Sign in</h2>
+      <p id="auth-modal-subtitle" style="font-size:15px;color:#64748b;margin:0 0 16px;letter-spacing:-0.01em;">to
+        continue to Yatrify</p>
+      <div id="clerk-signin"></div>
+      <div id="clerk-signup" style="display:none;"></div>
+      <p style="margin:16px 0 2px;text-align:center;font-size:14px;color:#64748b;">
+        <span id="auth-toggle-text">No account?</span>
+        <a id="auth-toggle-link" href="#"
+          style="margin-left:6px;color:#0b1638;text-decoration:underline;font-weight:600;">Sign up</a>
+      </p>
+    </div>
+    <style>
+      #signin-modal .cl-root,
+      #signin-modal .cl-main,
+      #signin-modal .cl-signIn-root {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        font-family: inherit !important;
+      }
+
+      #signin-modal,
+      #signin-modal * {
+        font-family: inherit !important;
+      }
+
+      #signin-modal .cl-card,
+      #signin-modal .cl-cardBox {
+        border: 0 !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+
+      #signin-modal .cl-header {
+        display: none !important;
+      }
+
+      #signin-modal .cl-footer {
+        display: none !important;
+      }
+
+      #signin-modal .cl-formButtonPrimary {
+        background: #0b1638 !important;
+        border-radius: 10px !important;
+        font-weight: 700 !important;
+        min-height: 46px !important;
+        letter-spacing: .03em !important;
+        text-transform: none !important;
+      }
+
+      #signin-modal .cl-socialButtonsBlockButton,
+      #signin-modal .cl-formFieldInput {
+        border-radius: 8px !important;
+        border-color: #cbd5e1 !important;
+        min-height: 50px !important;
+        font-family: inherit !important;
+      }
+
+      #signin-modal .cl-socialButtonsBlockButton {
+        position: relative !important;
+        overflow: visible !important;
+      }
+
+      #signin-modal [class*="socialButtonsBlock"] {
+        overflow: visible !important;
+      }
+
+      #signin-modal [class*="socialButtonsBlockButton"] {
+        overflow: visible !important;
+        position: relative !important;
+      }
+
+      #signin-modal [class*="badge"] {
+        display: none !important;
+      }
+
+      #signin-modal .cl-formFieldLabel,
+      #signin-modal .cl-footerAction,
+      #signin-modal .cl-formFieldHintText,
+      #signin-modal .cl-identityPreviewText,
+      #signin-modal .cl-dividerText {
+        font-family: inherit !important;
+      }
+
+      #signin-modal .cl-dividerLine {
+        background: #cbd5e1 !important;
+      }
+
+      .dark #signin-modal>div {
+        background: #0b1220 !important;
+        border-color: #334155 !important;
+        box-shadow: 0 20px 60px rgba(2, 6, 23, .65) !important;
+      }
+
+      .dark #signin-modal #signin-close {
+        color: #94a3b8 !important;
+      }
+
+      .dark #signin-modal #auth-modal-title {
+        color: #f8fafc !important;
+      }
+
+      .dark #signin-modal #auth-modal-subtitle,
+      .dark #signin-modal #auth-toggle-text {
+        color: #94a3b8 !important;
+      }
+
+      .dark #signin-modal #auth-toggle-link {
+        color: #dbeafe !important;
+      }
+
+      .dark #signin-modal .cl-socialButtonsBlockButton,
+      .dark #signin-modal .cl-formFieldInput {
+        background: #0f172a !important;
+        border-color: #334155 !important;
+        color: #e2e8f0 !important;
+      }
+
+      .dark #signin-modal .cl-dividerLine {
+        background: #334155 !important;
+      }
+
+      .dark #signin-modal .cl-formButtonPrimary {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+        color: #ffffff !important;
+        border: 1px solid #3b82f6 !important;
+        box-shadow: 0 8px 22px rgba(37, 99, 235, .4) !important;
+      }
+
+      .dark #signin-modal .cl-formButtonPrimary:hover {
+        background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+      }
+    </style>
+  </div>
+  <script src="/js/clerk-loader.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/plan-service.js"></script>
+  <script>
+    (function () {
+      var tryNowBtns = document.querySelectorAll('[id="btn-try-now"]');
+      var buyCreditsBtn = document.getElementById('btn-buy-credits');
+      var dashboardLink = document.getElementById('dashboard-link');
+      var modal = document.getElementById('signin-modal');
+      var closeBtn = document.getElementById('signin-close');
+      var signInBtn = document.getElementById('open-signin');
+      var signInNode = document.getElementById('clerk-signin');
+      var signUpNode = document.getElementById('clerk-signup');
+      var authTitle = document.getElementById('auth-modal-title');
+      var authSubtitle = document.getElementById('auth-modal-subtitle');
+      var authToggleText = document.getElementById('auth-toggle-text');
+      var authToggleLink = document.getElementById('auth-toggle-link');
+      var signInLink = document.getElementById('signin-link');
+      var signUpLink = document.getElementById('signup-link');
+      var profile = document.getElementById('user-profile');
+      var avatar = document.getElementById('user-avatar');
+      var nameEl = document.getElementById('profile-name');
+      var emailEl = document.getElementById('profile-email');
+      var profileBtn = document.getElementById('profile-btn');
+      var profileMenu = document.getElementById('profile-menu');
+      var manageBtn = document.getElementById('manage-account');
+      var signOutBtn = document.getElementById('signout-btn');
+      var signInMounted = false;
+      var signUpMounted = false;
+      var authMode = 'sign-in';
+
+      var planModal = document.getElementById('plan-modal');
+      var planClose = document.getElementById('plan-close');
+      var planInput = document.getElementById('plan-input');
+      var planGenerate = document.getElementById('plan-generate');
+      var planOutput = document.getElementById('plan-output');
+      function getApiBaseUrl() {
+        return (window.__YATRIFY_API_BASE_URL && String(window.__YATRIFY_API_BASE_URL).trim()) || 'http://localhost:4000';
+      }
+
+      function renderAuthMode(mode) {
+        authMode = mode === 'sign-up' ? 'sign-up' : 'sign-in';
+        if (authTitle) authTitle.textContent = authMode === 'sign-up' ? 'Create your account' : 'Sign in';
+        if (authSubtitle) authSubtitle.textContent = 'to continue to Yatrify';
+        if (signInNode) signInNode.style.display = authMode === 'sign-in' ? 'block' : 'none';
+        if (signUpNode) signUpNode.style.display = authMode === 'sign-up' ? 'block' : 'none';
+        if (authToggleText) authToggleText.textContent = authMode === 'sign-up' ? 'Already have an account?' : 'No account?';
+        if (authToggleLink) authToggleLink.textContent = authMode === 'sign-up' ? 'Sign in' : 'Sign up';
+      }
+
+      function ensureClerkLoaded() {
+        if (window.Clerk) {
+          return window.Clerk.loaded ? Promise.resolve() : window.Clerk.load();
+        }
+        if (typeof window.__loadYatrifyClerk === 'function') {
+          return window.__loadYatrifyClerk(true).then(function () {
+            if (!window.Clerk) throw new Error('Clerk SDK not available');
+            return window.Clerk.loaded ? Promise.resolve() : window.Clerk.load();
+          });
+        }
+        return Promise.reject(new Error('Clerk SDK not available'));
+      }
+
+      function openModal(mode) {
+        modal.style.display = 'flex';
+        requestAnimationFrame(function () { modal.style.opacity = '1'; });
+        document.body.style.overflow = 'hidden';
+        renderAuthMode(mode);
+        ensureClerkLoaded().then(function () {
+          if (!signInMounted && signInNode) {
+            window.Clerk.mountSignIn(signInNode, { afterSignInUrl: window.location.href });
+            signInMounted = true;
+          }
+          if (!signUpMounted && signUpNode) {
+            window.Clerk.mountSignUp(signUpNode, { afterSignInUrl: window.location.href, afterSignUpUrl: window.location.href });
+            signUpMounted = true;
+          }
+        }).catch(function (err) {
+          console.error('Clerk failed to load', err);
+        });
+      }
+
+      function closeModal() {
+        modal.style.opacity = '0';
+        setTimeout(function () { modal.style.display = 'none'; }, 200);
+        document.body.style.overflow = '';
+      }
+
+      function openPlanModal() {
+        if (!planModal) return;
+        planModal.style.display = 'flex';
+        requestAnimationFrame(function () { planModal.style.opacity = '1'; });
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closePlanModal() {
+        if (!planModal) return;
+        planModal.style.opacity = '0';
+        setTimeout(function () { planModal.style.display = 'none'; }, 200);
+        document.body.style.overflow = '';
+      }
+
+      function openMenu() {
+        if (profileMenu) profileMenu.style.display = 'block';
+      }
+      function closeMenu() {
+        if (profileMenu) profileMenu.style.display = 'none';
+      }
+
+      function redirectToNewPlan() {
+        window.location.href = 'plans-newplan.html';
+      }
+
+      function redirectToDashboard() {
+        window.location.href = 'dashboard.html';
+      }
+
+      function getPlanListFromPayload(payload) {
+        if (Array.isArray(payload)) return payload;
+        if (payload && Array.isArray(payload.plans)) return payload.plans;
+        return [];
+      }
+
+      function routeBasedOnPlanCount() {
+        if (!window.YatrifyPlanService || typeof window.YatrifyPlanService.listPlans !== 'function') {
+          redirectToNewPlan();
+          return Promise.resolve();
+        }
+        return window.YatrifyPlanService.listPlans().then(function (payload) {
+          var plans = getPlanListFromPayload(payload);
+          if (plans.length > 0) {
+            redirectToDashboard();
+          } else {
+            redirectToNewPlan();
+          }
+        }).catch(function () {
+          redirectToNewPlan();
+        });
+      }
+
+      function setPendingAdventureRedirect() {
+        try {
+          window.sessionStorage.setItem('yatrify.pendingAdventureRedirect', '1');
+        } catch (_) {}
+      }
+
+      function consumePendingAdventureRedirect() {
+        try {
+          if (window.sessionStorage.getItem('yatrify.pendingAdventureRedirect') !== '1') return false;
+          window.sessionStorage.removeItem('yatrify.pendingAdventureRedirect');
+          return true;
+        } catch (_) {
+          return false;
+        }
+      }
+
+      function renderAdventureButtonLabel(btn, label) {
+        if (!btn) return;
+        btn.innerHTML =
+          '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-navigation h-4 w-4"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>' +
+          '<span style="font-weight:700;">' + label + '</span>';
+      }
+
+      function renderBuyCreditsButtonLabel(btn, label) {
+        if (!btn) return;
+        btn.innerHTML =
+          '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-credit-card h-4 w-4"><rect width="20" height="14" x="2" y="5" rx="2"></rect><line x1="2" x2="22" y1="10" y2="10"></line></svg>' +
+          '<span style="font-weight:700;">' + label + '</span>';
+      }
+
+      function handleStartAdventure(e) {
+        if (e) e.preventDefault();
+        ensureClerkLoaded().then(function () {
+          if (!window.Clerk || !window.Clerk.user) {
+            setPendingAdventureRedirect();
+            openModal('sign-in');
+            return;
+          }
+          routeBasedOnPlanCount();
+        }).catch(function () {
+          setPendingAdventureRedirect();
+          openModal('sign-in');
+        });
+      }
+
+      function handleAuthRequired(e) {
+        if (window.Clerk && window.Clerk.user) {
+          redirectToNewPlan();
+          return;
+        }
+        e.preventDefault();
+        openModal('sign-in');
+      }
+
+      async function generatePlan() {
+        var prompt = (planInput && planInput.value || '').trim();
+        if (!prompt) {
+          if (planOutput) planOutput.textContent = 'Please enter your trip details.';
+          return;
+        }
+        if (planOutput) planOutput.textContent = 'Generating plan...';
+        try {
+          var res = await fetch(getApiBaseUrl() + '/api/plan', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: prompt })
+          });
+          var data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Failed');
+          if (planOutput) planOutput.textContent = data.text || 'No response.';
+        } catch (err) {
+          if (planOutput) planOutput.textContent = 'Failed to generate plan.';
+        }
+      }
+
+      function updateUI() {
+        if (!window.Clerk || !window.Clerk.user) {
+          if (signInBtn) signInBtn.style.display = 'inline-flex';
+          if (dashboardLink) dashboardLink.style.display = 'none';
+          if (profile) profile.style.display = 'none';
+          closeMenu();
+          return;
+        }
+        if (signInBtn) signInBtn.style.display = 'none';
+        if (dashboardLink) dashboardLink.style.display = 'inline-block';
+        if (profile) profile.style.display = 'inline-flex';
+        if (avatar) avatar.src = window.Clerk.user.imageUrl || '';
+        if (nameEl) {
+          var name = [window.Clerk.user.firstName, window.Clerk.user.lastName].filter(Boolean).join(' ');
+          nameEl.textContent = name || 'Account';
+        }
+        if (emailEl) {
+          emailEl.textContent = window.Clerk.user.primaryEmailAddress ? window.Clerk.user.primaryEmailAddress.emailAddress : '';
+        }
+        if (tryNowBtns) {
+          tryNowBtns.forEach(function (btn) {
+            renderAdventureButtonLabel(btn, 'Start your Adventure');
+          });
+        }
+        if (buyCreditsBtn) renderBuyCreditsButtonLabel(buyCreditsBtn, 'Buy Credits');
+        if (window.Clerk && window.Clerk.user && consumePendingAdventureRedirect()) {
+          routeBasedOnPlanCount();
+        }
+      }
+
+      if (signInBtn) {
+        signInBtn.addEventListener('click', function (e) {
+          e.preventDefault();
+          openModal('sign-in');
+        });
+      }
+
+      if (signInLink) {
+        signInLink.addEventListener('click', function (e) {
+          e.preventDefault();
+          openModal('sign-in');
+        });
+      }
+
+      if (signUpLink) {
+        signUpLink.addEventListener('click', function (e) {
+          e.preventDefault();
+          openModal('sign-up');
+        });
+      }
+
+      if (authToggleLink) {
+        authToggleLink.addEventListener('click', function (e) {
+          e.preventDefault();
+          openModal(authMode === 'sign-up' ? 'sign-in' : 'sign-up');
+        });
+      }
+
+      if (tryNowBtns) {
+        tryNowBtns.forEach(function (btn) {
+          btn.addEventListener('click', handleStartAdventure);
+        });
+      }
+      if (buyCreditsBtn) buyCreditsBtn.addEventListener('click', handleAuthRequired);
+
+      if (closeBtn) closeBtn.addEventListener('click', closeModal);
+      if (modal) {
+        modal.addEventListener('click', function (e) {
+          if (e.target === modal) closeModal();
+        });
+      }
+
+      if (planClose) planClose.addEventListener('click', closePlanModal);
+      if (planModal) {
+        planModal.addEventListener('click', function (e) {
+          if (e.target === planModal) closePlanModal();
+        });
+      }
+
+      if (planGenerate) planGenerate.addEventListener('click', generatePlan);
+
+      if (profileBtn) {
+        profileBtn.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          if (profileMenu && profileMenu.style.display === 'block') {
+            closeMenu();
+          } else {
+            openMenu();
+          }
+        });
+      }
+
+      if (profileMenu) {
+        profileMenu.addEventListener('click', function (e) {
+          e.stopPropagation();
+        });
+      }
+
+      document.addEventListener('click', function (e) {
+        if (!profile) return;
+        if (!profile.contains(e.target)) {
+          closeMenu();
+        }
+      });
+
+      if (manageBtn) {
+        manageBtn.addEventListener('click', function () {
+          if (window.Clerk) window.Clerk.openUserProfile();
+        });
+      }
+
+      if (signOutBtn) {
+        signOutBtn.addEventListener('click', function () {
+          if (window.Clerk) window.Clerk.signOut({ redirectUrl: window.location.href });
+        });
+      }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+          closeModal();
+          closePlanModal();
+        }
+      });
+
+      window.addEventListener('load', function () {
+        ensureClerkLoaded().then(function () {
+          updateUI();
+          window.Clerk.addListener(updateUI);
+        }).catch(function () {
+        });
+      });
+
+      // Theme Toggle Functionality
+      function initTheme() {
+        var theme = localStorage.getItem('theme') || 'light';
+        var html = document.documentElement;
+        html.classList.toggle('dark', theme === 'dark');
+        html.style.colorScheme = theme;
+      }
+
+      function toggleTheme() {
+        var html = document.documentElement;
+        var isDark = html.classList.contains('dark');
+        var newTheme = isDark ? 'light' : 'dark';
+
+        html.classList.toggle('dark');
+        html.style.colorScheme = newTheme;
+        localStorage.setItem('theme', newTheme);
+      }
+
+      // Initialize theme on page load
+      initTheme();
+
+      // Theme toggle button
+      var themeToggleBtn = document.getElementById('theme-toggle-btn');
+      if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', toggleTheme);
+      }
+
+    })();
+  </script>
+<script src="/js/page-transition.js"></script>
+<script src="/js/page-data-loader.js"></script>
+</body>
+
+</html>
+
+
+

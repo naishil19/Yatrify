@@ -1,0 +1,31 @@
+version: '3.9'
+services:
+  db:
+    image: postgres:16
+    container_name: Yatrify_db
+    environment:
+      POSTGRES_DB: Yatrify
+      POSTGRES_USER: Yatrify
+      POSTGRES_PASSWORD: Yatrify_dev_password
+    ports:
+      - '5432:5432'
+    volumes:
+      - Yatrify_db_data:/var/lib/postgresql/data
+      - ./backend/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+  api:
+    image: node:20
+    container_name: Yatrify_api
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+    command: sh -c "npm install && npm run dev"
+    environment:
+      PORT: 4000
+      DATABASE_URL: postgresql://Yatrify:Yatrify_dev_password@db:5432/Yatrify
+      CLERK_WEBHOOK_SECRET: REPLACE_ME
+    ports:
+      - '4000:4000'
+    depends_on:
+      - db
+volumes:
+  Yatrify_db_data:

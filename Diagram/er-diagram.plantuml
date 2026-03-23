@@ -1,0 +1,91 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+
+' ================= ENTITIES =================
+rectangle "User" as User
+rectangle "Trip" as Trip
+rectangle "Itinerary" as Itinerary
+rectangle "DayPlan" as DayPlan
+rectangle "Expense" as Expense
+rectangle "Collaboration" as Collaboration
+rectangle "Comment" as Comment
+rectangle "Booking" as Booking
+rectangle "Image" as Image
+rectangle "Payment" as Payment
+
+' ================= ATTRIBUTES =================
+ellipse "user_id" as u1
+ellipse "name" as u2
+ellipse "email" as u3
+ellipse "password" as u4
+ellipse "credits" as u5
+
+User -- u1
+User -- u2
+User -- u3
+User -- u4
+User -- u5
+
+ellipse "trip_id" as t1
+ellipse "destination" as t2
+ellipse "start_date" as t3
+ellipse "end_date" as t4
+ellipse "budget" as t5
+
+Trip -- t1
+Trip -- t2
+Trip -- t3
+Trip -- t4
+Trip -- t5
+
+ellipse "day_number" as d1
+ellipse "activities" as d2
+
+DayPlan -- d1
+DayPlan -- d2
+
+ellipse "amount" as e1
+ellipse "category" as e2
+
+Expense -- e1
+Expense -- e2
+
+ellipse "text" as c1
+ellipse "timestamp" as c2
+
+Comment -- c1
+Comment -- c2
+
+' ================= RELATIONSHIPS =================
+diamond "creates" as r1
+diamond "has" as r2
+diamond "contains" as r3
+diamond "tracks" as r4
+diamond "collaborates" as r5
+diamond "writes" as r6
+diamond "makes" as r7
+
+User -- r1
+r1 -- Trip
+
+Trip -- r2
+r2 -- Itinerary
+
+Itinerary -- r3
+r3 -- DayPlan
+
+Trip -- r4
+r4 -- Expense
+
+User -- r5
+r5 -- Collaboration
+Trip -- Collaboration
+
+User -- r6
+r6 -- Comment
+
+User -- r7
+r7 -- Payment
+
+@enduml

@@ -1,0 +1,141 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+' ===================== CLASSES =====================
+
+class User {
+  +userId: String
+  +name: String
+  +email: String
+  +password: String
+  +credits: int
+  --
+  +signUp()
+  +signIn()
+  +signOut()
+  +createTrip()
+}
+
+class Trip {
+  +tripId: String
+  +startLocation: String
+  +destination: String
+  +startDate: Date
+  +endDate: Date
+  +budget: double
+  +currency: String
+  +isPublished: boolean
+  --
+  +generatePlan()
+  +refinePlan()
+  +publish()
+  +unpublish()
+}
+
+class Itinerary {
+  +itineraryId: String
+  --
+  +generate()
+  +update()
+}
+
+class DayPlan {
+  +dayNumber: int
+  +activities: String
+  --
+  +addActivity()
+  +removeActivity()
+}
+
+class Expense {
+  +expenseId: String
+  +amount: double
+  +category: String
+  +date: Date
+  --
+  +addExpense()
+  +calculateTotal()
+}
+
+class Collaboration {
+  +collabId: String
+  +role: String
+  --
+  +inviteUser()
+  +removeUser()
+}
+
+class Comment {
+  +commentId: String
+  +text: String
+  +timestamp: Date
+  --
+  +addComment()
+}
+
+class BookingLink {
+  +type: String
+  +url: String
+}
+
+class Image {
+  +imageUrl: String
+  --
+  +fetchImage()
+}
+
+class AIService {
+  --
+  +generateItinerary()
+  +refinePlan()
+}
+
+class PaymentService {
+  +paymentId: String
+  +amount: double
+  +status: String
+  --
+  +processPayment()
+}
+
+class CreditSystem {
+  +creditsAvailable: int
+  --
+  +deductCredits()
+  +addCredits()
+}
+
+' ===================== RELATIONSHIPS =====================
+
+' User and Trip
+User "1" --> "0..*" Trip : creates >
+Trip --> User : owned by
+
+' Trip composition
+Trip "1" *-- "1" Itinerary : contains
+Itinerary "1" *-- "1..*" DayPlan : consists of
+
+' Expense tracking
+Trip "1" o-- "0..*" Expense : tracks >
+
+' Collaboration
+Trip "1" o-- "0..*" Collaboration : supports >
+Collaboration "0..*" --> "1" User : participants >
+Collaboration "1" --> "0..*" Comment : has >
+
+' External services
+Trip --> AIService : uses >
+Trip --> Image : fetches >
+Trip --> BookingLink : provides >
+
+' Payment & credits
+User --> PaymentService : makes >
+User --> CreditSystem : uses >
+
+' Additional relations
+Expense --> Trip : belongs to
+DayPlan --> Trip : part of
+
+@enduml
