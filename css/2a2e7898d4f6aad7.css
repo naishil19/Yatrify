@@ -5,248 +5,39 @@ html.yatrify-page-transition-modern.yatrify-shell-loading body {
   overflow: hidden;
 }
 
-html.yatrify-page-transition-modern.yatrify-shell-loading .sidebar,
+html.yatrify-page-transition-modern .topbar,
+html.yatrify-page-transition-modern .main-grid,
+html.yatrify-page-transition-modern footer,
+html.yatrify-page-transition-modern #mobile-drawer {
+  will-change: opacity, transform;
+}
+
+html.yatrify-page-transition-modern.yatrify-shell-loading .topbar,
+html.yatrify-page-transition-modern.yatrify-shell-loading .main-grid,
 html.yatrify-page-transition-modern.yatrify-shell-loading footer,
 html.yatrify-page-transition-modern.yatrify-shell-loading #mobile-drawer {
   opacity: 0 !important;
   visibility: hidden !important;
   pointer-events: none !important;
-}
-
-html.yatrify-page-transition-modern.yatrify-shell-loading .content {
-  position: relative !important;
-  min-height: calc(100vh - 150px);
-  overflow: hidden;
-}
-
-html.yatrify-page-transition-modern.yatrify-shell-loading .content > *:not(#yatrify-modern-loader) {
-  opacity: 0 !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
+  transform: translateY(10px) !important;
 }
 
 html.yatrify-page-transition-modern.yatrify-shell-revealing .topbar,
-html.yatrify-page-transition-modern.yatrify-shell-revealing .sidebar,
 html.yatrify-page-transition-modern.yatrify-shell-revealing .main-grid,
-html.yatrify-page-transition-modern.yatrify-shell-revealing .content,
 html.yatrify-page-transition-modern.yatrify-shell-revealing footer,
 html.yatrify-page-transition-modern.yatrify-shell-revealing #mobile-drawer,
 html.yatrify-page-transition-modern.yatrify-page-revealed .topbar,
-html.yatrify-page-transition-modern.yatrify-page-revealed .sidebar,
 html.yatrify-page-transition-modern.yatrify-page-revealed .main-grid,
-html.yatrify-page-transition-modern.yatrify-page-revealed .content,
 html.yatrify-page-transition-modern.yatrify-page-revealed footer,
-html.yatrify-page-transition-modern.yatrify-page-revealed #mobile-drawer,
-html.yatrify-page-transition-modern.yatrify-shell-revealing .content > *:not(#yatrify-modern-loader),
-html.yatrify-page-transition-modern.yatrify-page-revealed .content > *:not(#yatrify-modern-loader) {
+html.yatrify-page-transition-modern.yatrify-page-revealed #mobile-drawer {
   opacity: 1 !important;
   visibility: visible !important;
   pointer-events: auto !important;
-  transition: opacity 180ms ease;
-}
-
-#yatrify-modern-loader {
-  display: none;
-}
-
-.content > #yatrify-modern-loader {
-  position: absolute;
-  inset: 0;
-  z-index: 12;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  background:
-    linear-gradient(180deg, rgba(248, 250, 252, 0.84) 0%, rgba(241, 245, 249, 0.90) 100%);
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity 180ms ease, visibility 180ms ease;
-}
-
-html.dark .content > #yatrify-modern-loader {
-  background:
-    linear-gradient(180deg, rgba(2, 8, 23, 0.84) 0%, rgba(15, 23, 42, 0.90) 100%);
-}
-
-html.yatrify-page-transition-modern.yatrify-shell-loading .content > #yatrify-modern-loader {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-}
-
-html.yatrify-page-transition-modern.yatrify-shell-revealing .content > #yatrify-modern-loader,
-html.yatrify-page-transition-modern.yatrify-page-revealed .content > #yatrify-modern-loader {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-}
-
-.content > #yatrify-modern-loader::before,
-.content > #yatrify-modern-loader::after {
-  content: "";
-  position: fixed;
-  left: 0;
-  right: 0;
-  top: 0;
-  pointer-events: none;
-}
-
-.content > #yatrify-modern-loader::before {
-  height: 3px;
-  background: linear-gradient(90deg, rgba(37, 99, 235, 0.12), rgba(59, 130, 246, 0.22), rgba(37, 99, 235, 0.12));
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.18) inset;
-}
-
-.content > #yatrify-modern-loader::after {
-  width: 38vw;
-  min-width: 160px;
-  max-width: 420px;
-  height: 3px;
-  right: auto;
-  background: linear-gradient(90deg, rgba(96, 165, 250, 0) 0%, rgba(59, 130, 246, 0.95) 18%, rgba(125, 211, 252, 1) 55%, rgba(59, 130, 246, 0.95) 82%, rgba(96, 165, 250, 0) 100%);
-  box-shadow: 0 0 12px rgba(59, 130, 246, 0.34);
-  transform: translateX(-42vw);
-  animation: yatrifyTopBarSweep 1.05s cubic-bezier(.37, 0, .21, 1) infinite;
-}
-
-html.dark .content > #yatrify-modern-loader::before {
-  background: linear-gradient(90deg, rgba(56, 189, 248, 0.14), rgba(96, 165, 250, 0.22), rgba(56, 189, 248, 0.14));
-  box-shadow: 0 0 0 1px rgba(30, 41, 59, 0.72) inset;
-}
-
-html.dark .content > #yatrify-modern-loader::after {
-  background: linear-gradient(90deg, rgba(125, 211, 252, 0) 0%, rgba(96, 165, 250, 0.95) 18%, rgba(125, 211, 252, 1) 55%, rgba(96, 165, 250, 0.95) 82%, rgba(125, 211, 252, 0) 100%);
-  box-shadow: 0 0 12px rgba(56, 189, 248, 0.34);
-}
-
-.yatrify-modern-loader-card {
-  width: min(440px, calc(100vw - 40px));
-  border-radius: 26px;
-  padding: 24px;
-  border: 1px solid rgba(226, 232, 240, 0.92);
-  background: rgba(255, 255, 255, 0.88);
-  box-shadow: 0 30px 70px rgba(15, 23, 42, 0.10);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-}
-
-html.dark .yatrify-modern-loader-card {
-  border-color: rgba(51, 65, 85, 0.92);
-  background: rgba(15, 23, 42, 0.84);
-  box-shadow: 0 28px 64px rgba(2, 8, 23, 0.42);
-}
-
-.yatrify-modern-loader-head {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.yatrify-modern-loader-badge {
-  width: 42px;
-  height: 42px;
-  flex: 0 0 42px;
-  border-radius: 14px;
-  background:
-    radial-gradient(circle at 30% 30%, rgba(191, 219, 254, 0.95), rgba(59, 130, 246, 0.18) 62%, rgba(59, 130, 246, 0.04) 100%);
-  position: relative;
-  overflow: hidden;
-}
-
-.yatrify-modern-loader-badge::before {
-  content: "";
-  position: absolute;
-  inset: 11px;
-  border-radius: 999px;
-  border: 2px solid rgba(37, 99, 235, 0.96);
-  border-right-color: transparent;
-  animation: yatrifyLoaderSpin 0.8s linear infinite;
-}
-
-html.dark .yatrify-modern-loader-badge {
-  background:
-    radial-gradient(circle at 30% 30%, rgba(30, 64, 175, 0.72), rgba(59, 130, 246, 0.2) 62%, rgba(59, 130, 246, 0.04) 100%);
-}
-
-html.dark .yatrify-modern-loader-badge::before {
-  border-color: rgba(125, 211, 252, 0.96);
-  border-right-color: transparent;
-}
-
-.yatrify-modern-loader-title {
-  margin: 0;
-  color: #0f172a;
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-}
-
-.yatrify-modern-loader-text {
-  margin: 4px 0 0;
-  color: #64748b;
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-html.dark .yatrify-modern-loader-title {
-  color: #f8fafc;
-}
-
-html.dark .yatrify-modern-loader-text {
-  color: #94a3b8;
-}
-
-.yatrify-modern-loader-lines {
-  display: grid;
-  gap: 10px;
-  margin-top: 18px;
-}
-
-.yatrify-modern-loader-line {
-  height: 12px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, rgba(226, 232, 240, 0.96), rgba(241, 245, 249, 0.98), rgba(226, 232, 240, 0.96));
-  background-size: 200% 100%;
-  animation: yatrifyLoaderShimmer 1.05s linear infinite;
-}
-
-.yatrify-modern-loader-line.short {
-  width: 42%;
-}
-
-.yatrify-modern-loader-line.medium {
-  width: 68%;
-}
-
-.yatrify-modern-loader-line.long {
-  width: 100%;
-}
-
-html.dark .yatrify-modern-loader-line {
-  background: linear-gradient(90deg, rgba(30, 41, 59, 0.96), rgba(51, 65, 85, 0.98), rgba(30, 41, 59, 0.96));
-  background-size: 200% 100%;
-}
-
-@media (max-width: 640px) {
-  .content > #yatrify-modern-loader {
-    padding: 18px;
-  }
-
-  .yatrify-modern-loader-card {
-    width: min(100%, calc(100vw - 28px));
-    border-radius: 22px;
-    padding: 20px 18px;
-  }
-
-  .yatrify-modern-loader-title {
-    font-size: 16px;
-  }
-
-  .yatrify-modern-loader-text {
-    font-size: 12px;
-  }
+  transform: translateY(0) !important;
+  transition:
+    opacity 220ms cubic-bezier(.22,.61,.36,1),
+    transform 260ms cubic-bezier(.22,.61,.36,1),
+    visibility 0s linear 0s !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -254,30 +45,9 @@ html.dark .yatrify-modern-loader-line {
   html.yatrify-page-transition-modern .main-grid,
   html.yatrify-page-transition-modern footer,
   html.yatrify-page-transition-modern #mobile-drawer,
-  .content > #yatrify-modern-loader,
-  .content > #yatrify-modern-loader::after,
-  .yatrify-modern-loader-badge::before,
-  .yatrify-modern-loader-line {
+  html.yatrify-page-transition-modern::after {
     transition: none !important;
     animation: none !important;
-  }
-}
-
-@keyframes yatrifyLoaderSpin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes yatrifyLoaderShimmer {
-  0% {
-    background-position: 0% 50%;
-  }
-  100% {
-    background-position: 200% 50%;
   }
 }
 
@@ -322,11 +92,14 @@ html.dark.yatrify-page-transition-modern::after {
 }
 
 html.yatrify-page-transition-modern.yatrify-nav-loading::before,
-html.yatrify-page-transition-modern.yatrify-nav-loading::after {
+html.yatrify-page-transition-modern.yatrify-nav-loading::after,
+html.yatrify-page-transition-modern.yatrify-shell-loading::before,
+html.yatrify-page-transition-modern.yatrify-shell-loading::after {
   opacity: 1;
 }
 
-html.yatrify-page-transition-modern.yatrify-nav-loading::after {
+html.yatrify-page-transition-modern.yatrify-nav-loading::after,
+html.yatrify-page-transition-modern.yatrify-shell-loading::after {
   animation: yatrifyTopBarSweep 1.15s cubic-bezier(.37, 0, .21, 1) infinite;
 }
 

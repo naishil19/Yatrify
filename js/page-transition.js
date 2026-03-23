@@ -62,47 +62,9 @@
   if (modernMode) {
     var revealed = root.classList.contains("yatrify-page-revealed");
     var fallbackTimer = null;
-    var loaderRemoved = false;
-
-    function ensureModernLoader() {
-      var loader = document.getElementById("yatrify-modern-loader");
-      var contentHost = document.querySelector(".content");
-      if (loader) {
-        if (contentHost && loader.parentNode !== contentHost) {
-          contentHost.insertBefore(loader, contentHost.firstChild || null);
-        }
-        return loader;
-      }
-      if (!document.body) return null;
-      loader = document.createElement("div");
-      loader.id = "yatrify-modern-loader";
-      loader.setAttribute("aria-hidden", "true");
-      loader.innerHTML =
-        '<div class="yatrify-modern-loader-card">' +
-        '<div class="yatrify-modern-loader-head">' +
-        '<span class="yatrify-modern-loader-badge"></span>' +
-        '<div>' +
-        '<p class="yatrify-modern-loader-title">Loading your journey</p>' +
-        '<p class="yatrify-modern-loader-text">Preparing the latest travel details for this page.</p>' +
-        '</div>' +
-        '</div>' +
-        '<div class="yatrify-modern-loader-lines">' +
-        '<span class="yatrify-modern-loader-line long"></span>' +
-        '<span class="yatrify-modern-loader-line medium"></span>' +
-        '<span class="yatrify-modern-loader-line short"></span>' +
-        '</div>' +
-        '</div>';
-      if (contentHost) {
-        contentHost.insertBefore(loader, contentHost.firstChild || null);
-      } else {
-        document.body.insertBefore(loader, document.body.firstChild || null);
-      }
-      return loader;
-    }
 
     function revealModern() {
       if (revealed) return;
-      ensureModernLoader();
       root.classList.add("yatrify-shell-revealing", "yatrify-page-revealed");
       window.setTimeout(function () {
         root.classList.remove("yatrify-shell-loading", "yatrify-shell-revealing", "yatrify-page-loading", "yatrify-page-revealing", "yatrify-nav-loading");
@@ -111,14 +73,7 @@
           clearTimeout(fallbackTimer);
           fallbackTimer = null;
         }
-        if (!loaderRemoved) {
-          loaderRemoved = true;
-          window.setTimeout(function () {
-            var loader = document.getElementById("yatrify-modern-loader");
-            if (loader && loader.parentNode) loader.parentNode.removeChild(loader);
-          }, 220);
-        }
-      }, 180);
+      }, 240);
     }
 
     function revealSoon() {
@@ -134,8 +89,6 @@
       revealSoon();
     }
 
-    ensureModernLoader();
-
     window.addEventListener("yatrify:page-ready", revealSoon, { once: true });
     window.addEventListener("pageshow", function () {
       if (root.classList.contains("yatrify-page-ready")) revealSoon();
@@ -143,7 +96,7 @@
 
     fallbackTimer = setTimeout(function () {
       if (!revealed) revealModern();
-    }, 3200);
+    }, 2200);
 
     document.addEventListener("click", function (event) {
       var link = event.target && event.target.closest ? event.target.closest("a") : null;
