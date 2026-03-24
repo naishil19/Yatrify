@@ -3,66 +3,44 @@ left to right direction
 skinparam monochrome true
 skinparam shadowing false
 
-title Yatrify DFD Level 1
-
 ' ================= EXTERNAL ENTITIES =================
 rectangle "User" as User
 rectangle "Collaborator" as Collab
 rectangle "Auth Service\n(Clerk)" as Clerk
 rectangle "AI Service\n(Gemini)" as Gemini
-rectangle "Image API\n(Unsplash)" as Unsplash
-rectangle "Email Service" as Email
 
 ' ================= PROCESSES =================
 circle "1.0\nUser Account" as P1
-circle "2.0\nPlan Generation\nand Management" as P2
-circle "3.0\nCollaboration" as P3
-circle "4.0\nExpenses, Settings\nand Community" as P4
+circle "2.0\nTravel Plan\nManagement" as P2
+circle "3.0\nCollaboration\nand Community" as P3
 
 ' ================= DATA STORES =================
-database "D1\nUser Data" as D1
+database "D1\nUser Data\nand Credits" as D1
 database "D2\nPlan Data" as D2
-database "D3\nShared Data" as D3
 
-' ================= ACCOUNT FLOW =================
-User --> P1 : Sign in / Sign up
-P1 --> Clerk : Verify user
+' ================= ACCOUNT =================
+User --> P1 : Sign in / Sign up /\nupdate profile
+P1 --> Clerk : Verify identity
 Clerk --> P1 : Session
-P1 --> D1 : Save user profile
-D1 --> P1 : User data / credits
-P1 --> User : Login status
+P1 --> D1 : Save / fetch user data
+D1 --> P1 : Profile / credits
+P1 --> User : Account status
 
-' ================= PLAN FLOW =================
-User --> P2 : Create, open,\nrefine, edit, delete plan
+' ================= PLAN =================
+User --> P2 : Create / open / refine /\nedit / delete plan /\nmanage expenses
 P2 --> Gemini : Generate / refine plan
 Gemini --> P2 : Plan sections
-P2 --> Unsplash : Get destination image
-Unsplash --> P2 : Hero image
 P2 --> D1 : Read / update credits
-P2 --> D2 : Save / fetch / update plan
-D2 --> P2 : Plan details
+P2 --> D2 : Save / fetch plan data
+D2 --> P2 : Plan / itinerary / expenses
 P2 --> User : Generated or updated plan
 
-' ================= COLLABORATION FLOW =================
-User --> P3 : Invite / revoke collaborator
-Collab --> P3 : Accept invite
-P3 --> Email : Send invite email
-Email --> P3 : Delivery result
-P3 --> D3 : Save invite / shared access
-D3 --> P3 : Invite / access records
-P3 --> D2 : Read shared plan
-D2 --> P3 : Shared plan
-P3 --> User : Invite status
+' ================= COLLABORATION + COMMUNITY =================
+User --> P3 : Invite / revoke /\npublish / browse community
+Collab --> P3 : Accept invite /\nopen shared plan
+P3 --> D2 : Save invites / shared access /\npublish status
+D2 --> P3 : Shared plans /\ncommunity plans
+P3 --> User : Invite status /\npublic plans
 P3 --> Collab : Shared access
-
-' ================= OTHER FEATURES FLOW =================
-User --> P4 : Manage expenses,\nupdate settings,\npublish / unpublish,\nbrowse community
-P4 --> D1 : Update profile settings
-P4 --> D2 : Save expenses / publish state
-P4 --> D3 : Save / fetch community data
-D1 --> P4 : Saved profile
-D2 --> P4 : Expenses / plan status
-D3 --> P4 : Community plans
-P4 --> User : Updated settings,\nexpenses, public plans
 
 @enduml

@@ -3,7 +3,6 @@ skinparam monochrome true
 skinparam shadowing false
 skinparam activityArrowThickness 1
 
-title Yatrify Flowchart
 
 start
 

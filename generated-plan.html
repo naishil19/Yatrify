@@ -5954,8 +5954,8 @@
 
       function renderBanners() {
         var shareBanner = document.getElementById("share-banner");
-        if (isPlanReadOnly() && shareBanner) {
-          shareBanner.style.display = "none";
+        if (shareBanner) {
+          shareBanner.style.display = isPlanReadOnly() ? "none" : "";
         }
         document.getElementById("share-title").textContent = "Share Your Travel Plans";
         document.getElementById("share-text").textContent =
@@ -5976,7 +5976,6 @@
           if (banner.hidden) return false;
           var computed = window.getComputedStyle ? window.getComputedStyle(banner) : null;
           if (computed && computed.display === "none") return false;
-          if (computed && computed.visibility === "hidden") return false;
           return true;
         });
         content.classList.toggle("no-share-banner", !hasVisibleBanner);

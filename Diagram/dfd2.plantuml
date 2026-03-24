@@ -1,67 +1,58 @@
 @startuml
-left to right direction
+top to bottom direction
 skinparam monochrome true
 skinparam shadowing false
 
-' ================= ENTITIES =================
+
+' ================= EXTERNAL ENTITIES =================
 rectangle "User" as User
-rectangle "AI Service" as AI
-rectangle "Image API" as Img
-rectangle "Booking API" as Book
+rectangle "AI Service\n(Gemini)" as Gemini
+rectangle "Image API\n(Unsplash)" as Unsplash
 
 ' ================= SUB-PROCESSES =================
-circle "2.1\nEnter Trip Details" as P1
-circle "2.2\nValidate Input" as P2
-circle "2.3\nCheck Credits" as P3
-circle "2.4\nGenerate Plan (AI)" as P4
-circle "2.5\nFetch Images" as P5
-circle "2.6\nFetch Booking Links" as P6
-circle "2.7\nSave Plan" as P7
-circle "2.8\nDisplay Plan" as P8
+circle "2.1\nEnter Trip\nDetails" as P21
+circle "2.2\nValidate Trip\nData" as P22
+circle "2.3\nCheck and\nUpdate Credits" as P23
+circle "2.4\nGenerate or\nRefine Plan" as P24
+circle "2.5\nUpdate\nItinerary" as P25
+circle "2.6\nSave / Fetch /\nDelete Plan" as P26
+circle "2.7\nDisplay Plan" as P27
 
 ' ================= DATA STORES =================
-database "Trip DB" as TDB
-database "User DB" as UDB
+database "D1\nUser Data\nand Credits" as D1
+database "D2\nPlan Data" as D2
 
-' ================= FLOW =================
+' ================= MAIN FLOW =================
+User --> P21 : Trip details / plan request
+P21 --> P22 : Trip details
 
-' Input
-User --> P1 : Trip Details
-P1 --> P2
+P22 --> P23 : Validated data
+P22 --> User : Invalid input / error
 
-' Validation
-P2 --> P3 : Valid Data
+P23 --> D1 : Fetch credits
+D1 --> P23 : Credits available
+P23 --> P24 : Credits OK
+P23 --> User : Insufficient credits / stop
 
-' Credit Check
-P3 --> UDB : Get Credits
-UDB --> P3
+P24 --> Gemini : Generate / refine prompt
+Gemini --> P24 : Plan sections
+P24 --> Unsplash : Destination query
+P24 --> P25 : Generated plan
+Unsplash --> P27 : Hero image
 
-P3 --> P4 : Credits OK
-P3 --> User : Error (No Credits)
+User --> P25 : Edit itinerary day
+P25 --> D2 : Fetch current itinerary
+D2 --> P25 : Current itinerary
+P25 --> P26 : Final plan
 
-' AI Generation
-P4 --> AI : Generate Plan
-AI --> P4 : Itinerary
+User --> P26 : Open plan / delete plan
+P26 --> D2 : Save plan
+P26 --> D2 : Delete plan
+D2 --> P26 : Fetched plan
+P26 --> D1 : Update credits
+D1 --> P26 : Updated credits
+P26 --> P27 : Saved plan / fetched plan
 
-' External APIs
-P4 --> P5
-P5 --> Img : Image Request
-Img --> P5
-
-P4 --> P6
-P6 --> Book : Booking Request
-Book --> P6
-
-' Save
-P5 --> P7
-P6 --> P7
-P4 --> P7
-
-P7 --> TDB : Save Trip
-TDB --> P7
-
-' Output
-P7 --> P8
-P8 --> User : Display Travel Plan
+P27 --> User : Generated / refined / updated plan
 
 @enduml

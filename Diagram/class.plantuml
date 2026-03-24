@@ -4,7 +4,6 @@ skinparam shadowing false
 skinparam classAttributeIconSize 0
 skinparam packageStyle rectangle
 
-title Yatrify Simple Class Diagram
 
 package "Domain" {
   class User {
