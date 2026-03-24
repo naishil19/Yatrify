@@ -3,65 +3,66 @@ left to right direction
 skinparam monochrome true
 skinparam shadowing false
 
-' ================= ENTITIES =================
+title Yatrify DFD Level 1
+
+' ================= EXTERNAL ENTITIES =================
 rectangle "User" as User
 rectangle "Collaborator" as Collab
-rectangle "AI Service" as AI
-rectangle "Image API" as Img
-rectangle "Booking API" as Book
+rectangle "Auth Service\n(Clerk)" as Clerk
+rectangle "AI Service\n(Gemini)" as Gemini
+rectangle "Image API\n(Unsplash)" as Unsplash
+rectangle "Email Service" as Email
 
 ' ================= PROCESSES =================
-circle "1.0 Auth" as Auth
-circle "2.0 Plan" as Plan
-circle "3.0 AI Gen" as AIProc
-circle "4.0 Collaboration" as CollabProc
-circle "5.0 Expense" as Expense
-circle "6.0 Publish" as Publish
+circle "1.0\nUser Account" as P1
+circle "2.0\nPlan Generation\nand Management" as P2
+circle "3.0\nCollaboration" as P3
+circle "4.0\nExpenses, Settings\nand Community" as P4
 
 ' ================= DATA STORES =================
-database "User DB" as UDB
-database "Trip DB" as TDB
-database "Expense DB" as EDB
+database "D1\nUser Data" as D1
+database "D2\nPlan Data" as D2
+database "D3\nShared Data" as D3
 
-' ================= FLOW =================
+' ================= ACCOUNT FLOW =================
+User --> P1 : Sign in / Sign up
+P1 --> Clerk : Verify user
+Clerk --> P1 : Session
+P1 --> D1 : Save user profile
+D1 --> P1 : User data / credits
+P1 --> User : Login status
 
-' AUTH (Top Left)
-User --> Auth : Login
-Auth --> UDB : Verify User
-UDB --> Auth
-Auth --> User : Status
+' ================= PLAN FLOW =================
+User --> P2 : Create, open,\nrefine, edit, delete plan
+P2 --> Gemini : Generate / refine plan
+Gemini --> P2 : Plan sections
+P2 --> Unsplash : Get destination image
+Unsplash --> P2 : Hero image
+P2 --> D1 : Read / update credits
+P2 --> D2 : Save / fetch / update plan
+D2 --> P2 : Plan details
+P2 --> User : Generated or updated plan
 
-' PLAN (Center)
-User --> Plan : Trip Details
-Plan --> TDB : Save Trip
-TDB --> Plan : Trip Data
+' ================= COLLABORATION FLOW =================
+User --> P3 : Invite / revoke collaborator
+Collab --> P3 : Accept invite
+P3 --> Email : Send invite email
+Email --> P3 : Delivery result
+P3 --> D3 : Save invite / shared access
+D3 --> P3 : Invite / access records
+P3 --> D2 : Read shared plan
+D2 --> P3 : Shared plan
+P3 --> User : Invite status
+P3 --> Collab : Shared access
 
-' AI (Right)
-Plan --> AIProc : Trip Input
-AIProc --> AI : Generate Plan
-AI --> AIProc : Data
-AIProc --> TDB : Save Itinerary
-
-AIProc --> Img : Image Request
-Img --> AIProc
-
-AIProc --> Book : Booking Request
-Book --> AIProc
-
-' COLLAB (Bottom Left)
-Collab --> CollabProc : Comments
-CollabProc --> TDB : Update Trip
-CollabProc --> User : Shared Plan
-
-' EXPENSE (Bottom Center)
-User --> Expense : Add Expense
-Expense --> EDB : Store
-EDB --> Expense
-Expense --> User : Total
-
-' PUBLISH (Bottom Right)
-User --> Publish : Publish
-Publish --> TDB : Update Status
-Publish --> User : Confirmation
+' ================= OTHER FEATURES FLOW =================
+User --> P4 : Manage expenses,\nupdate settings,\npublish / unpublish,\nbrowse community
+P4 --> D1 : Update profile settings
+P4 --> D2 : Save expenses / publish state
+P4 --> D3 : Save / fetch community data
+D1 --> P4 : Saved profile
+D2 --> P4 : Expenses / plan status
+D3 --> P4 : Community plans
+P4 --> User : Updated settings,\nexpenses, public plans
 
 @enduml

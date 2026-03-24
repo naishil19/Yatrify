@@ -2095,6 +2095,9 @@ body > footer {
   var canEdit = accessRole === "owner" || accessRole === "collaborator";
   var currentUserEmail = window.YatrifyCurrentUserEmail || "";
   var collaboratorRefreshTimer = null;
+  var collaboratorLimit = null;
+  var collaboratorCount = 0;
+  var knownCollaboratorEmails = {};
   var revokeModal = document.getElementById("revoke-modal");
   var revokeInput = document.getElementById("revoke-input");
   var revokeConfirmBtn = document.getElementById("revoke-confirm");
@@ -2112,6 +2115,10 @@ body > footer {
 
   function escHtml(s) {
     return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;").replace(/'/g,"&#039;");
+  }
+
+  function normalizeEmail(value) {
+    return String(value || "").trim().toLowerCase();
   }
 
   function parseDate(iso) {
@@ -2207,6 +2214,32 @@ body > footer {
     });
   }
   bindToastClose();
+
+  function syncInviteAvailability() {
+    var emailInput = document.getElementById("collaborator-email");
+    var btn = document.getElementById("invite-btn");
+    var inviteRow = document.querySelector(".invite-row");
+    var emailLabel = document.querySelector(".email-label");
+    if (!emailInput || !btn) return;
+    if (accessRole !== "owner") {
+      if (inviteRow) inviteRow.style.display = "none";
+      if (emailLabel) emailLabel.style.display = "none";
+      emailInput.disabled = true;
+      btn.disabled = true;
+      return;
+    }
+
+    var hasLimit = Number.isFinite(collaboratorLimit) && collaboratorLimit > 0;
+    var limitReached = hasLimit && collaboratorCount >= collaboratorLimit;
+    emailInput.disabled = limitReached;
+    btn.disabled = limitReached;
+    emailInput.placeholder = limitReached
+      ? "Collaborator limit reached for this plan"
+      : "your-co-traveller@example.com";
+    btn.title = limitReached
+      ? ("Limit reached: " + collaboratorCount + "/" + collaboratorLimit + " collaborators")
+      : "";
+  }
 
   function setRevokeConfirmState() {
     if (!revokeConfirmBtn) return;
@@ -2393,6 +2426,18 @@ body > footer {
 
     var payload = await window.YatrifyPlanService.listCollaborators(activePlanId).catch(function () { return null; });
     var collaborators = payload && payload.collaborators ? payload.collaborators : [];
+    knownCollaboratorEmails = {};
+    collaborators.forEach(function (item) {
+      var invitedEmail = normalizeEmail(item && item.invitedEmail);
+      var currentEmail = normalizeEmail(item && item.email);
+      if (invitedEmail) knownCollaboratorEmails[invitedEmail] = true;
+      if (currentEmail) knownCollaboratorEmails[currentEmail] = true;
+    });
+    var nextCollaboratorLimit = Number(payload && payload.collaboratorLimit);
+    collaboratorLimit = Number.isFinite(nextCollaboratorLimit) && nextCollaboratorLimit > 0
+      ? nextCollaboratorLimit
+      : null;
+    collaboratorCount = collaborators.length;
     var accepted = collaborators.filter(function (item) {
       return String(item && item.status || "").trim().toLowerCase() === "accepted";
     });
@@ -2502,6 +2547,7 @@ body > footer {
     if (window.lucide && typeof window.lucide.createIcons === "function") {
       window.lucide.createIcons();
     }
+    syncInviteAvailability();
   }
 
   function startCollaboratorAutoRefresh() {
@@ -2512,19 +2558,12 @@ body > footer {
     }, 3000);
   }
 
-      function setupInvite() {
+  function setupInvite() {
     var emailInput = document.getElementById("collaborator-email");
     var btn = document.getElementById("invite-btn");
     if (!emailInput || !btn || !window.YatrifyPlanService) return;
-    if (accessRole !== "owner") {
-      var inviteRow = document.querySelector(".invite-row");
-      var emailLabel = document.querySelector(".email-label");
-      if (inviteRow) inviteRow.style.display = "none";
-      if (emailLabel) emailLabel.style.display = "none";
-      emailInput.disabled = true;
-      btn.disabled = true;
-      return;
-    }
+    syncInviteAvailability();
+    if (accessRole !== "owner") return;
 
     btn.addEventListener("click", async function () {
       if (!activePlanId) {
@@ -2536,6 +2575,22 @@ body > footer {
       }
       var email = emailInput.value.trim();
       if (!email || !email.includes("@")) { emailInput.focus(); return; }
+      var normalizedEmail = normalizeEmail(email);
+      if (
+        Number.isFinite(collaboratorLimit) &&
+        collaboratorLimit > 0 &&
+        collaboratorCount >= collaboratorLimit &&
+        !knownCollaboratorEmails[normalizedEmail]
+      ) {
+        showToast(
+          collaboratorLimit === 1
+            ? "Free plans can invite up to 1 collaborator."
+            : ("Paid plans can invite up to " + collaboratorLimit + " collaborators."),
+          { title: "Collaborator limit reached" }
+        );
+        syncInviteAvailability();
+        return;
+      }
       btn.disabled = true;
       btn.innerHTML = SPINNER_ICON + " Inviting...";
       try {
@@ -2575,8 +2630,8 @@ body > footer {
         }
         showToast(message, { title: "Invite couldn't be sent" });
       } finally {
-        btn.disabled = false;
         btn.innerHTML = INVITE_ICON + " Invite";
+        syncInviteAvailability();
       }
     });
 

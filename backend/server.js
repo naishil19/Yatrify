@@ -1,4 +1,4 @@
-﻿import express from "express";
+import express from "express";
 import OpenAI from "openai";
 import { Pool } from "pg";
 import { Webhook } from "svix";
@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { verifyToken } from "@clerk/backend";
+import { createClerkClient, verifyToken } from "@clerk/backend";
 import { createStore } from "./data/store.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -52,6 +52,16 @@ function getOpenAIClient() {
     });
   }
   return openaiClient;
+}
+
+let clerkClient = null;
+function getClerkClient() {
+  const secretKey = String(process.env.CLERK_SECRET_KEY || "").trim();
+  if (!secretKey || secretKey === "REPLACE_ME") return null;
+  if (!clerkClient) {
+    clerkClient = createClerkClient({ secretKey });
+  }
+  return clerkClient;
 }
 
 function escapeHtml(value) {
@@ -387,15 +397,115 @@ function diffDaysInclusive(startDate, endDate) {
   return Math.max(1, Math.floor((end - start) / oneDay) + 1);
 }
 
+const FREE_PLAN_INCLUDED_CREDITS = 2;
+
+function normalizePlanTier(planTier) {
+  const normalized = String(planTier || "").trim().toLowerCase();
+  if (normalized === "paid" || normalized === "business") return normalized;
+  return "free";
+}
+
+function derivePlanTierFromUser(user) {
+  if (!user || typeof user !== "object") return "free";
+  const explicitPlanTier = normalizePlanTier(user.plan_tier);
+  if (explicitPlanTier !== "free") return explicitPlanTier;
+  const credits = Number(user.credits || 0);
+  return Number.isFinite(credits) && credits > FREE_PLAN_INCLUDED_CREDITS ? "paid" : "free";
+}
+
+async function reconcileUserPlanTier(user) {
+  if (!user || !user.id) return user;
+  const storedPlanTier = normalizePlanTier(user.plan_tier);
+  const effectivePlanTier = derivePlanTierFromUser(user);
+
+  if (storedPlanTier !== effectivePlanTier && typeof store.updateUserPlanTier === "function") {
+    const updatedUser = await store.updateUserPlanTier(user.id, effectivePlanTier);
+    if (updatedUser) return updatedUser;
+  }
+
+  if (storedPlanTier === effectivePlanTier && storedPlanTier === user.plan_tier) {
+    return user;
+  }
+
+  return Object.assign({}, user, { plan_tier: effectivePlanTier });
+}
+
+function normalizeOptionalText(value) {
+  const normalized = String(value || "").trim();
+  return normalized || null;
+}
+
+function getPrimaryEmailFromClerkUser(clerkUser) {
+  if (!clerkUser || typeof clerkUser !== "object") return null;
+  const primaryEmail = clerkUser.primaryEmailAddress;
+  if (primaryEmail && primaryEmail.emailAddress) {
+    return normalizeOptionalText(primaryEmail.emailAddress);
+  }
+  if (Array.isArray(clerkUser.emailAddresses)) {
+    for (let i = 0; i < clerkUser.emailAddresses.length; i += 1) {
+      const emailAddress = normalizeOptionalText(
+        clerkUser.emailAddresses[i] && clerkUser.emailAddresses[i].emailAddress
+      );
+      if (emailAddress) return emailAddress;
+    }
+  }
+  return null;
+}
+
+function shouldSyncUserProfile(existingUser, authProfile) {
+  if (!existingUser) return true;
+  if (!existingUser.email || !existingUser.first_name || !existingUser.last_name || !existingUser.image_url) {
+    return true;
+  }
+  if (authProfile.email && authProfile.email !== existingUser.email) return true;
+  if (authProfile.firstName && authProfile.firstName !== existingUser.first_name) return true;
+  if (authProfile.lastName && authProfile.lastName !== existingUser.last_name) return true;
+  return false;
+}
+
+async function fetchClerkUserProfile(clerkUserId) {
+  const client = getClerkClient();
+  if (!client) return null;
+  try {
+    const clerkUser = await client.users.getUser(clerkUserId);
+    return {
+      email: getPrimaryEmailFromClerkUser(clerkUser),
+      firstName: normalizeOptionalText(clerkUser.firstName),
+      lastName: normalizeOptionalText(clerkUser.lastName),
+      imageUrl: normalizeOptionalText(clerkUser.imageUrl),
+    };
+  } catch (error) {
+    console.error("Unable to fetch Clerk profile:", error);
+    return null;
+  }
+}
+
 async function getAuthedUser(req) {
   if (!req.auth || !req.auth.clerkUserId) return null;
+
   const existing = await store.getUserByClerkId(req.auth.clerkUserId);
-  if (existing) return existing;
-  return store.ensureUser(req.auth.clerkUserId, {
-    email: req.auth.email || null,
-    firstName: req.auth.firstName || null,
-    lastName: req.auth.lastName || null,
-  });
+  const authProfile = {
+    email: normalizeOptionalText(req.auth.email),
+    firstName: normalizeOptionalText(req.auth.firstName),
+    lastName: normalizeOptionalText(req.auth.lastName),
+    imageUrl: null,
+  };
+
+  let profile = Object.assign({}, authProfile);
+  if (shouldSyncUserProfile(existing, authProfile)) {
+    const clerkProfile = await fetchClerkUserProfile(req.auth.clerkUserId);
+    if (clerkProfile) {
+      profile = {
+        email: clerkProfile.email || profile.email,
+        firstName: clerkProfile.firstName || profile.firstName,
+        lastName: clerkProfile.lastName || profile.lastName,
+        imageUrl: clerkProfile.imageUrl || profile.imageUrl,
+      };
+    }
+  }
+
+  const user = await store.ensureUser(req.auth.clerkUserId, profile);
+  return reconcileUserPlanTier(user);
 }
 
 function buildFeasibilityPrompt(payload) {
@@ -2013,6 +2123,20 @@ async function requirePlanAccess(userId, planId) {
   return access;
 }
 
+function getTripDayLimitForPlanTier(planTier) {
+  const normalizedPlanTier = normalizePlanTier(planTier);
+  return normalizedPlanTier === "paid" || normalizedPlanTier === "business" ? 30 : 7;
+}
+
+function getCollaboratorLimitForPlanTier(planTier) {
+  const normalizedPlanTier = normalizePlanTier(planTier);
+  return normalizedPlanTier === "paid" || normalizedPlanTier === "business" ? 5 : 1;
+}
+
+function normalizeEmailAddress(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
 app.get("/api/users/me", requireAuth, requireDb, async (req, res) => {
   try {
     const user = await getAuthedUser(req);
@@ -2024,7 +2148,7 @@ app.get("/api/users/me", requireAuth, requireDb, async (req, res) => {
       firstName: user.first_name,
       lastName: user.last_name,
       credits: Number(user.credits || 0),
-      planTier: user.plan_tier || "free",
+      planTier: derivePlanTierFromUser(user),
     });
   } catch (error) {
     console.error("GET /api/users/me failed:", error);
@@ -2053,7 +2177,7 @@ app.post("/api/plans/generate", requireAuth, requireDb, express.json(), async (r
     if (!totalDays) {
       return res.status(400).json({ error: "Invalid travel dates" });
     }
-    const limit = user.plan_tier === "paid" ? 30 : 7;
+    const limit = getTripDayLimitForPlanTier(user.plan_tier);
     if (totalDays > limit) {
       return res.status(400).json({ error: "Trip length exceeds plan limit", limit });
     }
@@ -2225,7 +2349,17 @@ app.get("/api/plans/:id/collaborators", requireAuth, requireDb, async (req, res)
     const access = await requirePlanAccess(user.id, req.params.id);
     if (!access) return res.status(403).json({ error: "Forbidden" });
     const collaborators = await store.listCollaborators(req.params.id);
-    return res.json({ collaborators });
+    const collaboratorLimit =
+      access.role === "owner" ? getCollaboratorLimitForPlanTier(user.plan_tier) : null;
+    return res.json({
+      collaborators,
+      collaboratorLimit,
+      collaboratorCount: collaborators.length,
+      collaboratorLimitReached:
+        Number.isFinite(collaboratorLimit) && collaboratorLimit > 0
+          ? collaborators.length >= collaboratorLimit
+          : false,
+    });
   } catch (error) {
     return res.status(500).json({ error: "Unable to fetch collaborators" });
   }
@@ -2241,6 +2375,26 @@ app.post("/api/plans/:id/collaborators", requireAuth, requireDb, express.json(),
     }
     const email = String(req.body && req.body.email ? req.body.email : "").trim();
     if (!email) return res.status(400).json({ error: "Email is required" });
+    const collaboratorLimit = getCollaboratorLimitForPlanTier(user.plan_tier);
+    const collaborators = await store.listCollaborators(req.params.id);
+    const normalizedInviteEmail = normalizeEmailAddress(email);
+    const inviteAlreadyExists = collaborators.some((item) => {
+      return (
+        normalizeEmailAddress(item && item.invitedEmail) === normalizedInviteEmail ||
+        normalizeEmailAddress(item && item.email) === normalizedInviteEmail
+      );
+    });
+    if (!inviteAlreadyExists && collaborators.length >= collaboratorLimit) {
+      return res.status(403).json({
+        error: "Collaborator limit reached",
+        detail:
+          collaboratorLimit === 1
+            ? "Free plans can invite up to 1 collaborator."
+            : `Paid plans can invite up to ${collaboratorLimit} collaborators.`,
+        collaboratorLimit,
+        collaboratorCount: collaborators.length,
+      });
+    }
     const invite = await store.inviteCollaborator(req.params.id, email);
 
     const inviterName =
@@ -2268,7 +2422,12 @@ app.post("/api/plans/:id/collaborators", requireAuth, requireDb, express.json(),
       console.error("Collaborator invite email failed:", mailError);
     }
 
-    return res.json({ invite, emailDelivery });
+    return res.json({
+      invite,
+      emailDelivery,
+      collaboratorLimit,
+      collaboratorCount: inviteAlreadyExists ? collaborators.length : collaborators.length + 1,
+    });
   } catch (error) {
     console.error("POST /api/plans/:id/collaborators failed:", error);
     const detail =
@@ -2531,3 +2690,5 @@ app.post("/webhooks/clerk", express.raw({ type: "application/json" }), async (re
 app.listen(port, () => {
   console.log(`API listening on ${port}`);
 });
+
+

@@ -1,0 +1,57 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam activityArrowThickness 1
+
+title Yatrify Flowchart
+
+start
+
+:Open Yatrify website;
+
+if (Signed in?) then (Yes)
+  :Open Dashboard;
+else (No)
+  :Sign In / Sign Up with Clerk;
+  :Open Dashboard;
+endif
+
+if (Create new plan?) then (Yes)
+  :Enter trip details;
+  :Validate trip details and credits;
+
+  if (Valid details and enough credits?) then (Yes)
+    :Generate AI travel plan;
+    :Fetch destination hero image;
+    :Save plan and deduct credits;
+    :Open Generated Plan;
+  else (No)
+    :Show validation or credit error;
+    :Return to Dashboard;
+    stop
+  endif
+
+else (No)
+  if (Open existing plan?) then (Yes)
+    :Open Generated Plan;
+  else (No)
+    :Browse community plans;
+    :Open read-only community plan;
+    stop
+  endif
+endif
+
+:Manage plan features;
+:Refine plan, edit itinerary,\nmanage collaborators, track expenses,\npublish or unpublish, update settings;
+
+if (Delete plan?) then (Yes)
+  :Delete travel plan;
+  :Return to Dashboard;
+  stop
+else (No)
+endif
+
+:Sign Out or leave app;
+stop
+
+@enduml

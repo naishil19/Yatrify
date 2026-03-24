@@ -3,39 +3,42 @@ left to right direction
 skinparam monochrome true
 skinparam shadowing false
 
-' ================= ENTITIES =================
+' ================= EXTERNAL ENTITIES =================
 rectangle "User" as User
 rectangle "Collaborator" as Collab
-rectangle "AI Service" as AI
-rectangle "Payment System" as Pay
-rectangle "Image API" as Img
-rectangle "Booking API" as Book
+rectangle "Auth Service\n(Clerk)" as Auth
+rectangle "AI Service\n(Gemini)" as AI
+rectangle "Image API\n(Unsplash)" as Img
+rectangle "Email Service" as Email
 
-' ================= SYSTEM =================
-circle "Yatrify System\n(AI Travel Planner)" as System
+' ================= MAIN PROCESS =================
+Circle "Yatrify System" as System
 
-' ================= FLOWS =================
+' ================= DATA STORE =================
+database "D1\nYatrify Database" as DB
 
-' User (Top)
-User --> System : Login / Trip Details
-System --> User : Travel Plan / Dashboard
+' ================= USER FLOWS =================
+User --> System : Sign in, create/refine plan,\nedit itinerary, manage settings,\ntrack expenses, publish plan
+System --> User : Dashboard, generated plan,\nupdated itinerary, expenses,\ncommunity plan view, credits
 
-' Left Side
-Collab --> System : Edits / Comments
-System --> Collab : Shared Plan
+Collab --> System : Accept invite,\nopen shared plan, edit shared plan
+System --> Collab : Invite access,\nshared itinerary
 
-' Right Side APIs
-System --> AI : Trip Inputs
-AI --> System : Generated Plan
+' ================= SERVICE FLOWS =================
+System --> Auth : Authentication request
+Auth --> System : User session / identity
 
-System --> Img : Destination Query
-Img --> System : Images
+System --> AI : Trip details / refine prompt
+AI --> System : Generated plan sections
 
-System --> Book : Travel Requests
-Book --> System : Booking Links
+System --> Img : Destination image request
+Img --> System : Hero image
 
-' Bottom Payment
-User --> Pay : Payment Info
-Pay --> System : Payment Status
+System --> Email : Collaboration invite email
+Email --> System : Delivery status
+
+' ================= DATA STORE FLOWS =================
+System --> DB : Save users, plans, collaborators,\nexpenses, publish state, credits
+DB --> System : User data, plans, invites,\nexpenses, community plans
 
 @enduml

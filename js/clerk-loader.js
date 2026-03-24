@@ -91,9 +91,62 @@
     });
   }
 
+  function syncCurrentUser(clerk) {
+    if (!clerk || !clerk.user || !clerk.session || typeof clerk.session.getToken !== "function") {
+      window.__YATRIFY_LAST_SYNCED_USER_ID = "";
+      return Promise.resolve(null);
+    }
+
+    var userId = String(clerk.user.id || "").trim();
+    if (!userId) return Promise.resolve(null);
+    if (window.__YATRIFY_LAST_SYNCED_USER_ID === userId) return Promise.resolve(null);
+    if (window.__YATRIFY_USER_SYNC_PROMISE && window.__YATRIFY_USER_SYNC_USER_ID === userId) {
+      return window.__YATRIFY_USER_SYNC_PROMISE;
+    }
+
+    var syncPromise = clerk.session.getToken().then(function (token) {
+      if (!token) throw new Error("Clerk token unavailable");
+      return fetch(apiBase.replace(/\/+$/, "") + "/api/users/me", {
+        method: "GET",
+        headers: {
+          "Authorization": "Bearer " + token,
+          "Content-Type": "application/json"
+        }
+      });
+    }).then(function (res) {
+      if (!res.ok) throw new Error("User sync failed with status " + res.status);
+      window.__YATRIFY_LAST_SYNCED_USER_ID = userId;
+      return res.json().catch(function () { return null; });
+    }).catch(function (error) {
+      console.error("Yatrify user sync failed", error);
+      return null;
+    }).finally(function () {
+      if (window.__YATRIFY_USER_SYNC_USER_ID === userId) {
+        window.__YATRIFY_USER_SYNC_PROMISE = null;
+        window.__YATRIFY_USER_SYNC_USER_ID = "";
+      }
+    });
+
+    window.__YATRIFY_USER_SYNC_USER_ID = userId;
+    window.__YATRIFY_USER_SYNC_PROMISE = syncPromise;
+    return syncPromise;
+  }
+
+  function attachClerkSyncListener(clerk) {
+    if (!clerk || typeof clerk.addListener !== "function" || clerk.__yatrifySyncListenerAttached === true) return;
+    clerk.addListener(function () {
+      syncCurrentUser(window.Clerk || clerk);
+    });
+    clerk.__yatrifySyncListenerAttached = true;
+  }
+
   function patchClerkLoad(publishableKey) {
     if (!window.Clerk || typeof window.Clerk.load !== "function" || !publishableKey) return;
-    if (window.Clerk.__yatrifyLoadPatched === true) return;
+    if (window.Clerk.__yatrifyLoadPatched === true) {
+      attachClerkSyncListener(window.Clerk);
+      syncCurrentUser(window.Clerk);
+      return;
+    }
 
     var originalLoad = window.Clerk.load.bind(window.Clerk);
     window.Clerk.load = function (options) {
@@ -101,9 +154,16 @@
       if (!opts.publishableKey) {
         opts.publishableKey = publishableKey;
       }
-      return originalLoad(opts);
+      return originalLoad(opts).then(function (result) {
+        attachClerkSyncListener(window.Clerk || result);
+        return syncCurrentUser(window.Clerk || result).then(function () {
+          return result;
+        });
+      });
     };
     window.Clerk.__yatrifyLoadPatched = true;
+    attachClerkSyncListener(window.Clerk);
+    syncCurrentUser(window.Clerk);
   }
 
   function initClerkFromEnv() {
@@ -155,3 +215,4 @@
   };
   initClerkFromEnv();
 })();
+

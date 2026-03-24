@@ -2,56 +2,73 @@
 skinparam monochrome true
 skinparam shadowing false
 
-[*] --> LoggedOut
 
-' ================= AUTH STATES =================
-LoggedOut --> Authenticating : Sign In / Sign Up
+[*] --> LandingPage
+
+' ================= PUBLIC ENTRY =================
+LandingPage --> Authenticating : Sign In / Sign Up
+LandingPage --> CommunityBrowsing : View Community Plans
+LandingPage --> InviteReview : Open Invite Link
+
+' ================= AUTH =================
 Authenticating --> Dashboard : Success
-Authenticating --> LoggedOut : Failed
-
-Dashboard --> CreatingPlan : Click "Create Travel Plan"
-
-' ================= PLAN CREATION =================
-CreatingPlan --> EnteringDetails : Fill Trip Details
-EnteringDetails --> CheckingCredits : Click Generate Plan
-
-CheckingCredits --> GeneratingAI : Credits Available
-CheckingCredits --> CreditError : Insufficient Credits
-
-CreditError --> Dashboard : Retry / Add Credits
-
-' ================= AI GENERATION =================
-GeneratingAI --> PlanReady : AI Plan Generated
+Authenticating --> LandingPage : Failed / Cancel
 
 ' ================= DASHBOARD =================
-PlanReady --> ViewingPlan : Open Trip Dashboard
+Dashboard --> NewPlanForm : Create Travel Plan
+Dashboard --> CommunityBrowsing : View Community Plans
+Dashboard --> InviteReview : Open Invite Link
+Dashboard --> LandingPage : Sign Out
 
-' ================= REFINEMENT =================
-ViewingPlan --> RefiningPlan : Modify Plan
+' ================= PLAN CREATION =================
+NewPlanForm --> ValidatingTrip : Submit Trip Details
+ValidatingTrip --> GeneratingPlan : Valid details + credits
+ValidatingTrip --> NewPlanForm : Invalid dates / no credits
+GeneratingPlan --> GeneratedPlan : Plan saved
+GeneratingPlan --> NewPlanForm : AI / save failed
 
-RefiningPlan --> CheckingCredits : Re-generate Plan
+' ================= PLAN WORKSPACE =================
+GeneratedPlan --> RefiningPlan : Refine Plan
+RefiningPlan --> GeneratedPlan : Refine success
+RefiningPlan --> GeneratedPlan : Refine failed / no credits
 
-' ================= COLLABORATION =================
-ViewingPlan --> Collaborating : Invite / Edit / Comment
-Collaborating --> ViewingPlan
+GeneratedPlan --> EditingItinerary : Edit itinerary
+EditingItinerary --> GeneratedPlan : Save / Cancel
 
-' ================= EXPENSE TRACKING =================
-ViewingPlan --> TrackingExpenses : Add Expense
-TrackingExpenses --> ViewingPlan
+GeneratedPlan --> CollaborationPanel : Manage collaborators
+CollaborationPanel --> GeneratedPlan : Close panel
+CollaborationPanel --> InvitePending : Send invite
+InvitePending --> CollaborationPanel : Invite sent
+InvitePending --> CollaborationPanel : Invalid invite / limit reached
+CollaborationPanel --> CollaborationPanel : Revoke invite / access
 
-' ================= PUBLISH FLOW =================
-ViewingPlan --> Publishing : Click Publish
-Publishing --> Published : Confirm
+GeneratedPlan --> ExpenseTracker : Open expenses
+ExpenseTracker --> GeneratedPlan : Save / Back
 
-Published --> ViewingCommunity : View in Community
-ViewingCommunity --> Published
+GeneratedPlan --> Settings : Open settings
+Settings --> GeneratedPlan : Save settings
+Settings --> PlanDeleted : Delete plan
+PlanDeleted --> Dashboard : Back to dashboard
 
-' ================= UNPUBLISH =================
-Published --> Unpublishing : Click Unpublish
-Unpublishing --> ViewingPlan
+GeneratedPlan --> Publishing : Publish plan
+Publishing --> Published : Publish success
+Publishing --> GeneratedPlan : Publish failed / cancel
+Published --> GeneratedPlan : Unpublish plan
 
-' ================= LOGOUT =================
-Dashboard --> LoggedOut : Sign Out
-ViewingPlan --> LoggedOut : Sign Out
+GeneratedPlan --> LandingPage : Sign Out
+
+' ================= SHARED PLAN FLOW =================
+InviteReview --> Authenticating : Sign in required
+InviteReview --> SharedPlan : Accept invite
+InviteReview --> LandingPage : Invalid / expired invite
+SharedPlan --> EditingItinerary : Edit shared itinerary
+SharedPlan --> ExpenseTracker : View or update expenses
+SharedPlan --> LandingPage : Sign Out
+
+' ================= COMMUNITY FLOW =================
+CommunityBrowsing --> CommunityReadOnlyPlan : Open plan
+CommunityReadOnlyPlan --> CommunityBrowsing : Back
+CommunityBrowsing --> LandingPage : Back
+CommunityBrowsing --> LandingPage : Sign Out
 
 @enduml

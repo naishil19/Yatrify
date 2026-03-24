@@ -5,124 +5,84 @@ skinparam sequenceMessageAlign center
 skinparam linetype ortho
 
 actor User
-
 participant "Frontend UI" as UI
-participant "Auth Service" as Auth
-participant "Trip Service" as Trip
-participant "AI Service" as AI
-participant "Image API" as IMG
-participant "Booking API" as BOOK
-participant "Credit System" as Credit
-participant "Collaboration Service" as Collab
-participant "Expense Service" as Expense
+participant "Auth Service (Clerk)" as Auth
+participant "Backend Server" as BE
+participant "AI Service (Gemini)" as AI
+participant "Image API (Unsplash)" as IMG
+participant "Email Service" as Mail
 database "Database" as DB
 
 ' ================= AUTH =================
-User -> UI : Sign In / Sign Up
+User -> UI : Sign in / Sign up
 UI -> Auth : authenticate()
-Auth -> DB : verifyUser()
-DB --> Auth : user data
-Auth --> UI : success
+Auth --> UI : session / token
 
-' ================= CREATE PLAN =================
-User -> UI : Enter Trip Details
-UI -> Trip : createTrip(data)
+' ================= GENERATE PLAN =================
+User -> UI : Enter trip details
+UI -> BE : generate plan request
+BE -> DB : check user, plan tier, credits
+DB --> BE : user data
 
-Trip -> Credit : checkCredits(userId)
-Credit --> Trip : valid
-
-Trip -> DB : saveTrip()
-DB --> Trip : tripId
-
-' ================= AI GENERATION =================
-Trip -> AI : generatePlan(details)
-AI --> Trip : itinerary + insights
-
-Trip -> IMG : fetchImage(destination)
-IMG --> Trip : imageURL
-
-Trip -> BOOK : fetchBookingLinks()
-BOOK --> Trip : links
-
-Trip -> DB : saveFullPlan()
-DB --> Trip : success
-
-Trip --> UI : show Trip Dashboard
-
-' ================= REFINE PLAN =================
-' ================= REFINE PLAN WITH CREDIT CHECK =================
-User -> UI : Modify Plan
-UI -> Trip : refineTrip(updatedData)
-
-Trip -> Credit : checkCredits(userId)
-
-alt Credits Available
-    Credit --> Trip : valid
-    
-    Trip -> AI : regeneratePlan(updatedData)
-    AI --> Trip : updated itinerary
-    
-    Trip -> DB : updateTrip()
-    DB --> Trip : success
-    
-    Trip --> UI : show updated plan
-
-else No Credits
-    Credit --> Trip : insufficient
-    
-    Trip --> UI : show error "Not enough credits"
+alt Valid trip and enough credits
+    BE -> AI : generate plan
+    AI --> BE : plan sections
+    BE -> DB : save plan + deduct credits
+    DB --> BE : generated plan saved
+    BE -> IMG : fetch hero image
+    IMG --> BE : image URL
+    BE --> UI : generated plan
+else Invalid dates / insufficient credits
+    BE --> UI : error
 end
 
-' ================= COLLABORATION =================
-User -> UI : Invite Collaborator
-UI -> Collab : sendInvite(email)
-Collab -> DB : saveCollaborator()
+' ================= REFINE / EDIT PLAN =================
+User -> UI : Refine plan / edit itinerary
+UI -> BE : refine or update itinerary
+BE -> DB : check access + current plan
+DB --> BE : plan access
 
-User -> UI : Add Comment
-UI -> Collab : addComment()
-Collab -> DB : storeComment()
+alt Refine allowed
+    BE -> AI : regenerate plan
+    AI --> BE : updated sections
+    BE -> DB : update plan + sections + credits
+    DB --> BE : updated plan
+    BE --> UI : updated plan
+else No access / no credits
+    BE --> UI : error
+end
+
+' ================= COLLABORATE / PUBLISH / COMMUNITY =================
+User -> UI : Invite collaborator
+UI -> BE : invite collaborator
+BE -> DB : check limit + save invite
+DB --> BE : invite status
+
+alt Invite allowed
+    BE -> Mail : send invite email
+    Mail --> BE : delivery status
+    BE --> UI : invite result
+else Limit reached / invalid invite
+    BE --> UI : error
+end
+
+User -> UI : Publish / unpublish plan
+UI -> BE : publish or unpublish
+BE -> DB : update plan status + community entry
+DB --> BE : success
+BE --> UI : success
+
+User -> UI : View community plans
+UI -> BE : fetch community plans
+BE -> DB : read published plans
+DB --> BE : plans
+BE --> UI : plans
 
 ' ================= EXPENSE TRACKING =================
-User -> UI : Add Expense
-UI -> Expense : addExpense()
-Expense -> DB : saveExpense()
-
-User -> UI : View Total Cost
-UI -> Expense : calculateTotal()
-Expense -> DB : fetchExpenses()
-DB --> Expense : data
-Expense --> UI : total amount
-
-' ================= PUBLISH =================
-User -> UI : Click Publish
-UI -> Trip : publishTrip()
-
-Trip -> DB : updateStatus(published)
-DB --> Trip : success
-
-Trip --> UI : show success message
-
-' ================= COMMUNITY =================
-User -> UI : View Community Plans
-UI -> Trip : getPublishedTrips()
-Trip -> DB : fetchPublished()
-DB --> Trip : plans
-Trip --> UI : display plans
-
-User -> UI : View Plan Details
-UI -> Trip : getTrip(tripId)
-Trip -> DB : fetchTrip()
-DB --> Trip : trip data
-Trip --> UI : read-only view
-
-' ================= UNPUBLISH =================
-User -> UI : Click Unpublish
-UI -> Trip : unpublishTrip()
-Trip -> DB : updateStatus(unpublished)
-DB --> Trip : success
-Trip --> UI : updated
-
-
-
+User -> UI : Add / view expenses
+UI -> BE : expense request
+BE -> DB : save or fetch expenses
+DB --> BE : updated expenses / total
+BE --> UI : updated expenses / total
 
 @enduml

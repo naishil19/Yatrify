@@ -1,4 +1,4 @@
-﻿import { randomUUID } from "crypto";
+import { randomUUID } from "crypto";
 
 function toDateValue(value) {
   if (!value) return null;
@@ -90,6 +90,18 @@ export function createPgStore(pool) {
     const result = await pool.query(
       "SELECT * FROM users WHERE clerk_user_id = $1 LIMIT 1",
       [clerkUserId]
+    );
+    return result.rows[0] || null;
+  }
+
+  async function updateUserPlanTier(userId, planTier) {
+    const result = await pool.query(
+      `UPDATE users
+         SET plan_tier = $2,
+             updated_at = NOW()
+       WHERE id = $1
+       RETURNING *`,
+      [userId, planTier]
     );
     return result.rows[0] || null;
   }
@@ -597,6 +609,7 @@ export function createPgStore(pool) {
   return {
     ensureUser,
     getUserByClerkId,
+    updateUserPlanTier,
     consumeCredits,
     listPlansForUser,
     getPlanAccess,
@@ -620,4 +633,5 @@ export function createPgStore(pool) {
     deleteExpense,
   };
 }
+
 
