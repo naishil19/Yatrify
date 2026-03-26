@@ -280,6 +280,227 @@ async function sendCollaboratorInviteEmail(options = {}) {
   };
 }
 
+function buildContactSubmissionEmailHtml(options = {}) {
+  const submittedAt = String(options.submittedAt || new Date().toISOString()).trim();
+  const name = String(options.name || "").trim();
+  const email = String(options.email || "").trim();
+  const subject = String(options.subject || "General Inquiry").trim();
+  const message = String(options.message || "").trim();
+  const pageUrl = String(options.pageUrl || "").trim();
+  const ipAddress = String(options.ipAddress || "").trim();
+  const userAgent = String(options.userAgent || "").trim();
+
+  const safeName = escapeHtml(name);
+  const safeEmail = escapeHtml(email);
+  const safeSubject = escapeHtml(subject);
+  const safeMessage = escapeHtml(message).replace(/\r?\n/g, "<br />");
+  const safeSubmittedAt = escapeHtml(submittedAt);
+  const safePageUrl = escapeHtml(pageUrl);
+  const safeIpAddress = escapeHtml(ipAddress);
+  const safeUserAgent = escapeHtml(userAgent);
+
+  return (
+    `<!doctype html>` +
+    `<html><body style="margin:0;padding:18px;background:#f5f7fb;font-family:Arial,Helvetica,sans-serif;color:#0f172a;">` +
+    `<table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr><td align="center">` +
+    `<table role="presentation" width="560" style="max-width:560px;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;padding:20px;">` +
+    `<tr><td style="font-size:22px;font-weight:700;color:#0f172a;padding-bottom:6px;">New Contact Form Submission</td></tr>` +
+    `<tr><td style="font-size:13px;line-height:1.6;color:#64748b;padding-bottom:18px;">A visitor submitted the Yatrify contact form.</td></tr>` +
+    `<tr><td style="padding-bottom:18px;">` +
+    `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">` +
+    `<tr><td style="width:140px;padding:8px 0;font-size:12px;font-weight:700;color:#475569;border-bottom:1px solid #e2e8f0;">Name</td><td style="padding:8px 0;font-size:14px;color:#0f172a;border-bottom:1px solid #e2e8f0;">${safeName}</td></tr>` +
+    `<tr><td style="width:140px;padding:8px 0;font-size:12px;font-weight:700;color:#475569;border-bottom:1px solid #e2e8f0;">Email</td><td style="padding:8px 0;font-size:14px;color:#0f172a;border-bottom:1px solid #e2e8f0;"><a href="mailto:${safeEmail}" style="color:#2563eb;text-decoration:none;">${safeEmail}</a></td></tr>` +
+    `<tr><td style="width:140px;padding:8px 0;font-size:12px;font-weight:700;color:#475569;border-bottom:1px solid #e2e8f0;">Subject</td><td style="padding:8px 0;font-size:14px;color:#0f172a;border-bottom:1px solid #e2e8f0;">${safeSubject}</td></tr>` +
+    `<tr><td style="width:140px;padding:8px 0;font-size:12px;font-weight:700;color:#475569;border-bottom:1px solid #e2e8f0;">Submitted</td><td style="padding:8px 0;font-size:14px;color:#0f172a;border-bottom:1px solid #e2e8f0;">${safeSubmittedAt}</td></tr>` +
+    (safePageUrl
+      ? `<tr><td style="width:140px;padding:8px 0;font-size:12px;font-weight:700;color:#475569;border-bottom:1px solid #e2e8f0;">Page</td><td style="padding:8px 0;font-size:14px;color:#0f172a;border-bottom:1px solid #e2e8f0;">${safePageUrl}</td></tr>`
+      : "") +
+    (safeIpAddress
+      ? `<tr><td style="width:140px;padding:8px 0;font-size:12px;font-weight:700;color:#475569;border-bottom:1px solid #e2e8f0;">IP Address</td><td style="padding:8px 0;font-size:14px;color:#0f172a;border-bottom:1px solid #e2e8f0;">${safeIpAddress}</td></tr>`
+      : "") +
+    (safeUserAgent
+      ? `<tr><td style="width:140px;padding:8px 0;font-size:12px;font-weight:700;color:#475569;">User Agent</td><td style="padding:8px 0;font-size:14px;color:#0f172a;">${safeUserAgent}</td></tr>`
+      : "") +
+    `</table>` +
+    `</td></tr>` +
+    `<tr><td style="font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:#475569;padding-bottom:8px;">Message</td></tr>` +
+    `<tr><td style="font-size:14px;line-height:1.7;color:#0f172a;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px;">${safeMessage}</td></tr>` +
+    `</table></td></tr></table>` +
+    `</body></html>`
+  );
+}
+
+function normalizeContactSubject(value) {
+  const key = String(value || "").trim().toLowerCase();
+  const subjectMap = {
+    general: "General Inquiry",
+    support: "Technical Support",
+    billing: "Billing & Payments",
+    partnership: "Partnership Inquiry",
+    feedback: "Feedback & Suggestions",
+    bug: "Report a Bug",
+    other: "Other",
+  };
+  return subjectMap[key] || String(value || "").trim() || "General Inquiry";
+}
+
+function parseBrevoListIds(value) {
+  return String(value || "")
+    .split(",")
+    .map((item) => Number.parseInt(String(item || "").trim(), 10))
+    .filter((item) => Number.isInteger(item) && item > 0);
+}
+
+async function sendContactSubmissionEmail(options = {}) {
+  const brevoApiKey = String(process.env.BREVO_API_KEY || "").trim();
+  if (!brevoApiKey) {
+    return { sent: false, skipped: true, reason: "BREVO_API_KEY not configured" };
+  }
+
+  const fromEmail = String(process.env.BREVO_FROM_EMAIL || process.env.SMTP_FROM_EMAIL || "").trim();
+  const fromName = String(process.env.BREVO_FROM_NAME || "Yatrify").trim();
+  const toEmail = String(process.env.CONTACT_FORM_TO_EMAIL || "support.yatrify@gmail.com").trim().toLowerCase();
+  if (!fromEmail) {
+    return { sent: false, skipped: true, reason: "BREVO_FROM_EMAIL not configured" };
+  }
+  if (!toEmail) {
+    return { sent: false, skipped: true, reason: "CONTACT_FORM_TO_EMAIL not configured" };
+  }
+
+  const name = String(options.name || "").trim();
+  const email = String(options.email || "").trim();
+  const subject = normalizeContactSubject(options.subject);
+  const message = String(options.message || "").trim();
+  if (!name || !email || !subject || !message) {
+    return { sent: false, skipped: true, reason: "Missing name, email, subject, or message" };
+  }
+
+  const submittedAt = String(options.submittedAt || new Date().toISOString()).trim();
+  const pageUrl = String(options.pageUrl || "").trim();
+  const ipAddress = String(options.ipAddress || "").trim();
+  const userAgent = String(options.userAgent || "").trim();
+
+  const emailSubject = `[Yatrify Contact] ${subject} - ${name}`;
+  const text = [
+    "New contact form submission",
+    "",
+    `Name: ${name}`,
+    `Email: ${email}`,
+    `Subject: ${subject}`,
+    `Submitted: ${submittedAt}`,
+    pageUrl ? `Page: ${pageUrl}` : "",
+    ipAddress ? `IP Address: ${ipAddress}` : "",
+    userAgent ? `User Agent: ${userAgent}` : "",
+    "",
+    "Message:",
+    message,
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  const html = buildContactSubmissionEmailHtml({
+    submittedAt,
+    name,
+    email,
+    subject,
+    message,
+    pageUrl,
+    ipAddress,
+    userAgent,
+  });
+
+  const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: {
+      "api-key": brevoApiKey,
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({
+      sender: { name: fromName, email: fromEmail },
+      to: [{ email: toEmail }],
+      replyTo: { email, name },
+      subject: emailSubject,
+      htmlContent: html,
+      textContent: text,
+    }),
+  });
+
+  const raw = await response.text().catch(() => "");
+  let payload = {};
+  try {
+    payload = raw ? JSON.parse(raw) : {};
+  } catch (_) {
+    payload = {};
+  }
+
+  if (!response.ok) {
+    throw new Error(`Brevo send failed: ${response.status} ${raw}`);
+  }
+
+  return {
+    sent: true,
+    id: payload && (payload.messageId || payload.id) ? String(payload.messageId || payload.id) : null,
+  };
+}
+
+async function subscribeNewsletterEmail(options = {}) {
+  const brevoApiKey = String(process.env.BREVO_API_KEY || "").trim();
+  if (!brevoApiKey) {
+    return { ok: false, skipped: true, reason: "BREVO_API_KEY not configured" };
+  }
+
+  const email = String(options.email || "").trim().toLowerCase();
+  if (!email) {
+    return { ok: false, skipped: true, reason: "Missing email" };
+  }
+
+  const newsletterListIds = parseBrevoListIds(
+    process.env.BREVO_NEWSLETTER_LIST_IDS || process.env.BREVO_NEWSLETTER_LIST_ID || ""
+  );
+  const payload = {
+    email,
+    emailBlacklisted: false,
+    smsBlacklisted: true,
+    updateEnabled: true,
+  };
+
+  if (newsletterListIds.length > 0) {
+    payload.listIds = newsletterListIds;
+  }
+
+  const response = await fetch("https://api.brevo.com/v3/contacts", {
+    method: "POST",
+    headers: {
+      "api-key": brevoApiKey,
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const raw = await response.text().catch(() => "");
+  let responseData = {};
+  try {
+    responseData = raw ? JSON.parse(raw) : {};
+  } catch (_) {
+    responseData = {};
+  }
+
+  if (!response.ok) {
+    throw new Error(`Brevo newsletter subscribe failed: ${response.status} ${raw}`);
+  }
+
+  return {
+    ok: true,
+    listIds: newsletterListIds,
+    id:
+      responseData && (responseData.id || responseData.contactId)
+        ? String(responseData.id || responseData.contactId)
+        : null,
+  };
+}
+
 function setCors(req, res) {
   const origin = req.headers.origin;
   if (origin && (allowedOrigins.includes(origin) || allowedOrigins.includes("*"))) {
@@ -313,6 +534,91 @@ app.get("/api/public-config", (_req, res) => {
     clerkPublishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || "",
     apiBaseUrl: process.env.API_BASE_URL || `http://localhost:${port}`,
   });
+});
+
+app.post("/api/contact", express.json(), async (req, res) => {
+  const body = req.body && typeof req.body === "object" ? req.body : {};
+  const name = String(body.name || "").trim();
+  const email = String(body.email || "").trim().toLowerCase();
+  const subject = String(body.subject || "").trim();
+  const message = String(body.message || "").trim();
+  const pageUrl = String(body.pageUrl || "").trim();
+
+  if (!name || !email || !subject || !message) {
+    return res.status(400).json({ error: "Name, email, subject, and message are required." });
+  }
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ error: "Please provide a valid email address." });
+  }
+
+  if (name.length > 120 || email.length > 320 || subject.length > 160 || message.length > 5000) {
+    return res.status(400).json({ error: "One or more fields exceed the allowed length." });
+  }
+
+  try {
+    const delivery = await sendContactSubmissionEmail({
+      name,
+      email,
+      subject: normalizeContactSubject(subject),
+      message,
+      pageUrl,
+      submittedAt: new Date().toISOString(),
+      ipAddress: req.headers["x-forwarded-for"] || req.socket?.remoteAddress || "",
+      userAgent: req.headers["user-agent"] || "",
+    });
+
+    if (!delivery.sent) {
+      return res.status(503).json({
+        error: delivery.reason || "Contact email delivery is not configured.",
+      });
+    }
+
+    return res.json({ ok: true, id: delivery.id || null });
+  } catch (error) {
+    console.error("Contact submission failed", error);
+    return res.status(500).json({ error: "Unable to send your message right now." });
+  }
+});
+
+app.post("/api/newsletter/subscribe", express.json(), async (req, res) => {
+  const body = req.body && typeof req.body === "object" ? req.body : {};
+  const email = String(body.email || "").trim().toLowerCase();
+  const source = String(body.source || "").trim();
+  const pageUrl = String(body.pageUrl || "").trim();
+
+  if (!email) {
+    return res.status(400).json({ error: "Email is required." });
+  }
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ error: "Please provide a valid email address." });
+  }
+
+  if (email.length > 320) {
+    return res.status(400).json({ error: "Email exceeds the allowed length." });
+  }
+
+  try {
+    const subscription = await subscribeNewsletterEmail({
+      email,
+    });
+
+    if (!subscription.ok) {
+      return res.status(503).json({
+        error: subscription.reason || "Newsletter signup is not configured.",
+      });
+    }
+
+    return res.json({
+      ok: true,
+      id: subscription.id || null,
+      listIds: subscription.listIds || [],
+    });
+  } catch (error) {
+    console.error("Newsletter subscribe failed", error);
+    return res.status(500).json({ error: "Unable to subscribe right now." });
+  }
 });
 
 function parseJsonFromText(rawText) {
@@ -480,9 +786,10 @@ async function fetchClerkUserProfile(clerkUserId) {
   }
 }
 
-async function getAuthedUser(req) {
+async function getAuthedUser(req, options = {}) {
   if (!req.auth || !req.auth.clerkUserId) return null;
 
+  const settings = options && typeof options === "object" ? options : {};
   const existing = await store.getUserByClerkId(req.auth.clerkUserId);
   const authProfile = {
     email: normalizeOptionalText(req.auth.email),
@@ -492,7 +799,7 @@ async function getAuthedUser(req) {
   };
 
   let profile = Object.assign({}, authProfile);
-  if (shouldSyncUserProfile(existing, authProfile)) {
+  if (!settings.skipProfileSync && shouldSyncUserProfile(existing, authProfile)) {
     const clerkProfile = await fetchClerkUserProfile(req.auth.clerkUserId);
     if (clerkProfile) {
       profile = {
@@ -505,6 +812,7 @@ async function getAuthedUser(req) {
   }
 
   const user = await store.ensureUser(req.auth.clerkUserId, profile);
+  if (settings.skipPlanTierReconcile) return user;
   return reconcileUserPlanTier(user);
 }
 
@@ -2528,7 +2836,7 @@ app.delete("/api/plans/:id/expenses/:expenseId", requireAuth, requireDb, async (
 
 app.post("/api/plans/:id/publish", requireAuth, requireDb, express.json(), async (req, res) => {
   try {
-    const user = await getAuthedUser(req);
+    const user = await getAuthedUser(req, { skipProfileSync: true });
     if (!user) return res.status(401).json({ error: "Unauthorized" });
     const access = await requirePlanAccess(user.id, req.params.id);
     if (!access || access.role !== "owner") {
@@ -2550,7 +2858,7 @@ app.post("/api/plans/:id/publish", requireAuth, requireDb, express.json(), async
 
 app.post("/api/plans/:id/unpublish", requireAuth, requireDb, async (req, res) => {
   try {
-    const user = await getAuthedUser(req);
+    const user = await getAuthedUser(req, { skipProfileSync: true });
     if (!user) return res.status(401).json({ error: "Unauthorized" });
     const access = await requirePlanAccess(user.id, req.params.id);
     if (!access || access.role !== "owner") {

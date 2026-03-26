@@ -220,6 +220,33 @@
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(59,130,246,0.3);
     }
+    .form-submit:disabled {
+      cursor: wait;
+      opacity: 0.8;
+      transform: none;
+      box-shadow: none;
+    }
+    .form-feedback {
+      display: none;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      border: 1px solid transparent;
+    }
+    .form-feedback.show {
+      display: block;
+    }
+    .form-feedback.error {
+      background: #fff1f2;
+      border-color: #fecdd3;
+      color: #be123c;
+    }
+    .dark .form-feedback.error {
+      background: rgba(190, 24, 93, 0.12);
+      border-color: rgba(251, 113, 133, 0.35);
+      color: #fecdd3;
+    }
 
     /* Info side */
     .info-section h2 {
@@ -491,9 +518,10 @@
               <textarea id="message" name="message" placeholder="Tell us how we can help..." required></textarea>
             </div>
             <button type="submit" class="form-submit">
-              Send Message
+              <span class="form-submit-label">Send Message</span>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" /></svg>
             </button>
+            <div class="form-feedback" id="form-feedback" role="alert" aria-live="polite"></div>
           </form>
 
           <div class="form-success" id="form-success">
@@ -658,6 +686,7 @@
     </div>
   </footer>
 
+  <script src="/js/api-client.js"></script>
   <script src="/js/clerk-loader.js"></script>
   <script src="/js/clerk-init.js"></script>
   <script>
@@ -692,14 +721,69 @@
     })();
 
     // Contact form handler
-    function handleSubmit(e) {
+    function getContactApiBaseUrl() {
+      if (window.YatrifyApiClient && typeof window.YatrifyApiClient.getApiBase === 'function') {
+        return window.YatrifyApiClient.getApiBase();
+      }
+      return String(window.__YATRIFY_API_BASE_URL || window.YATRIFY_API_BASE_URL || 'http://localhost:4000').replace(/\/+$/, '');
+    }
+
+    function setContactFormFeedback(message) {
+      var feedback = document.getElementById('form-feedback');
+      if (!feedback) return;
+      if (!message) {
+        feedback.textContent = '';
+        feedback.classList.remove('show', 'error');
+        return;
+      }
+      feedback.textContent = message;
+      feedback.classList.add('show', 'error');
+    }
+
+    async function handleSubmit(e) {
       e.preventDefault();
       var form = document.getElementById('contact-form');
       var success = document.getElementById('form-success');
-      form.style.display = 'none';
-      success.classList.add('show');
+      var submitButton = form ? form.querySelector('.form-submit') : null;
+      var submitLabel = submitButton ? submitButton.querySelector('.form-submit-label') : null;
+      var formData = new FormData(form);
+      var payload = {
+        name: String(formData.get('name') || '').trim(),
+        email: String(formData.get('email') || '').trim(),
+        subject: String(formData.get('subject') || '').trim(),
+        message: String(formData.get('message') || '').trim(),
+        pageUrl: window.location.href
+      };
+
+      setContactFormFeedback('');
+      if (submitButton) submitButton.disabled = true;
+      if (submitLabel) submitLabel.textContent = 'Sending...';
+
+      try {
+        var response = await fetch(getContactApiBaseUrl() + '/api/contact', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+        var result = await response.json().catch(function () { return {}; });
+        if (!response.ok) {
+          throw new Error(result && result.error ? result.error : 'Unable to send your message right now.');
+        }
+
+        form.reset();
+        form.style.display = 'none';
+        success.classList.add('show');
+      } catch (error) {
+        setContactFormFeedback(error && error.message ? error.message : 'Unable to send your message right now.');
+      } finally {
+        if (submitButton) submitButton.disabled = false;
+        if (submitLabel) submitLabel.textContent = 'Send Message';
+      }
     }
   </script>
+  <script src="/js/newsletter.js"></script>
 </body>
 </html>
 
