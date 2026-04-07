@@ -214,7 +214,7 @@ function normalizeInviteLogoUrl(rawUrl) {
 function getInviteLogoDataUri() {
   if (cachedInviteLogoDataUri) return cachedInviteLogoDataUri;
   try {
-    const logoPath = path.resolve(__dirname, "../images/image.png");
+    const logoPath = path.resolve(__dirname, "../images/logo_light.svg");
     const bytes = fs.readFileSync(logoPath);
     const ext = path.extname(logoPath).toLowerCase();
     const mime =
@@ -240,12 +240,12 @@ function resolveInviteLogoUrl(appBaseUrl) {
   const isLocalBase =
     /^(https?:\/\/)?(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\]|192\.168\.|10\.|172\.(1[6-9]|2\d|3[0-1])\.)/i.test(base);
 
-  if (!isLocalBase && base) return normalizeInviteLogoUrl(`${base}/images/image.png`);
+  if (!isLocalBase && base) return normalizeInviteLogoUrl(`${base}/images/logo_light.svg`);
 
   const inlineLogo = getInviteLogoDataUri();
   if (inlineLogo) return inlineLogo;
 
-  return base ? normalizeInviteLogoUrl(`${base}/images/image.png`) : "";
+  return base ? normalizeInviteLogoUrl(`${base}/images/logo_light.svg`) : "";
 }
 
 function buildCollaboratorInviteEmailHtml(options = {}) {
