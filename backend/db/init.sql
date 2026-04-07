@@ -72,6 +72,24 @@ CREATE TABLE credit_transactions (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
+CREATE TABLE payment_receipts (
+  id UUID PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  credit_transaction_id UUID REFERENCES credit_transactions(id) ON DELETE SET NULL,
+  provider TEXT NOT NULL DEFAULT 'razorpay',
+  razorpay_order_id TEXT UNIQUE,
+  razorpay_payment_id TEXT UNIQUE NOT NULL,
+  razorpay_signature TEXT,
+  amount_subunits BIGINT NOT NULL DEFAULT 0,
+  currency TEXT DEFAULT 'INR',
+  credits_added NUMERIC(6,2) NOT NULL DEFAULT 0,
+  status TEXT,
+  method TEXT,
+  payload JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
 CREATE TABLE plan_catalog (
   id UUID PRIMARY KEY,
   name TEXT NOT NULL,

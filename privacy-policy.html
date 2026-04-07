@@ -192,6 +192,7 @@
       .privacy-topbar { padding: 12px 14px; }
     }
   </style>
+  <link rel="stylesheet" href="css/responsive.css?v=20260331w" />
 </head>
 <body class="__className_fff05e bg-background text-foreground">
   <header class="w-full border-b bottom-2 border-border/40 z-50 sticky top-0 bg-background backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -204,7 +205,7 @@
         <div class="hidden md:flex items-center gap-8 text-sm">
           <a href="/#how-it-works" class="hover:underline hover:underline-offset-4">How it works</a>
           <a href="/#why-choose-Yatrify" class="hover:underline hover:underline-offset-4">Why Choose Yatrify</a>
-          <a href="/#public-plans" class="hover:underline hover:underline-offset-4">Community Plans</a>
+          <a href="/community-plans.html" class="hover:underline hover:underline-offset-4">Community Plans</a>
           <a href="/#pricing" class="hover:underline hover:underline-offset-4">Pricing</a>
         </div>
         <div class="flex items-center gap-3">
@@ -214,8 +215,7 @@
               <img id="user-avatar" alt="user" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid #e2e8f0;" />
             </button>
           </div>
-          <a id="signin-link" href="/sign-in/" class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 h-9 px-3 py-1.5 text-sm font-semibold bg-blue-500 text-white hover:bg-blue-600">Sign in</a>
-          <a id="signup-link" href="/sign-up/" class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 h-9 px-3 py-1.5 text-sm font-semibold border border-blue-500 text-blue-600 hover:bg-blue-50">Sign up</a>
+          <a id="signin-link" href="/sign-in.html" class="text-sm font-medium text-foreground hover:underline hover:underline-offset-4 whitespace-nowrap">Sign in</a>
         </div>
       </div>
     </nav>
@@ -363,17 +363,17 @@
       <div class="col-span-2 md:col-span-1">
         <h3 class="mb-5 font-medium">Support</h3>
         <ul class="space-y-4 text-sm text-muted-foreground dark:text-gray-400">
-          <li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/help-center">Help Center</a></li>
-          <li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/contact-us">Contact Us</a></li>
-          <li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/privacy-policy">Privacy Policy</a></li>
-          <li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/terms-of-service">Terms of Service</a></li>
+          <li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/help-center.html">Help Center</a></li>
+          <li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/contact-us.html">Contact Us</a></li>
+          <li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/privacy-policy.html">Privacy Policy</a></li>
+          <li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/terms-of-service.html">Terms of Service</a></li>
         </ul>
       </div>
       <div class="col-span-2 md:col-span-1">
         <h3 class="mb-5 font-medium">Company</h3>
         <ul class="space-y-4 text-sm text-muted-foreground dark:text-gray-400">
-          <li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/about-us">About Us</a></li>
-          <li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/partners">Partners</a></li>
+          <li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/about-us.html">About Us</a></li>
+          <li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/partners.html">Partners</a></li>
         </ul>
       </div>
       <div class="col-span-4 md:col-span-2">
@@ -384,7 +384,7 @@
             <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 px-4 py-2 dark:bg-slate-700 dark:hover:bg-slate-600" data-slot="button" type="submit">Subscribe</button>
           </div>
         </form>
-        <p class="mt-2 ml-1 text-xs font-medium text-muted-foreground dark:text-gray-400">By submitting, you agree to our<a href="/privacy-policy" class="ml-1 text-primary dark:text-blue-400 hover:underline">Privacy Policy</a></p>
+        <p class="mt-2 ml-1 text-xs font-medium text-muted-foreground dark:text-gray-400">By submitting, you agree to our<a href="/privacy-policy.html" class="ml-1 text-primary dark:text-blue-400 hover:underline">Privacy Policy</a></p>
       </div>
     </div>
   </footer>
@@ -394,7 +394,6 @@
     (function () {
       var dashboardLink = document.getElementById('dashboard-link');
       var signInLink = document.getElementById('signin-link');
-      var signUpLink = document.getElementById('signup-link');
       var profile = document.getElementById('user-profile');
       var avatar = document.getElementById('user-avatar');
 
@@ -403,13 +402,11 @@
           if (dashboardLink) dashboardLink.style.display = 'none';
           if (profile) profile.style.display = 'none';
           if (signInLink) signInLink.style.display = 'inline-flex';
-          if (signUpLink) signUpLink.style.display = 'inline-flex';
           return;
         }
         if (dashboardLink) dashboardLink.style.display = 'inline-block';
         if (profile) profile.style.display = 'inline-flex';
         if (signInLink) signInLink.style.display = 'none';
-        if (signUpLink) signUpLink.style.display = 'none';
         if (avatar) avatar.src = window.Clerk.user.imageUrl || '';
       }
 
@@ -423,4 +420,5 @@
   <script src="/js/newsletter.js"></script>
 </body>
 </html>
+
 

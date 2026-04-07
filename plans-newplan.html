@@ -109,14 +109,86 @@
         border-color: #2563eb;
         color: #fff;
       }
-      html.dark header.w-full.border-b {
-        background: rgba(2, 6, 23, 0.6) !important;
-        border-color: #0d1526 !important;
+      .topbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 65px;
+        z-index: 1200;
+        border-bottom: 1px solid var(--border);
+        background: color-mix(in oklab, #ffffff 72%, transparent);
+        backdrop-filter: blur(14px);
       }
-      html.light header.w-full.border-b {
-        background: rgba(255, 255, 255, 0.6) !important;
-        border-color: #f3f6f9 !important;
-
+      html.dark .topbar {
+        background: rgba(2, 8, 23, 0.6);
+        border-bottom-color: #0d1526;
+      }
+      .topbar-inner {
+        width: 100%;
+        max-width: none;
+        margin: 0 auto;
+        height: 100%;
+        padding: 0 80px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .topbar-left {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        flex: 1 1 auto;
+        min-width: 0;
+        justify-content: flex-start;
+      }
+      .topbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex: 0 0 auto;
+        justify-content: flex-end;
+        margin-left: 20px;
+        min-width: 0;
+      }
+      .logo-wrap {
+        display: inline-flex;
+        align-items: center;
+      }
+      .logo-wrap img {
+        width: 100px;
+        height: 50px;
+        object-fit: contain;
+      }
+      .logo-dark {
+        display: none;
+      }
+      html.dark .logo-light {
+        display: none;
+      }
+      html.dark .logo-dark {
+        display: block;
+      }
+      .topbar-nav {
+        display: flex;
+        gap: 28px;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        align-items: center;
+      }
+      .topbar-nav a {
+        color: var(--text);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 500;
+      }
+      .topbar-nav a:hover {
+        
+        text-underline-offset: 4px;
+      }
+      #mobile-menu-btn {
+        display: none;
       }
       .theme-toggle {
       display: inline-flex;
@@ -247,8 +319,8 @@ html.dark .theme-toggle:hover {
       main.page {
         width: min(1380px, calc(100vw - 300px));
         max-width: 1380px;
-        margin: 52px auto 54px;
-        padding: 0;
+        margin: 0 auto 54px;
+        padding: 84px 0 0;
         flex: 1 0 auto;
       }
       body > footer {
@@ -258,7 +330,25 @@ html.dark .theme-toggle:hover {
         main.page {
           width: min(1220px, calc(100vw - 170px));
           max-width: 1220px;
-          margin: 40px auto 44px;
+          margin: 0 auto 44px;
+        }
+      }
+      @media (max-width: 1280px) {
+        .topbar-nav {
+          display: none;
+        }
+        #mobile-menu-btn {
+          display: inline-flex;
+        }
+        .topbar-inner {
+          padding: 0 20px;
+        }
+        .topbar-left {
+          gap: 14px;
+        }
+        .topbar-actions {
+          gap: 16px;
+          margin-left: 12px;
         }
       }
       .builder {
@@ -1234,7 +1324,7 @@ html.dark .theme-toggle:hover {
         padding: 4px 2px;
       }
       .date-reset-btn:hover {
-        text-decoration: underline;
+        
       }
       .date-input-wrap input.invalid {
         border-color: #ef4444;
@@ -1594,21 +1684,83 @@ html.dark .theme-toggle:hover {
         gap: 10px;
       }
       .step4-loading-generation-chip {
+        --chip-bg: #ffffff;
+        --chip-border: #d8e2f0;
+        --chip-angle: 0deg;
+        --chip-border-alpha: 0;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 6px;
         min-height: 38px;
         padding: 0 12px;
+        position: relative;
         border-radius: 12px;
-        border: 1px solid #d8e2f0;
-        background: #ffffff;
+        border: 1px solid transparent;
+        background:
+          linear-gradient(var(--chip-bg), var(--chip-bg)) padding-box,
+          conic-gradient(
+            from var(--chip-angle),
+            rgb(37 99 235 / var(--chip-border-alpha)),
+            rgb(6 182 212 / var(--chip-border-alpha)),
+            rgb(139 92 246 / var(--chip-border-alpha)),
+            rgb(249 115 22 / var(--chip-border-alpha)),
+            rgb(37 99 235 / var(--chip-border-alpha))
+          ) border-box,
+          linear-gradient(var(--chip-border), var(--chip-border)) border-box;
         color: #0f172a;
         font-size: 12px;
         font-weight: 500;
         line-height: 1;
         box-shadow: 0 6px 14px rgba(15, 23, 42, 0.035);
         white-space: nowrap;
+        animation: step4ChipBorderCycle 7.2s linear infinite;
+      }
+      .step4-loading-generation-grid .step4-loading-generation-chip:nth-child(2) {
+        animation-delay: 1.2s;
+      }
+      .step4-loading-generation-grid .step4-loading-generation-chip:nth-child(3) {
+        animation-delay: 2.4s;
+      }
+      .step4-loading-generation-grid .step4-loading-generation-chip:nth-child(4) {
+        animation-delay: 3.6s;
+      }
+      .step4-loading-generation-grid .step4-loading-generation-chip:nth-child(5) {
+        animation-delay: 4.8s;
+      }
+      .step4-loading-generation-grid .step4-loading-generation-chip:nth-child(6) {
+        animation-delay: 6s;
+      }
+      @property --chip-angle {
+        syntax: "<angle>";
+        inherits: false;
+        initial-value: 0deg;
+      }
+      @property --chip-border-alpha {
+        syntax: "<number>";
+        inherits: false;
+        initial-value: 0;
+      }
+      @keyframes step4ChipBorderCycle {
+        0% {
+          --chip-angle: 0deg;
+          --chip-border-alpha: 0;
+        }
+        3% {
+          --chip-border-alpha: 1;
+        }
+        14% {
+          --chip-angle: 320deg;
+          --chip-border-alpha: 1;
+        }
+        20% {
+          --chip-angle: 360deg;
+          --chip-border-alpha: 0;
+        }
+        100% {
+          --chip-angle: 360deg;
+          --chip-border-alpha: 0;
+        }
       }
       .step4-loading-generation-chip i {
         width: 12px;
@@ -1650,12 +1802,17 @@ html.dark .theme-toggle:hover {
         color: #cbd5e1;
       }
       html.dark .step4-loading-generation-chip {
-        border-color: #334155;
-        background: #111827;
+        --chip-bg: #111827;
+        --chip-border: #334155;
         color: #e2e8f0;
       }
       html.dark .step4-loading-generation-chip i {
         color: #93c5fd;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .step4-loading-generation-chip {
+          animation: none;
+        }
       }
       @media (max-width: 900px) {
         .step4-loading-generation-panel {
@@ -1872,7 +2029,8 @@ html.dark .theme-toggle:hover {
         main.page {
           width: calc(100vw - 40px);
           max-width: none;
-          margin: 20px auto 36px;
+          margin: 0 auto 36px;
+          padding-top: 84px;
         }
         .builder { grid-template-columns: 1fr; }
         .left-panel {
@@ -1912,10 +2070,15 @@ html.dark .theme-toggle:hover {
         text-decoration: none;
         text-underline-offset: 4px;
       }
+    .header-credits:hover {
+      background: rgba(15, 23, 42, 0.08);
+      color: #0f172a;
+    }
 
-      .header-credits:hover {
-        text-decoration: underline;
-      }
+    html.dark .header-credits:hover {
+      background: rgba(148, 163, 184, 0.16);
+      color: #ffffff;
+    }
 
       html.dark .header-credits {
         color: #e5e7eb;
@@ -1955,70 +2118,66 @@ html.dark .theme-toggle:hover {
     </style>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-  <link rel="preload" as="script" href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></head>
+  <link rel="preload" as="script" href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js">
+  <link rel="stylesheet" href="css/responsive.css?v=20260331v">
+</head>
   <body class="__className_fff05e">
-    <header class="w-full border-b bottom-2 border-border/40 z-50 sticky top-0 bg-background backdrop-blur supports-[backdrop-filter]:bg-background/60">
-  <nav class="lg:px-20 px-5 py-3 mx-auto">
-    <div class="flex items-center justify-between w-full">
-      <div class="flex gap-4 items-center justify-start flex-1">
-        <a href="/"><div class="flex justify-center items-center leading-5 font-bold text-xl">
-          <img alt="logo" loading="lazy" width="100" height="50" decoding="async" class="dark:hidden" src="/images/image.png">
-          <img alt="logo" loading="lazy" width="100" height="50" decoding="async" class="hidden dark:flex" src="/images/image_2.png">
-        </div></a>
-      </div>
-      <div class="hidden md:flex items-center justify-center">
-        <ul class="flex gap-8 items-center text-sm">
-          <li class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer text-foreground"><a href="/">Home</a></li>
-          <li class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer text-foreground"><a href="/dashboard.html">Dashboard</a></li>
-          <li class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer text-foreground"><a href="/#public-plans">Community Plans</a></li>
-        </ul>
-      </div>
-      <div class="md:hidden flex items-center ml-2">
-        <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary underline-offset-4 hover:underline h-10 px-4 py-2 text-xl" aria-label="open side menu">
-          <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M904 160H120c-4.4 0-8 3.6-8 8v64c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-64c0-4.4-3.6-8-8-8zm0 624H120c-4.4 0-8 3.6-8 8v64c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-64c0-4.4-3.6-8-8-8zm0-312H120c-4.4 0-8 3.6-8 8v64c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-64c0-4.4-3.6-8-8-8z"></path></svg>
-        </button>
-        <aside class="fixed top-0 z-[100] bg-background w-[50%] border-r-2 border-neutral-200 h-full ease-in-out duration-700 left-[-100%] flex flex-col gap-2 min-h-[100svh]">
-          <div class="flex justify-between p-2">
-            <a href="/"><div class="flex flex-col leading-5 font-bold text-md p-1">
-              <img alt="logo" loading="lazy" width="100" height="50" decoding="async" class="dark:hidden" src="/images/image.png">
-              <img alt="logo" loading="lazy" width="100" height="50" decoding="async" class="hidden dark:flex" src="/images/image_2.png">
-            </div></a>
-            <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary underline-offset-4 hover:underline h-10 px-4 py-2 text-xl" aria-label="close menu">
-              <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" fill-rule="evenodd" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M799.855 166.312c.023.007.043.018.084.059l57.69 57.69c.041.041.052.06.059.084a.118.118 0 0 1 0 .069c-.007.023-.018.042-.059.083L569.926 512l287.703 287.703c.041.04.052.06.059.083a.118.118 0 0 1 0 .07c-.007.022-.018.042-.059.083l-57.69 57.69c-.041.041-.06.052-.084.059a.118.118 0 0 1-.069 0c-.023-.007-.042-.018-.083-.059L512 569.926 224.297 857.629c-.04.041-.06.052-.083.059a.118.118 0 0 1-.07 0c-.022-.007-.042-.018-.083-.059l-57.69-57.69c-.041-.041-.052-.06-.059-.084a.118.118 0 0 1 0-.069c.007-.023.018-.042.059-.083L454.073 512 166.371 224.297c-.041-.04-.052-.06-.059-.083a.118.118 0 0 1 0-.07c.007-.022.018-.042.059-.083l57.69-57.69c.041-.041.06-.052.084-.059a.118.118 0 0 1 .069 0c.023.007.042.018.083.059L512 454.073l287.703-287.702c.04-.041.06-.052.083-.059a.118.118 0 0 1 .07 0Z"></path></svg>
-            </button>
-          </div>
-          <ul class="w-full flex flex-col gap-7 justify-center items-start p-5 text-sm font-medium">
-            <li class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer text-foreground"><a href="/">Home</a></li>
-            <li class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer text-foreground"><a href="/dashboard.html">Dashboard</a></li>
-            <li class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer text-foreground"><a href="/#public-plans">Community Plans</a></li>
-          </ul>
-        </aside>
-      </div>
-      <div class="flex gap-5 justify-end items-center flex-1 header-action-row" style="position:relative;z-index:10005;">
-        <span class="header-credits">Credits <span id="credits-count">2</span></span>
-        <button type="button" class="icon-btn" title="Feedback" aria-label="Feedback">
-          <i data-lucide="message-circle" style="width:18px;height:18px;"></i>
-        </button>
-        <button id="theme-toggle-btn" class="theme-toggle" title="Toggle theme">
-          <svg id="sun-icon" class="dark:hidden lucide lucide-sun-icon lucide-sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg><svg id="moon-icon" class="hidden dark:block lucide lucide-moon-icon lucide-moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
-        </button>
-        <div id="user-profile" style="position:relative;z-index:10002;">
-          <button id="profile-btn" type="button" style="border:0;background:transparent;padding:0;cursor:pointer;pointer-events:auto;border-radius:50%;overflow:hidden;width:34px;height:34px;display:flex;align-items:center;justify-content:center;">
-            <img id="user-avatar" alt="user" style="width:34px;height:34px;border-radius:50%;object-fit:cover;">
+    <header class="topbar">
+      <nav class="topbar-inner" aria-label="Primary">
+        <div class="topbar-left">
+          <button id="mobile-menu-btn" class="icon-btn" type="button" aria-label="open side menu">
+            <i data-lucide="menu"></i>
           </button>
-          <div id="profile-menu" style="display:none;position:absolute;right:0;top:50px;min-width:240px;background:#fff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,0.15);padding:12px;z-index:10001;">
-            <div style="padding:12px 14px;border-bottom:1px solid #f3f4f6;margin-bottom:8px;">
-              <div id="profile-name" style="font-weight:700;font-size:15px;color:#111;letter-spacing:-0.3px;"></div>
-              <div id="profile-email" style="font-size:12px;color:#6b7280;word-break:break-all;margin-top:4px;"></div>
+          <a class="logo-wrap" href="/">
+            <img class="logo-light" src="/images/image.png" srcset="/images/image_3.png 1x, /images/image.png 2x" alt="Yatrify">
+            <img class="logo-dark" src="/images/image_2.png" srcset="/images/image_4.png 1x, /images/image_2.png 2x" alt="Yatrify">
+          </a>
+          <ul class="topbar-nav">
+            <li><a href="/">Home</a></li>
+            <li><a href="/dashboard.html">Dashboard</a></li>
+            <li><a href="/community-plans.html">Community Plans</a></li>
+          </ul>
+        </div>
+        <div class="topbar-actions header-action-row" style="position:relative;z-index:10005;">
+          <span class="header-credits">Credits <span id="credits-count">2</span></span>
+          <button type="button" class="icon-btn" title="Feedback" aria-label="Feedback">
+            <i data-lucide="message-circle" style="width:18px;height:18px;"></i>
+          </button>
+          <button id="theme-toggle-btn" class="theme-toggle" title="Toggle theme">
+            <svg id="sun-icon" class="dark:hidden lucide lucide-sun-icon lucide-sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg><svg id="moon-icon" class="hidden dark:block lucide lucide-moon-icon lucide-moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+          </button>
+          <div id="user-profile" style="position:relative;z-index:10002;">
+            <button id="profile-btn" type="button" style="border:0;background:transparent;padding:0;cursor:pointer;pointer-events:auto;border-radius:50%;overflow:hidden;width:34px;height:34px;display:flex;align-items:center;justify-content:center;">
+              <img id="user-avatar" alt="user" style="width:34px;height:34px;border-radius:50%;object-fit:cover;">
+            </button>
+            <div id="profile-menu" style="display:none;position:absolute;right:0;top:50px;min-width:240px;background:#fff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,0.15);padding:12px;z-index:10001;">
+              <div style="padding:12px 14px;border-bottom:1px solid #f3f4f6;margin-bottom:8px;">
+                <div id="profile-name" style="font-weight:700;font-size:15px;color:#111;letter-spacing:-0.3px;"></div>
+                <div id="profile-email" style="font-size:12px;color:#6b7280;word-break:break-all;margin-top:4px;"></div>
+              </div>
+              <button id="manage-account" type="button" style="width:100%;text-align:left;border:0;background:transparent;padding:10px 12px;cursor:pointer;font-size:14px;font-weight:500;color:#374151;border-radius:8px;transition:all 0.2s ease;">&#9881;&#65039; Manage account</button>
+              <button id="signout-btn" type="button" style="width:100%;text-align:left;border:0;background:transparent;padding:10px 12px;cursor:pointer;font-size:14px;font-weight:500;color:#dc2626;border-radius:8px;margin-top:4px;transition:all 0.2s ease;">&#128682; Sign out</button>
             </div>
-            <button id="manage-account" type="button" style="width:100%;text-align:left;border:0;background:transparent;padding:10px 12px;cursor:pointer;font-size:14px;font-weight:500;color:#374151;border-radius:8px;transition:all 0.2s ease;">&#9881;&#65039; Manage account</button>
-            <button id="signout-btn" type="button" style="width:100%;text-align:left;border:0;background:transparent;padding:10px 12px;cursor:pointer;font-size:14px;font-weight:500;color:#dc2626;border-radius:8px;margin-top:4px;transition:all 0.2s ease;">&#128682; Sign out</button>
           </div>
         </div>
-      </div>
-    </div>
-  </nav>
-</header>
+      </nav>
+      <aside class="fixed top-0 z-[100] bg-background w-[50%] border-r-2 border-neutral-200 h-full ease-in-out duration-700 left-[-100%] flex flex-col gap-2 min-h-[100svh]">
+        <div class="flex justify-between p-2">
+          <a href="/"><div class="flex flex-col leading-5 font-bold text-md p-1">
+            <img alt="logo" loading="lazy" width="100" height="50" decoding="async" class="dark:hidden" src="/images/image.png">
+            <img alt="logo" loading="lazy" width="100" height="50" decoding="async" class="hidden dark:flex" src="/images/image_2.png">
+          </div></a>
+          <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary underline-offset-4 hover:underline h-10 px-4 py-2 text-xl" aria-label="close menu">
+            <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" fill-rule="evenodd" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M799.855 166.312c.023.007.043.018.084.059l57.69 57.69c.041.041.052.06.059.084a.118.118 0 0 1 0 .069c-.007.023-.018.042-.059.083L569.926 512l287.703 287.703c.041.04.052.06.059.083a.118.118 0 0 1 0 .07c-.007.022-.018.042-.059.083l-57.69 57.69c-.041.041-.06.052-.084.059a.118.118 0 0 1-.069 0c-.023-.007-.042-.018-.083-.059L512 569.926 224.297 857.629c-.04.041-.06.052-.083.059a.118.118 0 0 1-.07 0c-.022-.007-.042-.018-.083-.059l-57.69-57.69c-.041-.041-.052-.06-.059-.084a.118.118 0 0 1 0-.069c.007-.023.018-.042.059-.083L454.073 512 166.371 224.297c-.041-.04-.052-.06-.059-.083a.118.118 0 0 1 0-.07c.007-.022.018-.042.059-.083l57.69-57.69c.041-.041.06-.052.084-.059a.118.118 0 0 1 .069 0c.023.007.042.018.083.059L512 454.073l287.703-287.702c.04-.041.06-.052.083-.059a.118.118 0 0 1 .07 0Z"></path></svg>
+          </button>
+        </div>
+        <ul class="w-full flex flex-col gap-7 justify-center items-start p-5 text-sm font-medium">
+          <li class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer text-foreground"><a href="/">Home</a></li>
+          <li class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer text-foreground"><a href="/dashboard.html">Dashboard</a></li>
+          <li class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer text-foreground"><a href="/community-plans.html">Community Plans</a></li>
+        </ul>
+      </aside>
+    </header>
 
     <main class="page">
       <div class="builder">
@@ -2395,7 +2554,7 @@ html.dark .theme-toggle:hover {
         </section>
       </div>
     </main>
-    <footer class="py-5 mt-10 bg-blue-50 dark:bg-slate-900 dark:text-gray-200 relative z-[1000]"><div class="lg:px-20 px-5 py-2 grid grid-cols-4 justify-between gap-10 lg:grid-cols-6 lg:text-left"><div class="col-span-4 flex w-full flex-col gap-6 lg:col-span-2"><div class="flex items-center gap-2 lg:justify-start"><div class="hidden md:flex gap-10 items-center justify-start flex-1"><a href="/"><div class="flex justify-center items-center leading-5 font-bold text-xl"><img alt="logo" loading="lazy" width="100" height="50" decoding="async" data-nimg="1" class="dark:hidden" style="color:transparent" srcset="images/image_3.png 1x, images/image.png 2x" src="images/image.png"><img alt="logo" loading="lazy" width="100" height="50" decoding="async" data-nimg="1" class="hidden dark:block" style="color:transparent" srcset="images/image_4.png 1x, images/image_2.png 2x" src="images/image_2.png"></div></a></div></div><p class="text-muted-foreground dark:text-gray-400">Your perfect trip, built for you. Effortlessly plan personalized itineraries that match your travel style.</p><ul class="flex items-center space-x-6"><li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300"><a href="#"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"></path></svg></a></li><li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300"><a href="#"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M504 256C504 119 393 8 256 8S8 119 8 256c0 123.78 90.69 226.38 209.25 245V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.28c-30.8 0-40.41 19.12-40.41 38.73V256h68.78l-11 71.69h-57.78V501C413.31 482.38 504 379.78 504 256z"></path></svg></a></li><li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300"><a href="#"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8l165-188.5L26.7 48H172.3l100.7 132.1L389.2 48zm-24.8 373.8h39.1L151.1 88.1h-42l255.3 333.7z"></path></svg></a></li><li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300"><a href="#"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"></path></svg></a></li></ul></div><div class="col-span-2 md:col-span-1"><h3 class="mb-5 font-medium">Support</h3><ul class="space-y-4 text-sm text-muted-foreground dark:text-gray-400"><li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/help-center">Help Center</a></li><li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/contact-us">Contact Us</a></li><li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/privacy-policy">Privacy Policy</a></li><li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/terms-of-service">Terms of Service</a></li></ul></div><div class="col-span-2 md:col-span-1"><h3 class="mb-5 font-medium">Company</h3><ul class="space-y-4 text-sm text-muted-foreground dark:text-gray-400"><li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/about-us">About Us</a></li><li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/partners">Partners</a></li></ul></div><div class="col-span-4 md:col-span-2"><h3 class="mb-2 font-medium">Newsletter</h3><form class="grid gap-1"><div class="flex justify-evenly w-full space-x-2"><input type="email" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-slate-800 dark:border-slate-700" data-slot="input" placeholder="Email" required="" value=""><button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 px-4 py-2 dark:bg-slate-700 dark:hover:bg-slate-600" data-slot="button" type="submit">Subscribe</button></div></form><p class="mt-2 ml-1 text-xs font-medium text-muted-foreground dark:text-gray-400">By submitting, you agree to our<a href="/privacy-policy" class="ml-1 text-primary dark:text-blue-400 hover:underline">Privacy Policy</a></p></div></div></footer>
+    <footer class="py-5 mt-10 bg-blue-50 dark:bg-slate-900 dark:text-gray-200 relative z-[1000]"><div class="lg:px-20 px-5 py-2 grid grid-cols-4 justify-between gap-10 lg:grid-cols-6 lg:text-left"><div class="col-span-4 flex w-full flex-col gap-6 lg:col-span-2"><div class="flex items-center gap-2 lg:justify-start"><div class="hidden md:flex gap-10 items-center justify-start flex-1"><a href="/"><div class="flex justify-center items-center leading-5 font-bold text-xl"><img alt="logo" loading="lazy" width="100" height="50" decoding="async" data-nimg="1" class="dark:hidden" style="color:transparent" srcset="images/image_3.png 1x, images/image.png 2x" src="images/image.png"><img alt="logo" loading="lazy" width="100" height="50" decoding="async" data-nimg="1" class="hidden dark:block" style="color:transparent" srcset="images/image_4.png 1x, images/image_2.png 2x" src="images/image_2.png"></div></a></div></div><p class="text-muted-foreground dark:text-gray-400">Your perfect trip, built for you. Effortlessly plan personalized itineraries that match your travel style.</p><ul class="flex items-center space-x-6"><li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300"><a href="#"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"></path></svg></a></li><li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300"><a href="#"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M504 256C504 119 393 8 256 8S8 119 8 256c0 123.78 90.69 226.38 209.25 245V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.28c-30.8 0-40.41 19.12-40.41 38.73V256h68.78l-11 71.69h-57.78V501C413.31 482.38 504 379.78 504 256z"></path></svg></a></li><li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300"><a href="#"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8l165-188.5L26.7 48H172.3l100.7 132.1L389.2 48zm-24.8 373.8h39.1L151.1 88.1h-42l255.3 333.7z"></path></svg></a></li><li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300"><a href="#"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"></path></svg></a></li></ul></div><div class="col-span-2 md:col-span-1"><h3 class="mb-5 font-medium">Support</h3><ul class="space-y-4 text-sm text-muted-foreground dark:text-gray-400"><li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/help-center.html">Help Center</a></li><li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/contact-us.html">Contact Us</a></li><li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/privacy-policy.html">Privacy Policy</a></li><li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/terms-of-service.html">Terms of Service</a></li></ul></div><div class="col-span-2 md:col-span-1"><h3 class="mb-5 font-medium">Company</h3><ul class="space-y-4 text-sm text-muted-foreground dark:text-gray-400"><li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/about-us.html">About Us</a></li><li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/partners.html">Partners</a></li></ul></div><div class="col-span-4 md:col-span-2"><h3 class="mb-2 font-medium">Newsletter</h3><form class="grid gap-1"><div class="flex justify-evenly w-full space-x-2"><input type="email" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-slate-800 dark:border-slate-700" data-slot="input" placeholder="Email" required="" value=""><button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 px-4 py-2 dark:bg-slate-700 dark:hover:bg-slate-600" data-slot="button" type="submit">Subscribe</button></div></form><p class="mt-2 ml-1 text-xs font-medium text-muted-foreground dark:text-gray-400">By submitting, you agree to our<a href="/privacy-policy.html" class="ml-1 text-primary dark:text-blue-400 hover:underline">Privacy Policy</a></p></div></div></footer>
 
     <script src="/js/clerk-loader.js"></script>
     <script src="/js/api-client.js"></script>
@@ -2548,10 +2707,17 @@ html.dark .theme-toggle:hover {
         var CALENDAR_WEEKDAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
         var countriesCache = null;
         var countriesPromise = null;
+        var statesByCountryCache = {};
+        var statesByCountryPromise = {};
         var citiesByCountryCache = {};
         var citiesByCountryPromise = {};
+        var detailedCitiesByCountryCache = {};
+        var detailedCitiesByCountryPromise = {};
         var WORLD_CITY_BATCH_WORKERS = 4;
         var WORLD_CITY_PRIORITY_ISO = ["US", "IN", "GB", "FR", "DE", "IT", "ES", "CA", "AU", "AE", "SG", "JP", "CH", "NL", "TH", "MY", "ID", "BR", "MX", "TR", "ZA", "NZ", "SA", "KR"];
+        var DETAILED_CITY_COUNTRY_ISO = { IN: true };
+        var worldStateIndex = [];
+        var worldStateSeen = {};
         var worldCityIndex = [];
         var worldCitySeen = {};
         var worldCityLoaderState = {
@@ -3815,11 +3981,81 @@ html.dark .theme-toggle:hover {
             return citiesByCountryCache[normalizedIso];
           }
           if (!citiesByCountryPromise[normalizedIso]) {
-            citiesByCountryPromise[normalizedIso] = fetchCSCJson("/countries/" + encodeURIComponent(normalizedIso) + "/cities")
-              .then(function (cities) {
+            citiesByCountryPromise[normalizedIso] = Promise.all([
+              fetchCSCJson("/countries/" + encodeURIComponent(normalizedIso) + "/cities"),
+              getStatesByCountry(normalizedIso)
+            ]).then(function (payload) {
+                var cities = Array.isArray(payload && payload[0]) ? payload[0] : [];
+                var states = Array.isArray(payload && payload[1]) ? payload[1] : [];
+                var stateNameByCode = {};
+                var stateNameById = {};
+                states.forEach(function (state) {
+                  var code = String(state && state.iso2 ? state.iso2 : "").trim().toUpperCase();
+                  var name = String(state && state.name ? state.name : "").trim();
+                  var id = String(state && state.id ? state.id : "").trim();
+                  if (!name) return;
+                  if (code) stateNameByCode[code] = name;
+                  if (id) stateNameById[id] = name;
+                });
                 var normalizedCities = (cities || [])
                   .map(function (city) {
-                    return { name: String(city && city.name ? city.name : "").trim() };
+                    var stateId = String(
+                      city && (
+                        city.state_id ||
+                        city.stateId
+                      )
+                        ? (
+                          city.state_id ||
+                          city.stateId
+                        )
+                        : ""
+                    ).trim();
+                    var stateCode = String(
+                      city && (
+                        city.state_code ||
+                        city.stateCode ||
+                        city.state_iso2 ||
+                        city.stateIso2
+                      )
+                        ? (
+                          city.state_code ||
+                          city.stateCode ||
+                          city.state_iso2 ||
+                          city.stateIso2
+                        )
+                        : ""
+                    ).trim().toUpperCase();
+                    var stateName = String(
+                      city && (
+                        city.state_name ||
+                        city.stateName ||
+                        city.state ||
+                        city.admin_name ||
+                        city.region ||
+                        city.province
+                      )
+                        ? (
+                          city.state_name ||
+                          city.stateName ||
+                          city.state ||
+                          city.admin_name ||
+                          city.region ||
+                          city.province
+                        )
+                        : ""
+                    ).trim();
+                    if (!stateName && stateCode && stateNameByCode[stateCode]) {
+                      stateName = stateNameByCode[stateCode];
+                    }
+                    if (!stateName && stateId && stateNameById[stateId]) {
+                      stateName = stateNameById[stateId];
+                    }
+                    return {
+                      name: String(city && city.name ? city.name : "").trim(),
+                      stateId: stateId,
+                      stateCode: stateCode,
+                      state: stateName
+                    };
                   })
                   .filter(function (city) {
                     return city.name;
@@ -3835,6 +4071,93 @@ html.dark .theme-toggle:hover {
               });
           }
           return citiesByCountryPromise[normalizedIso];
+        }
+
+        async function getCitiesByState(iso2, stateIso2) {
+          var countryIso = String(iso2 || "").trim().toUpperCase();
+          var stateCode = String(stateIso2 || "").trim().toUpperCase();
+          if (!countryIso || !stateCode) return [];
+          try {
+            var cities = await fetchCSCJson(
+              "/countries/" + encodeURIComponent(countryIso) + "/states/" + encodeURIComponent(stateCode) + "/cities"
+            );
+            return Array.isArray(cities) ? cities : [];
+          } catch (_) {
+            return [];
+          }
+        }
+
+        async function getDetailedCitiesByCountry(iso2) {
+          var normalizedIso = String(iso2 || "").trim().toUpperCase();
+          if (!normalizedIso) return [];
+          if (!DETAILED_CITY_COUNTRY_ISO[normalizedIso]) {
+            return getCitiesByCountry(normalizedIso);
+          }
+          if (detailedCitiesByCountryCache[normalizedIso]) {
+            return detailedCitiesByCountryCache[normalizedIso];
+          }
+          if (!detailedCitiesByCountryPromise[normalizedIso]) {
+            detailedCitiesByCountryPromise[normalizedIso] = getStatesByCountry(normalizedIso).then(async function (states) {
+              var combined = [];
+              for (var i = 0; i < states.length; i += 1) {
+                var state = states[i];
+                var stateIso2 = String(state && state.iso2 ? state.iso2 : "").trim().toUpperCase();
+                var stateName = String(state && state.name ? state.name : "").trim();
+                if (!stateIso2) continue;
+                var stateCities = await getCitiesByState(normalizedIso, stateIso2);
+                stateCities.forEach(function (city) {
+                  var name = String(city && city.name ? city.name : "").trim();
+                  if (!name) return;
+                  combined.push({
+                    name: name,
+                    state: stateName,
+                    stateCode: stateIso2
+                  });
+                });
+              }
+
+              // Fallback to generic list if detailed endpoint produced nothing.
+              if (!combined.length) {
+                combined = await getCitiesByCountry(normalizedIso);
+              }
+              detailedCitiesByCountryCache[normalizedIso] = combined;
+              return combined;
+            }).catch(async function () {
+              delete detailedCitiesByCountryPromise[normalizedIso];
+              return getCitiesByCountry(normalizedIso);
+            });
+          }
+          return detailedCitiesByCountryPromise[normalizedIso];
+        }
+
+        async function getStatesByCountry(iso2) {
+          var normalizedIso = String(iso2 || "").trim().toUpperCase();
+          if (!normalizedIso) return [];
+          if (statesByCountryCache[normalizedIso]) {
+            return statesByCountryCache[normalizedIso];
+          }
+          if (!statesByCountryPromise[normalizedIso]) {
+            statesByCountryPromise[normalizedIso] = fetchCSCJson("/countries/" + encodeURIComponent(normalizedIso) + "/states")
+              .then(function (states) {
+                var normalizedStates = (states || [])
+                  .map(function (state) {
+                    return {
+                      id: String(state && state.id ? state.id : "").trim(),
+                      name: String(state && state.name ? state.name : "").trim(),
+                      iso2: String(state && state.iso2 ? state.iso2 : "").trim().toUpperCase()
+                    };
+                  })
+                  .filter(function (state) {
+                    return state.name && state.iso2;
+                  });
+                statesByCountryCache[normalizedIso] = normalizedStates;
+                return normalizedStates;
+              }).catch(function () {
+                delete statesByCountryPromise[normalizedIso];
+                return [];
+              });
+          }
+          return statesByCountryPromise[normalizedIso];
         }
 
         function getMatchRank(text, query, assumeLowerCase) {
@@ -3880,17 +4203,55 @@ html.dark .theme-toggle:hover {
           if (!country || !Array.isArray(cities)) return;
           cities.forEach(function (city) {
             var cityName = String(city && city.name ? city.name : "").trim();
+            var stateName = String(city && city.state ? city.state : "").trim();
+            var stateCode = String(city && city.stateCode ? city.stateCode : "").trim().toUpperCase();
+            var stateLabel = stateName || stateCode;
             if (!cityName) return;
-            var value = cityName + ", " + country.name;
-            var key = value.toLowerCase();
+            var displayParts = [cityName];
+            var valueParts = [cityName];
+            if (stateLabel && stateLabel.toLowerCase() !== cityName.toLowerCase()) {
+              displayParts.push(stateLabel);
+              valueParts.push(stateLabel);
+            }
+            if (country.name) {
+              var countryLower = String(country.name).toLowerCase();
+              var stateLower = stateLabel.toLowerCase();
+              if (!stateLabel || stateLower !== countryLower) {
+                displayParts.push(country.name);
+                valueParts.push(country.name);
+              }
+            }
+            var label = displayParts.join(", ");
+            var value = valueParts.join(", ");
+            var key = label.toLowerCase();
             if (worldCitySeen[key]) return;
             worldCitySeen[key] = true;
             worldCityIndex.push({
               type: "City",
-              label: value,
+              label: label,
               value: value,
               countryIso: country.iso2,
               cityLower: cityName.toLowerCase(),
+              labelLower: key
+            });
+          });
+        }
+
+        function addStatesToWorldIndex(country, states) {
+          if (!country || !Array.isArray(states)) return;
+          states.forEach(function (state) {
+            var stateName = String(state && state.name ? state.name : "").trim();
+            if (!stateName) return;
+            var label = stateName + ", " + country.name;
+            var key = label.toLowerCase();
+            if (worldStateSeen[key]) return;
+            worldStateSeen[key] = true;
+            worldStateIndex.push({
+              type: "State",
+              label: label,
+              value: label,
+              countryIso: country.iso2,
+              stateLower: stateName.toLowerCase(),
               labelLower: key
             });
           });
@@ -3902,7 +4263,11 @@ html.dark .theme-toggle:hover {
             worldCityLoaderState.nextCountryIndex += 1;
             var country = orderedCountries[countryIndex];
             try {
-              var cities = await getCitiesByCountry(country.iso2);
+              if (DETAILED_CITY_COUNTRY_ISO[country.iso2]) {
+                var states = await getStatesByCountry(country.iso2);
+                addStatesToWorldIndex(country, states);
+              }
+              var cities = await getDetailedCitiesByCountry(country.iso2);
               addCitiesToWorldIndex(country, cities);
             } catch (error) {
               // Continue with remaining countries if a single request fails.
@@ -3958,6 +4323,23 @@ html.dark .theme-toggle:hover {
 
           startWorldCityIndexBuild();
 
+          var stateResults = [];
+          for (var s = 0; s < worldStateIndex.length; s += 1) {
+            var stateEntry = worldStateIndex[s];
+            var stateRank = getMatchRank(stateEntry.stateLower, normalizedCityQuery, true);
+            if (stateRank >= 99) {
+              stateRank = getMatchRank(stateEntry.labelLower, normalizedCityQuery, true);
+            }
+            if (stateRank >= 99) continue;
+            stateResults.push({
+              type: stateEntry.type,
+              label: stateEntry.label,
+              value: stateEntry.value,
+              countryIso: stateEntry.countryIso,
+              rank: stateRank
+            });
+          }
+
           var cityResults = [];
           for (var i = 0; i < worldCityIndex.length; i += 1) {
             var entry = worldCityIndex[i];
@@ -3975,12 +4357,16 @@ html.dark .theme-toggle:hover {
             });
           }
 
-          cityResults.sort(function (a, b) {
+          var combinedResults = stateResults.concat(cityResults);
+          combinedResults.sort(function (a, b) {
             if (a.rank !== b.rank) return a.rank - b.rank;
+            if (a.type !== b.type) {
+              return a.type === "State" ? -1 : 1;
+            }
             return a.label.localeCompare(b.label);
           });
 
-          return cityResults;
+          return combinedResults;
         }
 
         function clearAutocompletePoll(inputId) {
@@ -4767,6 +5153,20 @@ html.dark .theme-toggle:hover {
           readInputs();
           if (!window.YatrifyPlanService) throw new Error("API client not loaded");
           var payload = Object.assign({}, formState);
+          var step4PayloadKey = getStep4PayloadKey(payload);
+          if (step4State.hasResult && step4State.data && step4State.lastPayloadKey === step4PayloadKey) {
+            var seededMin = Number(step4State.data.suggestedBudgetMin);
+            var seededMax = Number(step4State.data.suggestedBudgetMax);
+            if (Number.isFinite(seededMin) || Number.isFinite(seededMax)) {
+              if (!Number.isFinite(seededMin)) seededMin = seededMax;
+              if (!Number.isFinite(seededMax)) seededMax = seededMin;
+              payload.feasibility = {
+                currency: String(step4State.data.currency || payload.currency || "INR").toUpperCase(),
+                suggestedBudgetMin: Math.max(0, Math.round(seededMin)),
+                suggestedBudgetMax: Math.max(Math.max(0, Math.round(seededMin)), Math.round(seededMax))
+              };
+            }
+          }
           var response = await window.YatrifyPlanService.generatePlan(payload);
           if (response && typeof response.credits === "number") {
             setCredits(response.credits);
@@ -4987,4 +5387,7 @@ html.dark .theme-toggle:hover {
   <script src="/js/newsletter.js"></script>
 </body>
 </html>
+
+
+
 

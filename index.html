@@ -158,6 +158,7 @@
       color: #ffffff !important;
     }
   </style>
+  <link rel="stylesheet" href="css/responsive.css?v=20260331w" />
 </head>
 
 <body class="__className_fff05e">
@@ -184,12 +185,21 @@
             <li
               class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer  text-foreground">
               <a href="/#public-plans">Community Plans</a></li>
+
             <li
               class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer  text-foreground">
               <a href="/#pricing">Pricing</a></li>
           </ul>
         </div>
-        <div class="md:hidden flex gap-6 flex-1"><button
+        <div class="md:hidden flex items-center gap-3 flex-1">
+          <a href="/" class="flex items-center" aria-label="Yatrify home">
+            <img alt="logo" loading="lazy" width="92" height="36" decoding="async" class="dark:hidden"
+              style="color:transparent" srcset="images/image_3.png 1x, images/image.png 2x" src="images/image.png">
+            <img alt="logo" loading="lazy" width="92" height="36" decoding="async" class="hidden dark:flex"
+              style="color:transparent" srcset="images/image_4.png 1x, images/image_2.png 2x"
+              src="images/image_2.png">
+          </a>
+          <button
             class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary underline-offset-4 hover:underline h-10 px-4 py-2 text-xl"
             aria-label="open side menu"><svg stroke="currentColor" fill="currentColor" stroke-width="0"
               viewBox="0 0 1024 1024" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
@@ -224,17 +234,14 @@
                 <a href="/#why-choose-Yatrify">Why Choose Yatrify</a></li>
               <li
                 class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer  text-foreground">
-                <a href="/#public-plans">Community Plans</a></li>
+                <a href="/community-plans.html">Community Plans</a></li>
               <li
                 class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer  text-foreground">
                 <a href="/#pricing">Pricing</a></li>
             </ul>
           </aside>
         </div>
-        <div class="flex gap-5 justify-end items-center flex-1" style="position:relative;z-index:10005;"><button
-            type="button" id="open-signin"
-            class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-9 px-3 py-1.5 text-sm font-semibold bg-blue-500 text-white hover:bg-blue-600">Sign
-            in</button><a id="dashboard-link" href="dashboard.html" onmouseover="this.style.textDecoration='underline'"
+        <div class="flex gap-5 justify-end items-center flex-1" style="position:relative;z-index:10005;"><a id="dashboard-link" href="dashboard.html" onmouseover="this.style.textDecoration='underline'"
             onmouseout="this.style.textDecoration='none'"
             style="display:none;font-size:14px;font-weight:500;color:#111827;text-decoration:none;transition:color 0.2s ease;padding:0;border-radius:0;background:transparent;"
             class="hover:underline hover:underline-offset-4">Dashboard</a><button id="theme-toggle-btn"
@@ -262,7 +269,7 @@
               style="border:0;background:transparent;padding:0;cursor:pointer;pointer-events:auto;border-radius:50%;overflow:hidden;width:34px;height:34px;display:flex;align-items:center;justify-content:center;">
               <img id="user-avatar" alt="user" style="width:34px;height:34px;border-radius:50%;object-fit:cover;">
             </button>
-            <div id="profile-menu"
+          <div id="profile-menu"
               style="display:none;position:absolute;right:0;top:50px;min-width:240px;background:#fff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,0.15);padding:12px;z-index:10001;">
               <div style="padding:12px 14px;border-bottom:1px solid #f3f4f6;margin-bottom:8px;">
                 <div id="profile-name" style="font-weight:700;font-size:15px;color:#111;letter-spacing:-0.3px;"></div>
@@ -275,7 +282,11 @@
                 style="width:100%;text-align:left;border:0;background:transparent;padding:10px 12px;cursor:pointer;font-size:14px;font-weight:500;color:#dc2626;border-radius:8px;margin-top:4px;transition:all 0.2s ease;">&#128682;
                 Sign out</button>
             </div>
-          </div>
+          </div><button
+            type="button" id="open-signin"
+            style="font-size:15px;"
+            class="inline-flex items-center justify-center whitespace-nowrap font-medium text-foreground hover:underline hover:underline-offset-4 bg-transparent p-0 border-0">Sign
+            in</button>
         </div>
       </div>
     </nav>
@@ -846,7 +857,7 @@
               </div>
             </a></div><a
             class="flex gap-1 justify-center items-center w-fit mx-auto text-xs underline-offset-4 hover:text-primary hover:underline"
-            href="/community-plans"><span>View All Community Plans</span><svg xmlns="http://www.w3.org/2000/svg"
+            href="/community-plans.html"><span>View All Community Plans</span><svg xmlns="http://www.w3.org/2000/svg"
               width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right size-4">
               <path d="m9 18 6-6-6-6"></path>
@@ -1118,7 +1129,7 @@
               <p class="text-xs text-muted-foreground font-medium mt-3"> Perfect for travel agencies, influencer brands,
                 platforms, and enterprise partners.</p>
             </div>
-            <div class="mt-4"><a href="/partners"
+            <div class="mt-4"><a href="/partners.html"
                 class="w-full text-center bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded-lg transition-colors flex items-center justify-center gap-2"><svg
                   xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -1184,16 +1195,16 @@
             <ul class="space-y-4 text-sm text-muted-foreground dark:text-gray-400">
               <li class="font-medium"><a
                   class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
-                  href="/help-center">Help Center</a></li>
+                  href="/help-center.html">Help Center</a></li>
               <li class="font-medium"><a
                   class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
-                  href="/contact-us">Contact Us</a></li>
+                  href="/contact-us.html">Contact Us</a></li>
               <li class="font-medium"><a
                   class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
-                  href="/privacy-policy">Privacy Policy</a></li>
+                  href="/privacy-policy.html">Privacy Policy</a></li>
               <li class="font-medium"><a
                   class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
-                  href="/terms-of-service">Terms of Service</a></li>
+                  href="/terms-of-service.html">Terms of Service</a></li>
             </ul>
           </div>
           <div class="col-span-2 md:col-span-1">
@@ -1201,10 +1212,10 @@
             <ul class="space-y-4 text-sm text-muted-foreground dark:text-gray-400">
               <li class="font-medium"><a
                   class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
-                  href="/about-us">About Us</a></li>
+                  href="/about-us.html">About Us</a></li>
               <li class="font-medium"><a
                   class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
-                  href="/partners">Partners</a></li>
+                  href="/partners.html">Partners</a></li>
             </ul>
           </div>
           <div class="col-span-4 md:col-span-2">
@@ -1217,7 +1228,7 @@
                   data-slot="button" type="submit">Subscribe</button></div>
             </form>
             <p class="mt-2 ml-1 text-xs font-medium text-muted-foreground dark:text-gray-400">By submitting, you agree
-              to our<a href="/privacy-policy" class="ml-1 text-primary dark:text-blue-400 hover:underline">Privacy
+              to our<a href="/privacy-policy.html" class="ml-1 text-primary dark:text-blue-400 hover:underline">Privacy
                 Policy</a></p>
           </div>
         </div>
@@ -1500,8 +1511,6 @@
       var authSubtitle = document.getElementById('auth-modal-subtitle');
       var authToggleText = document.getElementById('auth-toggle-text');
       var authToggleLink = document.getElementById('auth-toggle-link');
-      var signInLink = document.getElementById('signin-link');
-      var signUpLink = document.getElementById('signup-link');
       var profile = document.getElementById('user-profile');
       var avatar = document.getElementById('user-avatar');
       var nameEl = document.getElementById('profile-name');
@@ -1735,20 +1744,6 @@
         });
       }
 
-      if (signInLink) {
-        signInLink.addEventListener('click', function (e) {
-          e.preventDefault();
-          openModal('sign-in');
-        });
-      }
-
-      if (signUpLink) {
-        signUpLink.addEventListener('click', function (e) {
-          e.preventDefault();
-          openModal('sign-up');
-        });
-      }
-
       if (authToggleLink) {
         authToggleLink.addEventListener('click', function (e) {
           e.preventDefault();
@@ -1796,6 +1791,45 @@
           e.stopPropagation();
         });
       }
+
+      var mobileMenuButton = document.querySelector('button[aria-label="open side menu"]');
+      var mobileMenuDrawer = mobileMenuButton ? mobileMenuButton.parentElement.querySelector('aside') : null;
+      var mobileMenuCloseBtn = mobileMenuDrawer ? mobileMenuDrawer.querySelector('button[aria-label="close menu"]') : null;
+
+      function openMobileMenu() {
+        if (!mobileMenuDrawer) return;
+        mobileMenuDrawer.style.left = '0';
+        mobileMenuDrawer.dataset.state = 'open';
+      }
+
+      function closeMobileMenu() {
+        if (!mobileMenuDrawer) return;
+        mobileMenuDrawer.style.left = '-100%';
+        mobileMenuDrawer.dataset.state = 'closed';
+      }
+
+      if (mobileMenuButton) {
+        mobileMenuButton.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          openMobileMenu();
+        });
+      }
+
+      if (mobileMenuCloseBtn) {
+        mobileMenuCloseBtn.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          closeMobileMenu();
+        });
+      }
+
+      document.addEventListener('click', function (e) {
+        if (!mobileMenuDrawer || mobileMenuDrawer.dataset.state !== 'open') return;
+        if (mobileMenuDrawer.contains(e.target)) return;
+        if (mobileMenuButton && mobileMenuButton.contains(e.target)) return;
+        closeMobileMenu();
+      });
 
       document.addEventListener('click', function (e) {
         if (!profile) return;
@@ -1866,6 +1900,3 @@
 </body>
 
 </html>
-
-
-

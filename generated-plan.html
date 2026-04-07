@@ -159,7 +159,7 @@
     }
 
     .topbar-nav a:hover {
-      text-decoration: underline;
+      
       text-underline-offset: 4px;
     }
 
@@ -359,9 +359,14 @@
       text-decoration: none;
       text-underline-offset: 4px;
     }
-
     .header-credits:hover {
-      text-decoration: underline;
+      background: rgba(15, 23, 42, 0.08);
+      color: #0f172a;
+    }
+
+    html.dark .header-credits:hover {
+      background: rgba(148, 163, 184, 0.16);
+      color: #ffffff;
     }
 
     .icon-btn {
@@ -724,6 +729,10 @@
       gap: 12px;
     }
 
+    .sidebar-link-wrap {
+      position: relative;
+    }
+
     .sidebar-link {
       display: flex;
       align-items: center;
@@ -736,6 +745,36 @@
       transition: all .2s ease;
       font-size: var(--font-sidebar-item);
       line-height: 1.35;
+    }
+
+    .sidebar-tip {
+      position: absolute;
+      left: 0;
+      top: -2px;
+      width: calc(100% - 2px);
+      padding: 12px 14px;
+      border: 1px solid #d3dce8;
+      border-radius: 10px;
+      background: #ffffff;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12), 0 1px 3px rgba(15, 23, 42, 0.08);
+      color: #0f172a;
+      font-size: 11px;
+      line-height: 1.45;
+      letter-spacing: 0.01em;
+      white-space: normal;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateY(-100%);
+      transition: opacity .18s ease, transform .18s ease, visibility .18s ease;
+      z-index: 12;
+    }
+
+    .sidebar-link-wrap:hover .sidebar-tip,
+    .sidebar-link-wrap:focus-within .sidebar-tip {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(calc(-100% - 8px));
     }
 
     .sidebar-link i {
@@ -753,6 +792,25 @@
       background: #f1f5f9;
       border-color: transparent;
       color: inherit;
+    }
+
+    .sidebar-link.is-locked {
+      color: #64748b;
+      cursor: not-allowed;
+      transition: none;
+    }
+
+    .sidebar-link.is-locked:hover {
+      background: transparent;
+      border-color: transparent;
+    }
+
+    .sidebar-link-wrap:hover .sidebar-link.is-locked,
+    .sidebar-link-wrap:focus-within .sidebar-link.is-locked {
+      background: transparent;
+      border-color: transparent;
+      transform: none;
+      color: #64748b;
     }
 
     .dot {
@@ -776,7 +834,31 @@
 
     .lock {
       margin-left: auto;
-      opacity: .65;
+      width: 16px;
+      height: 16px;
+      opacity: .85;
+    }
+
+    html.dark .sidebar-link.is-locked {
+      color: #94a3b8;
+    }
+
+    html.dark .sidebar-tip {
+      background: #0f172a;
+      border-color: #334155;
+      color: #e2e8f0;
+      box-shadow: 0 10px 20px rgba(2, 6, 23, .55), 0 2px 6px rgba(2, 6, 23, .35);
+    }
+
+    html.dark .sidebar-link-wrap:hover .sidebar-link.is-locked,
+    html.dark .sidebar-link-wrap:focus-within .sidebar-link.is-locked {
+      color: #94a3b8;
+    }
+
+    @media (hover: none) {
+      .sidebar-tip {
+        display: none;
+      }
     }
 
     .content {
@@ -899,6 +981,60 @@
     html.dark #share-banner .dismiss-btn:hover {
       opacity: 1;
       color: #f8fafc;
+    }
+
+    .community-date-strip {
+      margin-top: var(--section-gap);
+      border: 1px solid #dce4ee;
+      border-radius: 28px;
+      background: #f9fbff;
+      height: 56px;
+      padding: 0 14px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, .07);
+    }
+
+    .community-date-strip[hidden] {
+      display: none !important;
+    }
+
+    .community-date-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border: 1px solid #d3dce8;
+      border-radius: 999px;
+      background: #ffffff;
+      height: 36px;
+      padding: 0 14px;
+      box-sizing: border-box;
+      color: #0f172a;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1;
+      box-shadow: 0 2px 5px rgba(15, 23, 42, .07);
+    }
+
+    .community-date-pill i,
+    .community-date-pill svg {
+      width: 15px;
+      height: 15px;
+      flex: 0 0 auto;
+    }
+
+    html.dark .community-date-strip {
+      background: #061126;
+      border-color: #1d3a66;
+      box-shadow: 0 10px 22px rgba(2, 6, 23, .5);
+    }
+
+    html.dark .community-date-pill {
+      background: #081a38;
+      border-color: #2c4f86;
+      color: #f8fbff;
+      box-shadow: 0 3px 8px rgba(2, 6, 23, .45);
     }
 
     .publish-strip {
@@ -2435,17 +2571,79 @@
       box-shadow: 0 18px 34px rgba(2, 6, 23, .45);
     }
 
-    html.dark #trip-highlights .detail-item,
-    html.dark #weather-analysis .detail-item {
+    html.dark #weather-analysis {
+      border-color: #334155;
+      box-shadow: none;
+    }
+
+    html.dark #weather-analysis .weather-panel {
       background: #111b2f;
       border-color: #334155;
       box-shadow: inset 0 1px 0 rgba(148, 163, 184, .06);
     }
 
-    html.dark #trip-highlights .chip {
-      background: #101a2f;
+    html.dark #weather-analysis .weather-copy {
+      color: #cbd5e1;
+    }
+
+    html.dark #weather-analysis .weather-panel-title {
+      color: #f8fafc;
+    }
+
+    html.dark #weather-analysis .weather-edit {
+      background: #111b2f;
       border-color: #334155;
-      color: #a8b8cc;
+      color: #e2e8f0;
+    }
+
+    html.dark #trip-highlights .trip-highlights-content {
+      color: #e2e8f0;
+    }
+
+    html.dark #trip-highlights .trip-title {
+      color: #f8fafc;
+    }
+
+    html.dark #trip-highlights .trip-highlights-body {
+      color: #cbd5e1;
+    }
+
+    html.dark #trip-highlights .trip-highlights-body strong {
+      color: #f8fafc;
+    }
+
+    html.dark #trip-highlights .trip-highlights-edit {
+      background: #111b2f;
+      border-color: #334155;
+      color: #e2e8f0;
+    }
+
+    html.dark .inline-editable.is-editing {
+      border-color: #4b5e7c;
+      background: #0f172a;
+      color: #e2e8f0;
+    }
+
+    html.dark .inline-edit-action-btn {
+      background: #111b2f;
+      border-color: #334155;
+      color: #e2e8f0;
+    }
+
+    html.dark .inline-edit-action-btn:hover {
+      border-color: #4b5e7c;
+      background: #16233a;
+    }
+
+    html.dark .inline-edit-action-btn.primary {
+      background: #1d4ed8;
+      border-color: #1d4ed8;
+      color: #fff;
+    }
+
+    html.dark #trip-highlights {
+      border-color: #334155;
+      box-shadow: none;
     }
 
     html.dark #itinerary .collapse-btn {
@@ -2657,11 +2855,241 @@
       margin-bottom: var(--space-2);
     }
 
+    #trip-highlights {
+      border-color: #cfd8e3;
+      border-radius: 8px;
+      box-shadow: none;
+      padding: 22px 24px 24px;
+    }
+
+    .trip-highlights-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .trip-highlights-head .section-title {
+      margin-bottom: 0;
+      font-size: 22px;
+      letter-spacing: -0.02em;
+    }
+
+    .trip-highlights-edit {
+      width: 30px;
+      height: 30px;
+      flex: 0 0 30px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform .2s ease, border-color .2s ease, background-color .2s ease;
+    }
+
+    .trip-highlights-edit i,
+    .trip-highlights-edit svg {
+      width: 15px !important;
+      height: 15px !important;
+      flex: 0 0 auto;
+    }
+
+    .trip-highlights-edit:hover {
+      transform: translateY(-1px);
+      border-color: var(--line-strong);
+      background: #f8fafc;
+    }
+
+    .trip-highlights-edit[hidden] {
+      display: none !important;
+    }
+
+    .trip-highlights-content {
+      padding-left: 40px;
+    }
+
     .trip-title {
-      margin: 0 0 var(--space-2);
-      font-size: var(--font-section-title);
-      font-weight: 600;
+      margin: 0 0 26px;
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.28;
+      margin-top: -15px;
+      letter-spacing: -0.02em;
+      color: #0f172a;
+    }
+
+    .trip-highlights-body {
+      color: #1f2f46;
+      font-size: clamp(16px, 1.02vw, 18px);
+      line-height: 1.78;
+      font-weight: 500;
+      margin-top: -15px;
+    }
+
+    .trip-highlights-body p {
+      margin: 0 0 26px;
+      margin-top: -15px;
+    }
+
+    .trip-highlights-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    .trip-highlights-body strong {
+      color: #0f172a;
+      font-weight: 700;
+    }
+
+    #weather-analysis {
+      border-color: #cfd8e3;
+      border-radius: 8px;
+      box-shadow: none;
+      padding: 22px 24px 24px;
+      --weather-title-indent: 34px;
+    }
+
+    .weather-analysis-stack {
+      margin-top: 14px;
+      margin-left: var(--weather-title-indent);
+      display: grid;
+      gap: 18px;
+    }
+
+    .weather-panel {
+      border: 1px solid #dce5f1;
+      border-radius: 8px;
+      background: #ffffff;
+      padding: 20px 24px 22px;
+      box-shadow: 0 5px 14px rgba(15, 23, 42, 0.08);
+    }
+
+    .weather-panel-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .weather-panel-title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+      color: #0f172a;
+    }
+
+    .weather-edit {
+      width: 30px;
+      height: 30px;
+      flex: 0 0 30px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform .2s ease, border-color .2s ease, background-color .2s ease;
+    }
+
+    .weather-edit i,
+    .weather-edit svg {
+      width: 15px !important;
+      height: 15px !important;
+      flex: 0 0 auto;
+    }
+
+    .weather-edit:hover {
+      transform: translateY(-1px);
+      border-color: var(--line-strong);
+      background: #f8fafc;
+    }
+
+    .weather-edit[hidden] {
+      display: none !important;
+    }
+
+    .weather-copy {
+      margin: 0;
+      color: #1f2f46;
+      font-size: clamp(16px, 1.02vw, 18px);
+      line-height: 1.72;
+      font-weight: 500;
+    }
+
+    .inline-editable {
+      outline: none;
+    }
+
+    .inline-editable.is-editing {
+      border: 1px dashed #9eb1cb;
+      border-radius: 8px;
+      background: #f8fbff;
+      padding: 10px 12px;
+      white-space: pre-wrap;
+      cursor: text;
+    }
+
+    .trip-title.inline-editable.is-editing {
+      min-height: auto;
+      margin-bottom: 18px;
       line-height: 1.35;
+    }
+
+    .trip-highlights-body.inline-editable.is-editing,
+    .weather-copy.inline-editable.is-editing {
+      min-height: 140px;
+    }
+
+    .inline-edit-actions {
+      margin-top: 14px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .inline-edit-actions[hidden] {
+      display: none !important;
+    }
+
+    .inline-edit-action-btn {
+      min-width: 88px;
+      height: 36px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1;
+      transition: border-color .2s ease, background-color .2s ease, transform .2s ease;
+    }
+
+    .inline-edit-action-btn:hover {
+      border-color: var(--line-strong);
+      background: #f8fafc;
+      transform: translateY(-1px);
+    }
+
+    .inline-edit-action-btn.primary {
+      background: #f8fbff;
+      border-color: #b8c9df;
     }
 
     .subsection-title {
@@ -3842,6 +4270,17 @@
         padding: 7px 10px;
       }
 
+      .community-date-strip {
+        height: 50px;
+        padding: 0 10px;
+      }
+
+      .community-date-pill {
+        height: 32px;
+        padding: 0 11px;
+        font-size: 10px;
+      }
+
       .date-months {
         grid-template-columns: 1fr;
       }
@@ -3858,6 +4297,35 @@
       .day-body-inner,
       .packing-grid {
         grid-template-columns: 1fr;
+      }
+
+      .trip-highlights-content {
+        padding-left: 0;
+      }
+
+      .trip-highlights-head {
+        align-items: center;
+      }
+
+      #trip-highlights {
+        padding: 18px 18px 20px;
+      }
+
+      .trip-highlights-head .section-title {
+        font-size: clamp(20px, 5.2vw, 24px);
+      }
+
+      #weather-analysis {
+        padding: 18px 18px 20px;
+        --weather-title-indent: 30px;
+      }
+
+      .weather-panel {
+        padding: 16px 16px 18px;
+      }
+
+      .weather-panel-title {
+        font-size: clamp(17px, 4.8vw, 20px);
       }
 
       .packing-edit-row {
@@ -3956,9 +4424,14 @@
       text-decoration: none;
       text-underline-offset: 4px;
     }
-
     .header-credits:hover {
-      text-decoration: underline;
+      background: rgba(15, 23, 42, 0.08);
+      color: #0f172a;
+    }
+
+    html.dark .header-credits:hover {
+      background: rgba(148, 163, 184, 0.16);
+      color: #ffffff;
     }
 
       .topbar-actions {
@@ -4207,6 +4680,7 @@
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
   <link rel="preload" as="script" href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js">
+  <link rel="stylesheet" href="css/responsive.css?v=20260331j" />
 </head>
 
 <body class="__className_fff05e bg-background text-foreground">
@@ -4225,7 +4699,7 @@
         <ul class="topbar-nav">
           <li><a href="/">Home</a></li>
           <li><a href="/dashboard.html">Dashboard</a></li>
-          <li><a href="/community-plans">Community Plans</a></li>
+          <li><a href="/community-plans.html">Community Plans</a></li>
         </ul>
       </div>
       <div class="topbar-actions">
@@ -4324,6 +4798,14 @@
       <h2 class="sidebar-subtitle">Control Center</h2>
       <div id="mobile-control-links" class="sidebar-links"></div>
     </div>
+    <div class="sidebar-group">
+      <h2 class="sidebar-subtitle">Navigation</h2>
+      <div class="sidebar-links">
+        <a class="sidebar-link" href="/"><i data-lucide="arrow-left" style="width:18px;height:18px;"></i><span>Home</span><span class="dot" aria-hidden="true"></span></a>
+        <a class="sidebar-link" href="/dashboard.html"><i data-lucide="arrow-left" style="width:18px;height:18px;"></i><span>Dashboard</span><span class="dot" aria-hidden="true"></span></a>
+        <a class="sidebar-link" href="/community-plans.html"><i data-lucide="arrow-left" style="width:18px;height:18px;"></i><span>Community Plans</span><span class="dot" aria-hidden="true"></span></a>
+      </div>
+    </div>
   </aside>
 
   <div class="main-grid">
@@ -4382,6 +4864,13 @@
         </div>
       </section>
 
+      <section id="community-date-strip" class="community-date-strip reveal" aria-label="Community plan dates" hidden>
+        <div class="community-date-pill">
+          <i data-lucide="calendar"></i>
+          <span id="community-date-label"></span>
+        </div>
+      </section>
+
       <section class="hero-card reveal">
         <div class="hero-visual">
           <img id="hero-image" alt="" />
@@ -4398,39 +4887,50 @@
       </section>
 
       <section id="trip-highlights" class="section-card reveal">
-        <h2 class="section-title"><i data-lucide="info"></i>Trip Highlights</h2>
-        <p id="trip-title" class="trip-title"></p>
-        <div class="detail-grid">
-          <div class="detail-item">
-            <p class="detail-label">Travel Window</p>
-            <p id="highlights-dates" class="detail-value"></p>
-          </div>
-          <div class="detail-item">
-            <p class="detail-label">Origin City</p>
-            <p id="highlights-origin" class="detail-value"></p>
-          </div>
-          <div class="detail-item">
-            <p class="detail-label">Hotel Preference</p>
-            <p id="highlights-hotel" class="detail-value"></p>
-          </div>
-          <div class="detail-item">
-            <p class="detail-label">Food Preference</p>
-            <p id="highlights-food" class="detail-value"></p>
+        <div class="trip-highlights-head">
+          <h2 class="section-title"><i data-lucide="info"></i>Trip Highlights</h2>
+          <button id="trip-highlights-edit-btn" class="trip-highlights-edit" type="button" aria-label="Edit trip highlights">
+            <i data-lucide="pencil"></i>
+          </button>
+        </div>
+        <div class="trip-highlights-content">
+          <p id="trip-title" class="trip-title"></p>
+          <div id="trip-highlights-body" class="trip-highlights-body"></div>
+          <div id="trip-highlights-edit-actions" class="inline-edit-actions" hidden>
+            <button id="trip-highlights-save-btn" class="inline-edit-action-btn primary" type="button">Save</button>
+            <button id="trip-highlights-cancel-btn" class="inline-edit-action-btn" type="button">Cancel</button>
           </div>
         </div>
-        <div id="interest-chips" class="chip-row"></div>
       </section>
 
       <section id="weather-analysis" class="section-card reveal">
         <h2 class="section-title"><i data-lucide="cloud-sun"></i>Weather Analysis</h2>
-        <div class="detail-grid weather-grid">
-          <article class="detail-item weather-item">
-            <h3 class="subsection-title">Expected Conditions</h3>
-            <p id="weather-expected" class="text-block"></p>
+        <div class="weather-analysis-stack">
+          <article class="weather-panel">
+            <div class="weather-panel-head">
+              <h3 class="weather-panel-title">Expected Conditions</h3>
+              <button id="weather-expected-edit-btn" class="weather-edit" type="button" aria-label="Edit weather expected conditions">
+                <i data-lucide="pencil"></i>
+              </button>
+            </div>
+            <p id="weather-expected" class="weather-copy"></p>
+            <div id="weather-expected-edit-actions" class="inline-edit-actions" hidden>
+              <button id="weather-expected-save-btn" class="inline-edit-action-btn primary" type="button">Save</button>
+              <button id="weather-expected-cancel-btn" class="inline-edit-action-btn" type="button">Cancel</button>
+            </div>
           </article>
-          <article class="detail-item weather-item">
-            <h3 class="subsection-title">Best Time To Visit</h3>
-            <p id="weather-best-time" class="text-block"></p>
+          <article class="weather-panel">
+            <div class="weather-panel-head">
+              <h3 class="weather-panel-title">Best Time To Visit</h3>
+              <button id="weather-best-time-edit-btn" class="weather-edit" type="button" aria-label="Edit weather best time to visit">
+                <i data-lucide="pencil"></i>
+              </button>
+            </div>
+            <p id="weather-best-time" class="weather-copy"></p>
+            <div id="weather-best-time-edit-actions" class="inline-edit-actions" hidden>
+              <button id="weather-best-time-save-btn" class="inline-edit-action-btn primary" type="button">Save</button>
+              <button id="weather-best-time-cancel-btn" class="inline-edit-action-btn" type="button">Cancel</button>
+            </div>
           </article>
         </div>
       </section>
@@ -4794,10 +5294,30 @@
         { id: "packing-checklist", icon: "briefcase", label: "Packing Checklist" }
       ];
       var CONTROL_LINKS = [
-        { icon: "refresh-cw", label: "Refine Plan", href: "/refine-plan.html" },
-        { icon: "wallet", label: "Expense Tracker", href: "/expense-tracker.html" },
-        { icon: "users", label: "Collaborate", href: "/collaborate.html" },
-        { icon: "settings", label: "Settings", href: "/settings.html" }
+        {
+          icon: "refresh-cw",
+          label: "Refine Plan",
+          href: "/refine-plan.html",
+          description: "Refine your plan -> Tailor dates, budget, and stops in seconds"
+        },
+        {
+          icon: "wallet",
+          label: "Expense Tracker",
+          href: "/expense-tracker.html",
+          description: "Track your travel expenses, view spending metrics, and manage your budget efficiently"
+        },
+        {
+          icon: "users",
+          label: "Collaborate",
+          href: "/collaborate.html",
+          description: "Invite friends and family to your travel plan and manage access permissions easily"
+        },
+        {
+          icon: "settings",
+          label: "Settings",
+          href: "/settings.html",
+          description: "Update your display name, set your preferred currency, and manage or delete your entire travel plan"
+        }
       ];
       var COLORS = {
         accommodation: "#4f46e5",
@@ -4858,6 +5378,14 @@
         draft: null,
         items: null,
         initial: null
+      };
+      var sectionEditState = {
+        trip: false,
+        weatherExpected: false,
+        weatherBestTime: false,
+        tripDraft: null,
+        weatherExpectedDraft: null,
+        weatherBestTimeDraft: null
       };
       var dayEditStore = {};
       var itineraryEditorState = {
@@ -4970,6 +5498,10 @@
         accessRole = loadedPlan.accessRole;
         derived = derivePlanData(planData);
         hydratePublishState();
+        var hasPersistedSections =
+          planData.sections &&
+          typeof planData.sections === "object" &&
+          Object.keys(planData.sections).length > 0;
         aiGeneratedSections = normalizeGeminiSectionsPayload(planData.sections || {});
         applyAiBudgetRangeIfPresent();
 
@@ -4979,6 +5511,7 @@
         renderSidebarLinks("mobile-plan-links", "mobile-control-links");
         renderBanners();
         renderPublishStrip();
+        renderCommunityDateStrip();
         renderHero();
         renderHighlights();
         renderWeather();
@@ -4994,7 +5527,9 @@
           hideInviteJoinOverlay();
           emitPageReady();
         });
-        hydrateGeminiSections();
+        if (!hasPersistedSections) {
+          hydrateGeminiSections();
+        }
       } catch (error) {
         if (isInviteJoinFlow && error && Number(error.status) === 401) {
           showInviteJoinOverlay("auth-required");
@@ -5407,6 +5942,10 @@
 
       function formatDate(dateObj) {
         return new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short", year: "numeric" }).format(dateObj);
+      }
+
+      function formatCommunityDate(dateObj) {
+        return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" }).format(dateObj);
       }
 
       function formatLongDateWithOrdinal(dateObj) {
@@ -5858,8 +6397,377 @@
         return String(rounded.toFixed(2)).replace(/\.?0+$/, "");
       }
 
+      function escapeRegExp(value) {
+        return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      }
+
+      function splitNarrativeIntoParagraphs(text) {
+        var cleaned = String(text || "").replace(/\r/g, "").trim();
+        if (!cleaned) return [];
+        var manualParagraphs = cleaned.split(/\n{2,}/).map(function (part) {
+          return part.replace(/\s+/g, " ").trim();
+        }).filter(Boolean);
+        if (manualParagraphs.length > 1) return manualParagraphs.slice(0, 3);
+        var normalized = cleaned.replace(/\s+/g, " ").trim();
+        var sentences = normalized.match(/[^.!?]+[.!?]?/g) || [normalized];
+        var groups = [];
+        var bucket = [];
+        var targetSize = sentences.length >= 6 ? 2 : 1;
+        sentences.forEach(function (sentence, index) {
+          bucket.push(sentence.trim());
+          var isLast = index === sentences.length - 1;
+          if (bucket.length >= targetSize || isLast) {
+            groups.push(bucket.join(" ").trim());
+            bucket = [];
+          }
+        });
+        return groups.filter(Boolean).slice(0, 3);
+      }
+
+      function emphasizeNarrativeKeywords(text, keywords) {
+        var html = escapeHtml(String(text || ""));
+        var markdownTokens = [];
+        html = html.replace(/(\*\*|__)(?=\S)([\s\S]*?\S)\1/g, function (_, marker, content) {
+          var token = "@@YTR_BOLD_" + markdownTokens.length + "@@";
+          markdownTokens.push("<strong>" + content + "</strong>");
+          return token;
+        });
+        var seen = {};
+        var ordered = [];
+        (keywords || []).forEach(function (keyword) {
+          var value = String(keyword || "").trim();
+          var key = value.toLowerCase();
+          if (!value || seen[key]) return;
+          seen[key] = true;
+          ordered.push(value);
+        });
+        ordered.sort(function (a, b) {
+          return b.length - a.length;
+        });
+        if (ordered.length) {
+          var pattern = new RegExp(ordered.map(function (keyword) {
+            return escapeRegExp(escapeHtml(keyword));
+          }).join("|"), "gi");
+          html = html.replace(pattern, function (match) {
+            return "<strong>" + match + "</strong>";
+          });
+        }
+        markdownTokens.forEach(function (markup, index) {
+          var token = "@@YTR_BOLD_" + index + "@@";
+          html = html.replace(token, markup);
+        });
+        return html;
+      }
+
+      function normalizeEntityTerm(value, options) {
+        var text = String(value || "")
+          .replace(/\*\*/g, "")
+          .replace(/^[\s,;:.!?'"()\-]+|[\s,;:.!?'"()\-]+$/g, "")
+          .replace(/\s+/g, " ")
+          .trim();
+        if (!text) return "";
+        var settings = options && typeof options === "object" ? options : {};
+        var maxWords = Number(settings.maxWords) > 0 ? Number(settings.maxWords) : 6;
+        var maxChars = Number(settings.maxChars) > 0 ? Number(settings.maxChars) : 56;
+        var words = text.split(" ").filter(Boolean);
+        if (!words.length || words.length > maxWords || text.length > maxChars) return "";
+        var stop = {
+          a: true, an: true, and: true, or: true, but: true, so: true, the: true,
+          to: true, of: true, in: true, on: true, at: true, by: true, for: true, from: true, with: true,
+          this: true, that: true, these: true, those: true, your: true, our: true, their: true,
+          you: true, we: true, they: true, it: true, is: true, are: true, was: true, were: true
+        };
+        while (words.length > 1 && stop[String(words[0] || "").toLowerCase()]) words.shift();
+        while (words.length > 1 && stop[String(words[words.length - 1] || "").toLowerCase()]) words.pop();
+        text = words.join(" ").trim();
+        if (!text) return "";
+        var key = text.toLowerCase();
+        if (words.length === 1) {
+          if (stop[key]) return "";
+          if (!/[a-z]/i.test(text)) return "";
+          if (text.length < 3) return "";
+        }
+        return text;
+      }
+
+      function addEntityTerm(target, seen, value, options) {
+        var normalized = normalizeEntityTerm(value, options);
+        if (!normalized) return;
+        var key = normalized.toLowerCase();
+        if (seen[key]) return;
+        seen[key] = true;
+        target.push(normalized);
+      }
+
+      function extractPlaceTermsFromText(text, limit) {
+        var source = String(text || "");
+        if (!source) return [];
+        var output = [];
+        var seen = {};
+        var maxItems = Number(limit) > 0 ? Number(limit) : 25;
+
+        var markdownPlace = source.match(/\*\*(?=\S)([\s\S]*?\S)\*\*/g) || [];
+        markdownPlace.forEach(function (item) {
+          if (output.length >= maxItems) return;
+          addEntityTerm(output, seen, item, { maxWords: 6, maxChars: 52 });
+        });
+
+        var properNouns = source.match(/[A-Z][A-Za-z'-]+(?:\s+[A-Z][A-Za-z'-]+){0,3}/g) || [];
+        properNouns.forEach(function (item) {
+          if (output.length >= maxItems) return;
+          addEntityTerm(output, seen, item, { maxWords: 5, maxChars: 44 });
+        });
+
+        return output;
+      }
+
+      function extractPatternTerms(text, pattern, limit, options) {
+        var source = String(text || "");
+        if (!source) return [];
+        pattern.lastIndex = 0;
+        var output = [];
+        var seen = {};
+        var maxItems = Number(limit) > 0 ? Number(limit) : 15;
+        var match;
+        while ((match = pattern.exec(source)) !== null) {
+          if (output.length >= maxItems) break;
+          addEntityTerm(output, seen, match[0], options);
+        }
+        return output;
+      }
+
+      function collectTripHighlightEmphasisTerms(meta, interestChips, aiHighlights) {
+        var terms = [];
+        var seen = {};
+
+        [meta.destination, meta.destinationCity, meta.origin].forEach(function (locationText) {
+          String(locationText || "").split(",").forEach(function (chunk) {
+            addEntityTerm(terms, seen, chunk, { maxWords: 4, maxChars: 40 });
+          });
+        });
+
+        var placeSources = [];
+        var foodSources = [];
+        var hotelSources = [];
+        var activitySources = [];
+
+        if (aiHighlights && typeof aiHighlights === "object") {
+          placeSources.push(aiHighlights.tripTitle);
+          placeSources.push(aiHighlights.summary);
+          foodSources.push(aiHighlights.foodPreference);
+          hotelSources.push(aiHighlights.hotelPreference);
+        }
+
+        if (aiGeneratedSections && Array.isArray(aiGeneratedSections.itinerary)) {
+          aiGeneratedSections.itinerary.forEach(function (day) {
+            if (!day || typeof day !== "object") return;
+            placeSources.push(day.title);
+            if (day.schedule && typeof day.schedule === "object") {
+              placeSources.push(day.schedule.morning);
+              placeSources.push(day.schedule.afternoon);
+              placeSources.push(day.schedule.evening);
+              placeSources.push(day.schedule.night);
+            }
+            (Array.isArray(day.foodRecommendations) ? day.foodRecommendations : []).forEach(function (item) {
+              foodSources.push(item);
+            });
+            (Array.isArray(day.stayOptions) ? day.stayOptions : []).forEach(function (item) {
+              hotelSources.push(item);
+            });
+            (Array.isArray(day.optionalActivities) ? day.optionalActivities : []).forEach(function (item) {
+              activitySources.push(item);
+            });
+            (Array.isArray(day.quickBookings) ? day.quickBookings : []).forEach(function (item) {
+              activitySources.push(item);
+            });
+          });
+        }
+
+        placeSources.forEach(function (chunk) {
+          extractPlaceTermsFromText(chunk, 20).forEach(function (term) {
+            addEntityTerm(terms, seen, term, { maxWords: 5, maxChars: 44 });
+          });
+        });
+
+        var foodPattern = /\b(?:[A-Za-z][A-Za-z'-]*\s+){0,3}(?:cuisine|dish|meal|meals|thali|biryani|seafood|street food|breakfast|lunch|dinner|cafe|dhaba)\b/gi;
+        foodSources.forEach(function (chunk) {
+          extractPatternTerms(chunk, foodPattern, 12, { maxWords: 5, maxChars: 46 }).forEach(function (term) {
+            addEntityTerm(terms, seen, term, { maxWords: 5, maxChars: 46 });
+          });
+        });
+
+        var hotelPattern = /\b(?:[A-Za-z0-9][A-Za-z0-9'-]*\s+){0,4}(?:hotel|resort|homestay|hostel|villa|lodge|stay)\b/gi;
+        hotelSources.forEach(function (chunk) {
+          extractPatternTerms(chunk, hotelPattern, 12, { maxWords: 6, maxChars: 48 }).forEach(function (term) {
+            addEntityTerm(terms, seen, term, { maxWords: 6, maxChars: 48 });
+          });
+        });
+
+        var activityPattern = /\b(?:[A-Za-z][A-Za-z'-]*\s+){0,4}(?:trek|hike|walk|cruise|safari|tour|ride|kayaking|paragliding|snorkeling|scuba diving|cycling|camping|boat ride|food trail|market walk|museum visit)\b/gi;
+        activitySources.concat(interestChips || []).forEach(function (chunk) {
+          extractPatternTerms(chunk, activityPattern, 14, { maxWords: 6, maxChars: 50 }).forEach(function (term) {
+            addEntityTerm(terms, seen, term, { maxWords: 6, maxChars: 50 });
+          });
+        });
+
+        return terms.slice(0, 70);
+      }
+
+      function buildHighlightFallbackParagraphs(meta, interests) {
+        var selectedInterests = Array.isArray(interests) ? interests.filter(Boolean).slice(0, 4) : [];
+        var focusText = selectedInterests.length
+          ? selectedInterests.join(", ").toLowerCase()
+          : "local experiences, scenic moments, and flexible exploring";
+        return [
+          "This " + derived.durationDays + "-day journey from " + meta.origin + " to " + meta.destination +
+            " is planned for " + meta.travelWindow + ", pairing " + meta.hotel + " stays with " + meta.food +
+            " choices to keep the trip comfortable from the moment you arrive.",
+          "The itinerary leans into " + focusText + ", creating a " + (derived.plan.pace || "balanced") +
+            " flow through " + meta.destinationCity + " with time for signature sights as well as slower, local discoveries along the way.",
+          "Designed for " + derived.passengersLabel + ", the overall route keeps each stop practical and connected, so the trip feels cohesive, easy to enjoy, and rich in memorable moments."
+        ];
+      }
+
+      function buildWeatherExpectedFallbackText() {
+        var weatherPref = String(derived.plan && derived.plan.weather ? derived.plan.weather : "balanced weather").trim();
+        return (
+          "During your " + derived.monthName + " travel window in " + derived.destination.city +
+          ", expect conditions aligned with your preference for " + weatherPref + ", with daytime and evening shifts that can feel noticeable across city zones and nearby viewpoints. " +
+          "Your " + derived.durationDays + "-day route is paced to support comfortable movement, so plan layered clothing, short weather checks each morning, and a flexible block for indoor options if needed. " +
+          "For " + derived.passengersLabel + ", this balance keeps sightseeing practical while still allowing local food stops, scenic walks, and unhurried transitions between activities."
+        );
+      }
+
+      function buildWeatherBestTimeFallbackText() {
+        var interestsText = (derived.interests || []).join(", ").toLowerCase() || "local exploration";
+        var pace = String(derived.plan && derived.plan.pace ? derived.plan.pace : "balanced").trim();
+        return (
+          derived.monthName + " is a strong fit for a " + pace + " itinerary, especially when your plan prioritizes " + interestsText + " across " + derived.destination.city + ". " +
+          "This window generally helps you cover signature sights and neighborhood experiences without overloading each day, while keeping room for spontaneous changes and rest breaks. " +
+          "To get the best outcome, confirm day-by-day forecasts a few days before departure and keep one buffer slot in the schedule for weather-led swaps."
+        );
+      }
+
+      function expandTripHighlightsParagraphs(summaryText, meta, interests) {
+        var source = String(summaryText || "").trim();
+        if (source) {
+          var sourceParagraphs = splitNarrativeIntoParagraphs(source);
+          if (sourceParagraphs.length) return sourceParagraphs.slice(0, 5);
+          return [source];
+        }
+        return buildHighlightFallbackParagraphs(meta, interests);
+      }
+
+      function ensureWeatherNarrativeLength(text, fallbackText, minimumWords) {
+        var source = toSingleParagraph(text);
+        var fallback = toSingleParagraph(fallbackText);
+        if (source) return source;
+        return fallback;
+      }
+
+      function normalizeInlineSingleLineText(value, fallback) {
+        var primary = String(value || "").replace(/\s+/g, " ").trim();
+        if (primary) return primary;
+        var backup = String(fallback || "").replace(/\s+/g, " ").trim();
+        return backup;
+      }
+
+      function normalizeInlineBlockText(value, fallback) {
+        var source = String(value || "").replace(/\r/g, "").trim();
+        if (!source) source = String(fallback || "").replace(/\r/g, "").trim();
+        if (!source) return "";
+        return source
+          .split(/\n+/)
+          .map(function (line) { return line.replace(/\s+/g, " ").trim(); })
+          .filter(Boolean)
+          .join("\n\n");
+      }
+
+      function htmlToEditableMarkdown(html) {
+        var source = String(html || "");
+        if (!source) return "";
+        var wrap = document.createElement("div");
+        wrap.innerHTML = source;
+
+        function nodeToMarkdown(node) {
+          if (!node) return "";
+          if (node.nodeType === Node.TEXT_NODE) {
+            return node.nodeValue || "";
+          }
+          if (node.nodeType !== Node.ELEMENT_NODE) {
+            return "";
+          }
+          var tag = node.tagName.toLowerCase();
+          if (tag === "br") return "\n";
+          var content = Array.from(node.childNodes).map(nodeToMarkdown).join("");
+          if (tag === "strong" || tag === "b") return "**" + content + "**";
+          if (tag === "p") return content + "\n\n";
+          if (tag === "div" || tag === "section" || tag === "article") return content + "\n";
+          if (tag === "li") return "- " + content + "\n";
+          return content;
+        }
+
+        return Array.from(wrap.childNodes).map(nodeToMarkdown).join("")
+          .replace(/\u00a0/g, " ")
+          .replace(/[ \t]+\n/g, "\n")
+          .replace(/\n{3,}/g, "\n\n")
+          .trim();
+      }
+
+      function toSingleParagraph(value) {
+        return String(value || "").replace(/\r/g, " ").replace(/\s+/g, " ").trim();
+      }
+
+      function setInlineEditableState(node, editing) {
+        if (!node) return;
+        if (editing) {
+          node.setAttribute("contenteditable", "true");
+          node.classList.add("inline-editable", "is-editing");
+        } else {
+          node.removeAttribute("contenteditable");
+          node.classList.remove("inline-editable", "is-editing");
+        }
+      }
+
+      function setEditButtonState(button, editing, editLabel, saveLabel) {
+        if (!button) return;
+        button.setAttribute("aria-label", editing ? saveLabel : editLabel);
+        var iconNode = button.querySelector("i");
+        if (iconNode) {
+          iconNode.setAttribute("data-lucide", editing ? "save" : "pencil");
+        }
+      }
+
+      function buildTripHighlightsEditablePayload(titleText, summaryText) {
+        var existing = aiGeneratedSections && aiGeneratedSections.tripHighlights
+          ? aiGeneratedSections.tripHighlights
+          : {};
+        var interests = Array.isArray(existing.interestChips) && existing.interestChips.length
+          ? existing.interestChips.slice(0, 8)
+          : (Array.isArray(derived.interests) ? derived.interests.slice(0, 8) : []);
+        return {
+          tripTitle: normalizeInlineSingleLineText(titleText, existing.tripTitle || derived.tripTitle || "Trip Overview"),
+          travelWindow: normalizeInlineSingleLineText(existing.travelWindow, derived.dateRangeText),
+          originCity: normalizeInlineSingleLineText(existing.originCity, derived.origin.city),
+          hotelPreference: normalizeInlineSingleLineText(existing.hotelPreference, derived.hotelStar),
+          foodPreference: normalizeInlineSingleLineText(existing.foodPreference, derived.foodPreference),
+          interestChips: interests,
+          summary: normalizeInlineBlockText(summaryText, existing.summary)
+        };
+      }
+
+      function buildWeatherEditablePayload(expectedText, bestTimeText) {
+        var existing = aiGeneratedSections && aiGeneratedSections.weatherAnalysis
+          ? aiGeneratedSections.weatherAnalysis
+          : {};
+        return {
+          expectedConditions: toSingleParagraph(expectedText) || normalizeInlineSingleLineText(existing.expectedConditions, ""),
+          bestTimeToVisit: toSingleParagraph(bestTimeText) || normalizeInlineSingleLineText(existing.bestTimeToVisit, "")
+        };
+      }
+
       async function loadUserCredits() {
-        if (isCommunityReadOnly || !window.YatrifyPlanService) return null;
+        if (!window.YatrifyPlanService) return null;
         try {
           var payload = await window.YatrifyPlanService.getUserMe();
           var credits = Number(payload && payload.credits);
@@ -5875,13 +6783,16 @@
         var creditsCount = document.getElementById("credits-count");
         var selectedLabel = document.getElementById("destination-selected-label");
 
+        await loadUserCredits();
+
         if (isCommunityReadOnly) {
-          if (creditsCount) creditsCount.textContent = "";
+          if (creditsCount) {
+            creditsCount.textContent = userCredits !== null ? formatCreditValue(userCredits) : "";
+          }
           if (selectedLabel) selectedLabel.textContent = derived.destination.full || "Community Plan";
           return;
         }
 
-        await loadUserCredits();
         if (creditsCount) {
           creditsCount.textContent = userCredits !== null ? formatCreditValue(userCredits) : "?";
         }
@@ -6001,14 +6912,31 @@
       }
 
       function makeSidebarLink(item, locked) {
+        var isLocked = !!locked;
         var href = item.href ? buildPlanAwarePageUrl(item.href) : (item.id ? "#" + item.id : "#");
-        var lock = locked ? '<i data-lucide="lock" class="lock"></i>' : "";
-        var dot = locked ? "" : '<span class="dot" aria-hidden="true"></span>';
+        var lock = isLocked ? '<i data-lucide="lock" class="lock" aria-hidden="true"></i>' : "";
+        var dot = isLocked ? "" : '<span class="dot" aria-hidden="true"></span>';
+        var tagName = isLocked ? "span" : "a";
+        var attrs = ' class="sidebar-link' + (isLocked ? " is-locked" : "") + '"';
+        var tooltipText = isLocked
+          ? "This section is not available for community shared plans"
+          : item.description;
+        var tooltip = tooltipText
+          ? '<div class="sidebar-tip">' + escapeHtml(tooltipText) + "</div>"
+          : "";
+        if (isLocked) {
+          attrs += ' aria-disabled="true"';
+        } else {
+          attrs += ' href="' + href + '"';
+          if (item.id) attrs += ' data-scroll-link="' + item.id + '"';
+        }
         return (
-          '<a class="sidebar-link' + (locked ? " is-locked" : "") + '" href="' + href + '"' +
-          (item.id ? ' data-scroll-link="' + item.id + '"' : "") + ">" +
+          '<div class="sidebar-link-wrap' + (tooltip ? " has-tip" : "") + '">' +
+          tooltip +
+          "<" + tagName + attrs + ">" +
           '<i data-lucide="' + item.icon + '" style="width:18px;height:18px;"></i>' +
-          "<span>" + escapeHtml(item.label) + "</span>" + dot + lock + "</a>"
+          "<span>" + escapeHtml(item.label) + "</span>" + dot + lock + "</" + tagName + ">" +
+          "</div>"
         );
       }
 
@@ -6019,7 +6947,9 @@
           planNode.innerHTML = PLAN_LINKS.map(function (item) { return makeSidebarLink(item, false); }).join("");
         }
         if (controlNode) {
-          controlNode.innerHTML = CONTROL_LINKS.map(function (item) { return makeSidebarLink(item, false); }).join("");
+          controlNode.innerHTML = CONTROL_LINKS.map(function (item) {
+            return makeSidebarLink(item, isCommunityReadOnly);
+          }).join("");
         }
       }
 
@@ -6037,6 +6967,24 @@
           derived.dateRangeText + " | " + derived.durationDays + " day" + (derived.durationDays > 1 ? "s" : "") +
           " | " + derived.passengersLabel;
         syncBannerStackSpacing();
+      }
+
+      function renderCommunityDateStrip() {
+        var strip = document.getElementById("community-date-strip");
+        var label = document.getElementById("community-date-label");
+        if (!strip || !label) return;
+        if (!isCommunityReadOnly) {
+          strip.hidden = true;
+          return;
+        }
+        var startDate = derived && derived.startDate ? derived.startDate : null;
+        var endDate = derived && derived.endDate ? derived.endDate : startDate;
+        if (startDate && endDate) {
+          label.textContent = formatCommunityDate(startDate) + " - " + formatCommunityDate(endDate);
+        } else {
+          label.textContent = String(derived && derived.dateRangeText ? derived.dateRangeText : "").trim();
+        }
+        strip.hidden = false;
       }
 
       function syncBannerStackSpacing() {
@@ -6211,34 +7159,252 @@
         var interestChips = aiHighlights && Array.isArray(aiHighlights.interestChips) && aiHighlights.interestChips.length
           ? aiHighlights.interestChips
           : derived.interests;
-        document.getElementById("trip-title").textContent =
-          (aiHighlights && (aiHighlights.summary || aiHighlights.tripTitle)) || derived.tripTitle;
-        document.getElementById("highlights-dates").textContent =
-          (aiHighlights && aiHighlights.travelWindow) || derived.dateRangeText;
-        document.getElementById("highlights-origin").textContent =
-          (aiHighlights && aiHighlights.originCity) || derived.origin.city;
-        document.getElementById("highlights-hotel").textContent =
-          (aiHighlights && aiHighlights.hotelPreference) || derived.hotelStar;
-        document.getElementById("highlights-food").textContent =
-          (aiHighlights && aiHighlights.foodPreference) || derived.foodPreference;
-        document.getElementById("interest-chips").innerHTML = interestChips.map(function (interest) {
-          return '<span class="chip">' + escapeHtml(interest) + "</span>";
+        var meta = {
+          tripTitle: (aiHighlights && aiHighlights.tripTitle) || derived.tripTitle || "Trip Overview",
+          travelWindow: (aiHighlights && aiHighlights.travelWindow) || derived.dateRangeText,
+          origin: (aiHighlights && aiHighlights.originCity) || derived.origin.city,
+          destination: derived.destination.full || derived.destination.city || "your destination",
+          destinationCity: derived.destination.city || derived.destination.full || "the destination",
+          hotel: (aiHighlights && aiHighlights.hotelPreference) || derived.hotelStar,
+          food: (aiHighlights && aiHighlights.foodPreference) || derived.foodPreference
+        };
+        var summaryText = aiHighlights && aiHighlights.summary ? aiHighlights.summary : "";
+        var paragraphs = expandTripHighlightsParagraphs(summaryText, meta, interestChips);
+        var emphasisTerms = collectTripHighlightEmphasisTerms(meta, interestChips, aiHighlights);
+        var editBtn = document.getElementById("trip-highlights-edit-btn");
+        var actionWrap = document.getElementById("trip-highlights-edit-actions");
+        var highlightsLocked = isPlanReadOnly();
+        if (highlightsLocked) {
+          sectionEditState.trip = false;
+          sectionEditState.tripDraft = null;
+        }
+        if (editBtn) {
+          editBtn.hidden = highlightsLocked || sectionEditState.trip;
+          setEditButtonState(editBtn, false, "Edit trip highlights", "Save trip highlights");
+        }
+        if (actionWrap) actionWrap.hidden = !sectionEditState.trip;
+        if (sectionEditState.trip) {
+          ensureLucideLoaded(renderIcons);
+          return;
+        }
+        document.getElementById("trip-title").textContent = meta.tripTitle;
+        document.getElementById("trip-highlights-body").innerHTML = paragraphs.map(function (paragraph) {
+          return "<p>" + emphasizeNarrativeKeywords(paragraph, emphasisTerms) + "</p>";
         }).join("");
+        ensureLucideLoaded(renderIcons);
       }
 
       function renderWeather() {
         var aiWeather = aiGeneratedSections && aiGeneratedSections.weatherAnalysis
           ? aiGeneratedSections.weatherAnalysis
           : null;
-        document.getElementById("weather-expected").textContent = aiWeather && aiWeather.expectedConditions
+        var expectedEditBtn = document.getElementById("weather-expected-edit-btn");
+        var bestTimeEditBtn = document.getElementById("weather-best-time-edit-btn");
+        var expectedActions = document.getElementById("weather-expected-edit-actions");
+        var bestTimeActions = document.getElementById("weather-best-time-edit-actions");
+        var weatherLocked = isPlanReadOnly();
+        if (weatherLocked) {
+          sectionEditState.weatherExpected = false;
+          sectionEditState.weatherBestTime = false;
+          sectionEditState.weatherExpectedDraft = null;
+          sectionEditState.weatherBestTimeDraft = null;
+        }
+        if (expectedEditBtn) {
+          expectedEditBtn.hidden = weatherLocked || sectionEditState.weatherExpected;
+          setEditButtonState(
+            expectedEditBtn,
+            false,
+            "Edit weather expected conditions",
+            "Save weather expected conditions"
+          );
+        }
+        if (bestTimeEditBtn) {
+          bestTimeEditBtn.hidden = weatherLocked || sectionEditState.weatherBestTime;
+          setEditButtonState(
+            bestTimeEditBtn,
+            false,
+            "Edit weather best time to visit",
+            "Save weather best time to visit"
+          );
+        }
+        if (expectedActions) expectedActions.hidden = !sectionEditState.weatherExpected;
+        if (bestTimeActions) bestTimeActions.hidden = !sectionEditState.weatherBestTime;
+        if (sectionEditState.weatherExpected || sectionEditState.weatherBestTime) {
+          ensureLucideLoaded(renderIcons);
+          return;
+        }
+        var expectedText = aiWeather && aiWeather.expectedConditions
           ? aiWeather.expectedConditions
-          : "During your " + derived.monthName + " travel window in " + derived.destination.city +
-            ", expect conditions aligned with your selection: " + (derived.plan.weather || "balanced weather") +
-            ". Your " + derived.durationDays + "-day plan supports city movement, local exploration, and pacing for " + derived.passengersLabel + ".";
-        document.getElementById("weather-best-time").textContent = aiWeather && aiWeather.bestTimeToVisit
+          : "";
+        expectedText = ensureWeatherNarrativeLength(
+          expectedText,
+          buildWeatherExpectedFallbackText(),
+          55
+        );
+        var bestTimeText = aiWeather && aiWeather.bestTimeToVisit
           ? aiWeather.bestTimeToVisit
-          : derived.monthName + " suits your " + (derived.plan.pace || "balanced") + " trip pace. It complements your chosen interests: " +
-            derived.interests.join(", ").toLowerCase() + ", while keeping daily transitions practical from " + derived.origin.city + " to " + derived.destination.city + ".";
+          : "";
+        bestTimeText = ensureWeatherNarrativeLength(
+          bestTimeText,
+          buildWeatherBestTimeFallbackText(),
+          50
+        );
+        document.getElementById("weather-expected").innerHTML = emphasizeNarrativeKeywords(
+          expectedText,
+          []
+        );
+        document.getElementById("weather-best-time").innerHTML = emphasizeNarrativeKeywords(
+          bestTimeText,
+          []
+        );
+        ensureLucideLoaded(renderIcons);
+      }
+
+      function toggleTripHighlightsInlineEdit() {
+        if (isPlanReadOnly()) return;
+        var titleNode = document.getElementById("trip-title");
+        var bodyNode = document.getElementById("trip-highlights-body");
+        if (!titleNode || !bodyNode || sectionEditState.trip) return;
+
+        sectionEditState.trip = true;
+        sectionEditState.tripDraft = {
+          title: titleNode.textContent,
+          body: bodyNode.innerText
+        };
+        var sourceTitle = aiGeneratedSections && aiGeneratedSections.tripHighlights
+          ? aiGeneratedSections.tripHighlights.tripTitle
+          : "";
+        var sourceSummary = aiGeneratedSections && aiGeneratedSections.tripHighlights
+          ? aiGeneratedSections.tripHighlights.summary
+          : "";
+        var renderedSummary = htmlToEditableMarkdown(bodyNode.innerHTML);
+        sourceSummary = renderedSummary || sourceSummary;
+        titleNode.textContent = normalizeInlineSingleLineText(sourceTitle, titleNode.textContent || derived.tripTitle || "Trip Overview");
+        bodyNode.textContent = normalizeInlineBlockText(sourceSummary, renderedSummary || bodyNode.innerText);
+        setInlineEditableState(titleNode, true);
+        setInlineEditableState(bodyNode, true);
+        renderHighlights();
+        ensureLucideLoaded(renderIcons);
+        bodyNode.focus();
+      }
+
+      async function saveTripHighlightsInlineEdit() {
+        if (!sectionEditState.trip) return;
+        var titleNode = document.getElementById("trip-title");
+        var bodyNode = document.getElementById("trip-highlights-body");
+        if (!titleNode || !bodyNode) return;
+        var nextTitle = normalizeInlineSingleLineText(titleNode.textContent, derived.tripTitle || "Trip Overview");
+        var nextSummary = normalizeInlineBlockText(bodyNode.innerText, "");
+
+        sectionEditState.trip = false;
+        sectionEditState.tripDraft = null;
+        setInlineEditableState(titleNode, false);
+        setInlineEditableState(bodyNode, false);
+
+        var nextTrip = buildTripHighlightsEditablePayload(nextTitle, nextSummary);
+        aiGeneratedSections = aiGeneratedSections || {};
+        aiGeneratedSections.tripHighlights = nextTrip;
+        renderHighlights();
+        stabilizeStepContainer();
+        ensureLucideLoaded(renderIcons);
+        try {
+          await persistPlanSections({ tripHighlights: nextTrip });
+          showPublishToast("Trip highlights updated.", { title: "Highlights saved" });
+        } catch (_) {
+          showPublishToast("Couldn't save trip highlights.", { title: "Highlights not saved" });
+        }
+      }
+
+      function cancelTripHighlightsInlineEdit() {
+        if (!sectionEditState.trip) return;
+        var titleNode = document.getElementById("trip-title");
+        var bodyNode = document.getElementById("trip-highlights-body");
+        sectionEditState.trip = false;
+        sectionEditState.tripDraft = null;
+        setInlineEditableState(titleNode, false);
+        setInlineEditableState(bodyNode, false);
+        renderHighlights();
+        stabilizeStepContainer();
+        ensureLucideLoaded(renderIcons);
+      }
+
+      function toggleWeatherInlineEdit(kind) {
+        if (isPlanReadOnly()) return;
+        var key = kind === "best" ? "weatherBestTime" : "weatherExpected";
+        var nodeId = kind === "best" ? "weather-best-time" : "weather-expected";
+        var node = document.getElementById(nodeId);
+        if (!node || sectionEditState[key]) return;
+        if (kind === "best" && sectionEditState.weatherExpected) return;
+        if (kind !== "best" && sectionEditState.weatherBestTime) return;
+
+        var weatherSource = aiGeneratedSections && aiGeneratedSections.weatherAnalysis
+          ? aiGeneratedSections.weatherAnalysis
+          : {};
+        sectionEditState[key] = true;
+        if (kind === "best") {
+          sectionEditState.weatherBestTimeDraft = node.innerText;
+        } else {
+          sectionEditState.weatherExpectedDraft = node.innerText;
+        }
+        var sourceText = kind === "best"
+          ? String(weatherSource.bestTimeToVisit || "")
+          : String(weatherSource.expectedConditions || "");
+        var renderedText = htmlToEditableMarkdown(node.innerHTML);
+        sourceText = renderedText || sourceText;
+        node.textContent = normalizeInlineBlockText(sourceText, renderedText || node.innerText || node.textContent);
+        setInlineEditableState(node, true);
+        renderWeather();
+        ensureLucideLoaded(renderIcons);
+        node.focus();
+      }
+
+      async function saveWeatherInlineEdit(kind) {
+        var key = kind === "best" ? "weatherBestTime" : "weatherExpected";
+        var nodeId = kind === "best" ? "weather-best-time" : "weather-expected";
+        var node = document.getElementById(nodeId);
+        if (!node || !sectionEditState[key]) return;
+        sectionEditState[key] = false;
+        if (kind === "best") {
+          sectionEditState.weatherBestTimeDraft = null;
+        } else {
+          sectionEditState.weatherExpectedDraft = null;
+        }
+        setInlineEditableState(node, false);
+        var expectedNode = document.getElementById("weather-expected");
+        var bestNode = document.getElementById("weather-best-time");
+        var nextWeather = buildWeatherEditablePayload(
+          expectedNode ? expectedNode.innerText : "",
+          bestNode ? bestNode.innerText : ""
+        );
+
+        aiGeneratedSections = aiGeneratedSections || {};
+        aiGeneratedSections.weatherAnalysis = nextWeather;
+        renderWeather();
+        stabilizeStepContainer();
+        ensureLucideLoaded(renderIcons);
+        try {
+          await persistPlanSections({ weatherAnalysis: nextWeather });
+          showPublishToast("Weather analysis updated.", { title: "Weather saved" });
+        } catch (_) {
+          showPublishToast("Couldn't save weather analysis.", { title: "Weather not saved" });
+        }
+      }
+
+      function cancelWeatherInlineEdit(kind) {
+        var key = kind === "best" ? "weatherBestTime" : "weatherExpected";
+        var nodeId = kind === "best" ? "weather-best-time" : "weather-expected";
+        var node = document.getElementById(nodeId);
+        if (!sectionEditState[key]) return;
+        sectionEditState[key] = false;
+        if (kind === "best") {
+          sectionEditState.weatherBestTimeDraft = null;
+        } else {
+          sectionEditState.weatherExpectedDraft = null;
+        }
+        setInlineEditableState(node, false);
+        renderWeather();
+        stabilizeStepContainer();
+        ensureLucideLoaded(renderIcons);
       }
 
       function dayActivities(dayIndex) {
@@ -7326,6 +8492,7 @@ function buildDayBaseModel(dayNumber) {
         setupBudgetTabs();
         setupBudgetEditing();
         setupPackingEditing();
+        setupHighlightsWeatherEditing();
         if (isCommunityReadOnly) {
           var headerSearch = document.getElementById("header-plan-search");
           if (headerSearch) headerSearch.style.display = "none";
@@ -7960,12 +9127,92 @@ function buildDayBaseModel(dayNumber) {
         });
       }
 
+      function setupHighlightsWeatherEditing() {
+        var tripBtn = document.getElementById("trip-highlights-edit-btn");
+        var tripSaveBtn = document.getElementById("trip-highlights-save-btn");
+        var tripCancelBtn = document.getElementById("trip-highlights-cancel-btn");
+        var expectedBtn = document.getElementById("weather-expected-edit-btn");
+        var expectedSaveBtn = document.getElementById("weather-expected-save-btn");
+        var expectedCancelBtn = document.getElementById("weather-expected-cancel-btn");
+        var bestTimeBtn = document.getElementById("weather-best-time-edit-btn");
+        var bestTimeSaveBtn = document.getElementById("weather-best-time-save-btn");
+        var bestTimeCancelBtn = document.getElementById("weather-best-time-cancel-btn");
+
+        if (tripBtn && tripBtn.dataset.bound !== "true") {
+          tripBtn.dataset.bound = "true";
+          tripBtn.addEventListener("click", function (event) {
+            event.preventDefault();
+            toggleTripHighlightsInlineEdit();
+          });
+        }
+        if (tripSaveBtn && tripSaveBtn.dataset.bound !== "true") {
+          tripSaveBtn.dataset.bound = "true";
+          tripSaveBtn.addEventListener("click", function (event) {
+            event.preventDefault();
+            saveTripHighlightsInlineEdit();
+          });
+        }
+        if (tripCancelBtn && tripCancelBtn.dataset.bound !== "true") {
+          tripCancelBtn.dataset.bound = "true";
+          tripCancelBtn.addEventListener("click", function (event) {
+            event.preventDefault();
+            cancelTripHighlightsInlineEdit();
+          });
+        }
+
+        if (expectedBtn && expectedBtn.dataset.bound !== "true") {
+          expectedBtn.dataset.bound = "true";
+          expectedBtn.addEventListener("click", function (event) {
+            event.preventDefault();
+            toggleWeatherInlineEdit("expected");
+          });
+        }
+        if (expectedSaveBtn && expectedSaveBtn.dataset.bound !== "true") {
+          expectedSaveBtn.dataset.bound = "true";
+          expectedSaveBtn.addEventListener("click", function (event) {
+            event.preventDefault();
+            saveWeatherInlineEdit("expected");
+          });
+        }
+        if (expectedCancelBtn && expectedCancelBtn.dataset.bound !== "true") {
+          expectedCancelBtn.dataset.bound = "true";
+          expectedCancelBtn.addEventListener("click", function (event) {
+            event.preventDefault();
+            cancelWeatherInlineEdit("expected");
+          });
+        }
+
+        if (bestTimeBtn && bestTimeBtn.dataset.bound !== "true") {
+          bestTimeBtn.dataset.bound = "true";
+          bestTimeBtn.addEventListener("click", function (event) {
+            event.preventDefault();
+            toggleWeatherInlineEdit("best");
+          });
+        }
+        if (bestTimeSaveBtn && bestTimeSaveBtn.dataset.bound !== "true") {
+          bestTimeSaveBtn.dataset.bound = "true";
+          bestTimeSaveBtn.addEventListener("click", function (event) {
+            event.preventDefault();
+            saveWeatherInlineEdit("best");
+          });
+        }
+        if (bestTimeCancelBtn && bestTimeCancelBtn.dataset.bound !== "true") {
+          bestTimeCancelBtn.dataset.bound = "true";
+          bestTimeCancelBtn.addEventListener("click", function (event) {
+            event.preventDefault();
+            cancelWeatherInlineEdit("best");
+          });
+        }
+      }
+
       function setupMobileDrawer() {
         var openBtn = document.getElementById("mobile-menu-btn");
         var closeBtn = document.getElementById("mobile-close-btn");
         var overlay = document.getElementById("mobile-overlay");
+        var drawer = document.getElementById("mobile-drawer");
+        if (!openBtn || !closeBtn || !overlay || !drawer) return;
         openBtn.addEventListener("click", function () {
-          document.getElementById("mobile-drawer").classList.add("open");
+          drawer.classList.add("open");
           overlay.classList.add("open");
           document.body.style.overflow = "hidden";
         });
@@ -7977,8 +9224,12 @@ function buildDayBaseModel(dayNumber) {
       }
 
       function closeMobileDrawer() {
-        document.getElementById("mobile-drawer").classList.remove("open");
-        document.getElementById("mobile-overlay").classList.remove("open");
+        var openBtn = document.getElementById("mobile-menu-btn");
+        var drawer = document.getElementById("mobile-drawer");
+        var overlay = document.getElementById("mobile-overlay");
+        if (!drawer || !overlay) return;
+        drawer.classList.remove("open");
+        overlay.classList.remove("open");
         document.body.style.overflow = "";
       }
 
@@ -8084,6 +9335,9 @@ function buildDayBaseModel(dayNumber) {
 </body>
 
 </html>
+
+
+
 
 
 

@@ -155,7 +155,7 @@
     }
 
     .topbar-nav a:hover {
-      text-decoration: underline;
+      
       text-underline-offset: 4px;
     }
 
@@ -320,10 +320,15 @@
       white-space: nowrap;
       text-decoration: none;
       text-underline-offset: 4px;
+    }
+    .header-credits:hover {
+      background: rgba(15, 23, 42, 0.08);
+      color: #0f172a;
     }
 
-    .header-credits:hover {
-      text-decoration: underline;
+    html.dark .header-credits:hover {
+      background: rgba(148, 163, 184, 0.16);
+      color: #ffffff;
     }
 
     html.dark .header-credits {
@@ -2271,7 +2276,7 @@
     }
 
     .td-for:hover {
-      text-decoration: underline;
+      
     }
 
     .td-category {
@@ -2428,6 +2433,7 @@
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
   <link rel="preload" as="script" href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js">
+  <link rel="stylesheet" href="css/responsive.css?v=20260331j" />
 </head>
 
 <body class="__className_fff05e">
@@ -2447,7 +2453,7 @@
         <ul class="topbar-nav">
           <li><a href="/">Home</a></li>
           <li><a href="/dashboard.html">Dashboard</a></li>
-          <li><a href="/#public-plans">Community Plans</a></li>
+          <li><a href="/community-plans.html">Community Plans</a></li>
         </ul>
       </div>
       <div class="topbar-actions">
@@ -2492,7 +2498,7 @@
               d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" />
           </svg>
         </button>
-        <a id="header-signin-link" class="header-signin" href="/sign-in/">Sign in</a>
+        <a id="header-signin-link" class="header-signin" href="/sign-in.html">Sign in</a>
         <div id="user-profile" class="profile-pill" aria-label="User profile">
           <button id="profile-btn" type="button" aria-label="Profile">
             <img id="user-avatar" alt="User avatar" />
@@ -2532,6 +2538,14 @@
     <div class="sidebar-group">
       <h2 class="sidebar-subtitle">Control Center</h2>
       <div id="mobile-control-links" class="sidebar-links"></div>
+    </div>
+    <div class="sidebar-group">
+      <h2 class="sidebar-subtitle">Navigation</h2>
+      <div class="sidebar-links">
+        <a class="sidebar-link" href="/"><i data-lucide="arrow-left" style="width:18px;height:18px;"></i><span>Home</span><span class="dot" aria-hidden="true"></span></a>
+        <a class="sidebar-link" href="/dashboard.html"><i data-lucide="arrow-left" style="width:18px;height:18px;"></i><span>Dashboard</span><span class="dot" aria-hidden="true"></span></a>
+        <a class="sidebar-link" href="/community-plans.html"><i data-lucide="arrow-left" style="width:18px;height:18px;"></i><span>Community Plans</span><span class="dot" aria-hidden="true"></span></a>
+      </div>
     </div>
   </aside>
 
@@ -2835,16 +2849,16 @@
             <ul class="space-y-4 text-sm text-muted-foreground dark:text-gray-400">
               <li class="font-medium"><a
                   class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
-                  href="/help-center">Help Center</a></li>
+                  href="/help-center.html">Help Center</a></li>
               <li class="font-medium"><a
                   class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
-                  href="/contact-us">Contact Us</a></li>
+                  href="/contact-us.html">Contact Us</a></li>
               <li class="font-medium"><a
                   class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
-                  href="/privacy-policy">Privacy Policy</a></li>
+                  href="/privacy-policy.html">Privacy Policy</a></li>
               <li class="font-medium"><a
                   class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
-                  href="/terms-of-service">Terms of Service</a></li>
+                  href="/terms-of-service.html">Terms of Service</a></li>
             </ul>
           </div>
           <div class="col-span-2 md:col-span-1">
@@ -2852,10 +2866,10 @@
             <ul class="space-y-4 text-sm text-muted-foreground dark:text-gray-400">
               <li class="font-medium"><a
                   class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
-                  href="/about-us">About Us</a></li>
+                  href="/about-us.html">About Us</a></li>
               <li class="font-medium"><a
                   class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
-                  href="/partners">Partners</a></li>
+                  href="/partners.html">Partners</a></li>
             </ul>
           </div>
           <div class="col-span-4 md:col-span-2">
@@ -2868,7 +2882,7 @@
                   data-slot="button" type="submit">Subscribe</button></div>
             </form>
             <p class="mt-2 ml-1 text-xs font-medium text-muted-foreground dark:text-gray-400">By submitting, you agree
-              to our<a href="/privacy-policy" class="ml-1 text-primary dark:text-blue-400 hover:underline">Privacy
+              to our<a href="/privacy-policy.html" class="ml-1 text-primary dark:text-blue-400 hover:underline">Privacy
                 Policy</a></p>
           </div>
         </div>
@@ -3932,7 +3946,11 @@
         var overlay = document.getElementById("mobile-overlay");
         var drawer = document.getElementById("mobile-drawer");
         if (!openBtn || !closeBtn || !overlay || !drawer) return;
-        openBtn.addEventListener("click", function () { drawer.classList.add("open"); overlay.classList.add("open"); document.body.style.overflow = "hidden"; });
+        openBtn.addEventListener("click", function () {
+          drawer.classList.add("open");
+          overlay.classList.add("open");
+          document.body.style.overflow = "hidden";
+        });
         closeBtn.addEventListener("click", closeMobile);
         overlay.addEventListener("click", closeMobile);
         document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeMobile(); });
@@ -4108,7 +4126,7 @@
             return;
           }
           if (signInLink) {
-            window.location.href = signInLink.getAttribute("href") || "/sign-in/";
+            window.location.href = signInLink.getAttribute("href") || "/sign-in.html";
           }
         });
 
@@ -4134,7 +4152,7 @@
             if (window.Clerk && typeof window.Clerk.openUserProfile === "function" && window.Clerk.user) {
               window.Clerk.openUserProfile();
             } else if (signInLink) {
-              window.location.href = signInLink.getAttribute("href") || "/sign-in/";
+              window.location.href = signInLink.getAttribute("href") || "/sign-in.html";
             }
           });
         }
@@ -4201,6 +4219,9 @@
 </body>
 
 </html>
+
+
+
 
 
 

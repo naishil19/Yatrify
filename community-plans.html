@@ -1,0 +1,2285 @@
+<!DOCTYPE html>
+<html lang="en" class="light" style="color-scheme: light;">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Yatrify - Community Plans</title>
+  <link rel="stylesheet" href="/css/2a2e7898d4f6aad7.css" />
+  <link rel="icon" href="/images/favicon.ico" type="image/x-icon" sizes="16x16" />
+  <style id="community-plans-inline-style">
+    /* Header + wrapper (reuse the same elements/classes as other pages) */
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 65px;
+      z-index: 1200;
+      border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+      background: color-mix(in oklab, #ffffff 72%, transparent);
+      backdrop-filter: blur(14px);
+    }
+
+    html.dark .topbar {
+      background: rgba(2, 8, 23, 0.6);
+      border-bottom-color: rgba(148, 163, 184, 0.16);
+    }
+
+    .topbar-inner {
+      width: 100%;
+      margin: 0 auto;
+      height: 100%;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      flex: 1 1 auto;
+      min-width: 0;
+      justify-content: flex-start;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex: 0 0 auto;
+      justify-content: flex-end;
+      margin-left: 20px;
+      min-width: 0;
+    }
+
+    .logo-wrap {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .logo-wrap img {
+      width: 100px;
+      height: 50px;
+      object-fit: contain;
+    }
+
+    .logo-dark {
+      display: none;
+    }
+
+    html.dark .logo-light {
+      display: none;
+    }
+
+    html.dark .logo-dark {
+      display: block;
+    }
+
+    .topbar-nav {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      align-items: center;
+    }
+
+    .topbar-nav a {
+      color: #0f172a;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    html.dark .topbar-nav a {
+      color: #e2e8f0;
+    }
+
+    .topbar-nav a:hover {
+      
+      text-underline-offset: 4px;
+    }
+
+    #mobile-menu-btn {
+      display: none;
+    }
+
+    .header-credits {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text, #0f172a);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+      padding: 4px 8px;
+      border-radius: 8px;
+      white-space: nowrap;
+      text-decoration: none;
+      text-underline-offset: 4px;
+      transition: color 0.2s ease, background-color 0.2s ease;
+    }
+
+    .header-credits:hover {
+      background: rgba(15, 23, 42, 0.08);
+      color: #0f172a;
+    }
+
+    html.dark .header-credits {
+      color: #e5e7eb;
+    }
+
+    html.dark .header-credits:hover {
+      background: rgba(148, 163, 184, 0.16);
+      color: #ffffff;
+    }
+
+    .icon-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 0;
+      background: transparent;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text, #0f172a);
+      cursor: pointer;
+      transition: color 0.2s ease, background 0.2s ease;
+    }
+
+    .icon-btn:hover {
+      background: rgba(15, 23, 42, 0.06);
+      color: #0f172a;
+    }
+
+    html.dark .icon-btn {
+      color: #e5e7eb;
+    }
+
+    html.dark .icon-btn:hover {
+      background: rgba(30, 41, 59, 0.9);
+      color: #ffffff;
+    }
+
+    .theme-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      flex: 0 0 34px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      position: relative;
+      transition: color 0.2s ease, opacity 0.2s ease;
+    }
+
+    .theme-toggle:hover {
+      opacity: 0.9;
+    }
+
+    .theme-toggle svg {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 24px;
+      height: 24px;
+      display: block;
+      transform: translate(-50%, -50%);
+      transform-origin: center;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .header-action-row {
+      gap: 16px !important;
+    }
+
+    .header-signin-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #0f172a;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 500;
+      white-space: nowrap;
+      text-underline-offset: 4px;
+    }
+
+    .header-signin-link:hover {
+      
+    }
+
+    html.dark .header-signin-link {
+      color: #e2e8f0;
+    }
+
+    html:not(.dark) .theme-toggle #moon-icon {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    html.dark .theme-toggle #sun-icon {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    html.dark .theme-toggle #moon-icon {
+      opacity: 1;
+    }
+
+    #user-profile {
+      display: inline-flex;
+      align-items: center;
+      position: relative;
+    }
+
+    #profile-btn {
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+
+    #profile-btn:hover {
+      transform: scale(1.05);
+      filter: brightness(0.95);
+    }
+
+    #profile-menu {
+      pointer-events: auto;
+      animation: slideDown 0.2s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-5px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    #manage-account,
+    #signout-btn {
+      opacity: 0.85;
+      transition: all 0.2s ease;
+    }
+
+    #manage-account:hover {
+      background-color: #f3f4f6 !important;
+      opacity: 1;
+    }
+
+    #signout-btn:hover {
+      background-color: #fee2e2 !important;
+      opacity: 1;
+    }
+
+    /* Community page styles */
+    body.community-page-body {
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .community-page {
+      background: #ffffff;
+      padding: 5px 80px 56px;
+      min-height: calc(100svh - 4rem);
+      position: relative;
+    }
+
+    .community-shell {
+      width: 100%;
+      max-width: none;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: calc(20vw - 80px) minmax(0, 1fr);
+      gap: 0;
+      align-items: start;
+      position: relative;
+    }
+
+    .community-shell.is-collapsed {
+      grid-template-columns: 0 minmax(0, 1fr);
+    }
+
+    .community-filters {
+      grid-column: 1;
+      grid-row: 1;
+      background: transparent;
+      border-right: 0;
+      border-radius: 0;
+      padding: 0 8px 0 0;
+      box-shadow: none;
+      position: sticky;
+      top: 88px;
+      align-self: start;
+      width: 100%;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      overflow: visible;
+      max-width: calc(20vw - 80px);
+      transform-origin: left top;
+      will-change: transform, opacity;
+      backface-visibility: hidden;
+      transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s ease;
+    }
+
+    .community-shell.is-collapsed .community-filters {
+      max-width: 0;
+      padding-right: 0;
+      overflow: hidden;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateX(-18px);
+    }
+
+    .community-filter-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 0 22px;
+    }
+
+    .community-filter-title {
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #4b5563;
+      font-weight: 500;
+      line-height: 1;
+      margin: 0;
+    }
+
+    .community-filters-body {
+      display: block;
+    }
+
+    .community-filter-group {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 18px;
+      min-width: 0;
+    }
+
+    .community-filter-group label {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .community-filter-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.0fr);
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .community-select {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+      border: 1px solid #d7e0ea;
+      border-radius: 14px;
+      padding: 10px 42px 10px 14px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #334155;
+      background-color: #ffffff;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-position: calc(100% - 16px) 50%;
+      background-size: 14px 14px;
+      background-repeat: no-repeat;
+    }
+
+    .community-select[hidden] {
+      display: none !important;
+    }
+
+    .community-dropdown {
+      position: relative;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      z-index: 8;
+    }
+
+    .community-dropdown-trigger {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+      border: 1px solid #d7e0ea;
+      border-radius: 14px;
+      padding: 10px 14px;
+      min-height: 46px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #334155;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      text-align: left;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .community-dropdown-trigger:hover {
+      border-color: #c9d5e3;
+    }
+
+    .community-dropdown-trigger:focus-visible {
+      outline: 2px solid rgba(59, 130, 246, 0.45);
+      outline-offset: 2px;
+    }
+
+    .community-dropdown-label {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .community-dropdown-caret {
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 6px solid #64748b;
+      flex: 0 0 auto;
+      transition: transform 0.2s ease;
+    }
+
+    .community-dropdown.is-open .community-dropdown-caret {
+      transform: rotate(180deg);
+    }
+
+    .community-dropdown-menu {
+      position: absolute;
+      left: 0;
+      right: 0;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+      top: calc(100% + 6px);
+      background: #ffffff;
+      border: 1px solid #d7e0ea;
+      border-radius: 14px;
+      box-shadow: 0 16px 34px rgba(15, 23, 42, 0.12);
+      overflow: hidden;
+      max-height: 280px;
+      overflow-y: auto;
+      display: none;
+      z-index: 60;
+    }
+
+    .community-dropdown.is-open .community-dropdown-menu {
+      display: block;
+    }
+
+    .community-dropdown-option {
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      border: 0;
+      background: #ffffff;
+      color: #334155;
+      text-align: left;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .community-dropdown-option:hover,
+    .community-dropdown-option[aria-selected="true"] {
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    .community-content {
+      grid-column: 2;
+      grid-row: 1;
+      display: grid;
+      gap: 14px;
+      padding: 0 0 0 28px;
+      min-width: 0;
+      padding-right: 12px;
+      transition: padding 0.18s ease;
+    }
+
+    .community-shell.is-collapsed .community-content {
+      grid-column: 1 / -1;
+      grid-row: 1;
+      padding-left: 0;
+    }
+
+    .community-result-hint {
+      margin-top: 0;
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .community-loading {
+      display: none;
+      min-height: 520px;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 0 8px;
+    }
+
+    .community-content.is-loading .community-loading {
+      display: flex;
+    }
+
+    .community-content.is-loading .community-result-hint,
+    .community-content.is-loading .community-grid,
+    .community-content.is-loading .community-load {
+      display: none;
+    }
+
+    .community-loading-rings {
+      position: relative;
+      width: 460px;
+      height: 460px;
+      display: grid;
+      place-items: center;
+      animation: communityZoom 2.4s ease-in-out infinite;
+    }
+
+    .community-loading-ring {
+      position: absolute;
+      border-radius: 999px;
+      background: rgba(59, 130, 246, 0.10);
+      animation: communityPulse 2.1s ease-in-out infinite;
+    }
+
+    .community-loading-ring--outer {
+      inset: 0;
+      opacity: 0.7;
+    }
+
+    .community-loading-ring--middle {
+      inset: 76px;
+      opacity: 0.78;
+      animation-delay: 0.18s;
+    }
+
+    .community-loading-ring--inner {
+      inset: 148px;
+      background: rgba(59, 130, 246, 0.12);
+      opacity: 0.88;
+      animation-delay: 0.32s;
+    }
+
+    .community-loading-core {
+      position: relative;
+      z-index: 1;
+      width: 120px;
+      height: 120px;
+      border-radius: 999px;
+      background: #ffffff;
+      box-shadow: 0 16px 36px rgba(59, 130, 246, 0.14);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 16px;
+      color: #334155;
+      overflow: hidden;
+    }
+
+    .community-loading-core::before {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.18) 0%, rgba(59, 130, 246, 0.08) 45%, rgba(59, 130, 246, 0) 72%);
+      animation: communityHalo 1.9s ease-in-out infinite;
+    }
+
+    .community-loading-core > div {
+      position: relative;
+      z-index: 1;
+    }
+
+    .community-loading-icon {
+      width: 40px;
+      height: 40px;
+      color: #4f66ad;
+      margin: 0 auto 8px;
+      animation: communityIconZoom 1.9s ease-in-out infinite;
+    }
+
+    .community-loading-label {
+      font-size: 14px;
+      line-height: 1.3;
+      color: #334155;
+      animation: communityFade 1.8s ease-in-out infinite;
+    }
+
+    @keyframes communityPulse {
+      0%, 100% {
+        transform: scale(0.95);
+        opacity: 0.52;
+      }
+
+      50% {
+        transform: scale(1.06);
+        opacity: 0.94;
+      }
+    }
+
+    @keyframes communityIconZoom {
+      0%, 100% {
+        transform: scale(0.92);
+        opacity: 0.9;
+      }
+
+      50% {
+        transform: scale(1.08);
+        opacity: 1;
+      }
+    }
+
+    @keyframes communityHalo {
+      0%, 100% {
+        transform: scale(0.88);
+        opacity: 0.55;
+      }
+
+      50% {
+        transform: scale(1.08);
+        opacity: 0.95;
+      }
+    }
+
+    @keyframes communityFade {
+      0%, 100% {
+        opacity: 0.95;
+      }
+
+      50% {
+        opacity: 0.68;
+      }
+    }
+
+    @keyframes communityZoom {
+      0%, 100% {
+        transform: scale(0.985);
+      }
+
+      50% {
+        transform: scale(1.02);
+      }
+    }
+
+    .community-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .community-title {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 10px;
+    }
+
+    .community-title-copy {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-top: 0;
+    }
+
+    .community-title-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: transparent;
+      display: grid;
+      place-items: center;
+      color: #0f172a;
+      margin-top: 0;
+      flex: 0 0 auto;
+      position: relative;
+    }
+
+    .community-title-toggle {
+      border: 0;
+      padding: 0;
+      cursor: pointer;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .community-title-toggle:hover {
+      opacity: 0.78;
+    }
+
+    .community-title-toggle:focus-visible {
+      outline: 2px solid rgba(59, 130, 246, 0.45);
+      outline-offset: 4px;
+    }
+
+    .community-title-toggle[aria-expanded="false"] {
+      transform: translateX(-2px);
+    }
+
+    .community-title-icon::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: -8px;
+      transform: translateY(-50%);
+      width: 1px;
+      height: 24px;
+      background: #d7e0ea;
+    }
+
+    .community-title h1 {
+      font-size: 18px;
+      font-weight: 500;
+      color: #0f172a;
+      margin: 0;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .community-title p {
+      font-size: 15px;
+      color: #64748b;
+      margin: 0;
+      padding-left: 18px;
+      border-left: 1px solid #d7e0ea;
+      line-height: 1.1;
+    }
+
+    .community-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 20px;
+      justify-content: start;
+    }
+
+    .community-card {
+      position: relative;
+      border-radius: 14px;
+      overflow: hidden;
+      aspect-ratio: 0.92;
+      color: #ffffff;
+      display: block;
+      border: 1px solid #dfe7f1;
+      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+      transform: translateY(0);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .community-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transform: scale(1);
+      transition: transform 0.3s ease;
+    }
+
+    .community-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.04) 38%, rgba(15, 23, 42, 0.78) 100%);
+    }
+
+    .community-card-content {
+      position: absolute;
+      inset: auto 16px 14px;
+      z-index: 1;
+      display: grid;
+      gap: 6px;
+    }
+
+    .community-card-content h3 {
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.25;
+      text-shadow: 0 8px 18px rgba(15, 23, 42, 0.45);
+    }
+
+    .community-card-meta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .community-card-meta svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    .community-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 18px 32px rgba(15, 23, 42, 0.18);
+    }
+
+    .community-card:hover img {
+      transform: scale(1.04);
+    }
+
+    .community-card:focus-visible {
+      outline: 3px solid rgba(59, 130, 246, 0.7);
+      outline-offset: 3px;
+    }
+
+    .community-empty {
+      grid-column: 1 / -1;
+      padding: 22px 18px;
+      border-radius: 16px;
+      border: 1px solid #e2e8f0;
+      background: #ffffff;
+      color: #0f172a;
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
+    }
+
+    .community-empty strong {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 6px;
+    }
+
+    .community-empty p {
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    .community-load {
+      display: flex;
+      justify-content: center;
+      padding-top: 2px;
+    }
+
+    .community-load-btn {
+      background: #3b82f6;
+      color: #ffffff;
+      border-radius: 999px;
+      padding: 11px 22px;
+      min-width: 142px;
+      font-weight: 500;
+      font-size: 14px;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .community-load-btn:hover {
+      background: #2563eb;
+      transform: translateY(-1px);
+    }
+
+    html.dark .community-page {
+      background: #0b1220;
+    }
+
+    html.dark .community-filters {
+      background: transparent;
+      box-shadow: none;
+    }
+
+    html.dark .community-filter-title {
+      color: rgba(148, 163, 184, 0.9);
+    }
+
+    html.dark .community-filter-group label {
+      color: #e2e8f0;
+    }
+
+    html.dark .community-select {
+      background-color: #0b1220;
+      border-color: rgba(148, 163, 184, 0.22);
+      color: #e2e8f0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-position: calc(100% - 16px) 50%;
+      background-size: 14px 14px;
+      background-repeat: no-repeat;
+    }
+
+    html.dark .community-dropdown-trigger,
+    html.dark .community-dropdown-menu,
+    html.dark .community-dropdown-option {
+      background: #0b1220;
+      color: #e2e8f0;
+      border-color: rgba(148, 163, 184, 0.22);
+    }
+
+    html.dark .community-dropdown-option:hover,
+    html.dark .community-dropdown-option[aria-selected="true"] {
+      background: rgba(37, 99, 235, 0.18);
+      color: #dbeafe;
+    }
+
+    html.dark .community-dropdown-caret {
+      border-top-color: rgba(148, 163, 184, 0.9);
+    }
+
+    html.dark .community-title-icon {
+      background: transparent;
+      color: #e2e8f0;
+    }
+
+    html.dark .community-title h1 {
+      color: #e2e8f0;
+    }
+
+    html.dark .community-title p,
+    html.dark .community-result-hint {
+      color: rgba(148, 163, 184, 0.9);
+    }
+
+    html.dark .community-loading-ring {
+      background: rgba(96, 165, 250, 0.10);
+    }
+
+    html.dark .community-loading-ring--inner {
+      background: rgba(96, 165, 250, 0.14);
+    }
+
+    html.dark .community-loading-core {
+      background: #111a2c;
+      box-shadow: 0 18px 40px rgba(2, 6, 23, 0.36);
+    }
+
+    html.dark .community-loading-label {
+      color: #dbe4f3;
+    }
+
+    html.dark .community-title p {
+      border-left-color: rgba(148, 163, 184, 0.25);
+    }
+
+    html.dark .community-title-icon::after {
+      background: rgba(148, 163, 184, 0.25);
+    }
+
+    .community-page::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 20vw;
+      width: 1px;
+      background: #dbe5f1;
+      pointer-events: none;
+      transition: opacity 0.24s ease;
+    }
+
+    .community-page.is-collapsed::before {
+      opacity: 0;
+    }
+
+    html.dark .community-page::before {
+      background: rgba(148, 163, 184, 0.18);
+    }
+
+    body.community-page-body > footer {
+      margin-top: 0 !important;
+    }
+
+    html.dark .community-empty {
+      border-color: rgba(148, 163, 184, 0.18);
+      background: rgba(15, 23, 42, 0.65);
+      color: #e2e8f0;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+    }
+
+    html.dark .community-empty p {
+      color: rgba(148, 163, 184, 0.9);
+    }
+
+    @media (max-width: 1500px) {
+      .community-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 1200px) {
+      .community-shell {
+        grid-template-columns: 280px minmax(0, 1fr);
+      }
+
+      .community-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .community-page {
+        padding: 14px 18px 40px;
+      }
+
+      .community-page::before {
+        display: none;
+      }
+
+      .community-shell {
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        gap: 14px;
+      }
+
+      .community-shell.is-collapsed {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .community-filters {
+        grid-column: auto;
+        order: 1;
+        position: static;
+        border-right: 0;
+        padding: 16px;
+        height: auto;
+        max-height: none;
+        overflow: visible;
+        width: 100%;
+        max-width: none !important;
+        background: #ffffff;
+        border: 1px solid #d7e0ea;
+        border-radius: 18px;
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
+      }
+
+      .community-shell.is-collapsed .community-filters {
+        width: 100%;
+        max-width: none !important;
+        padding: 16px;
+        overflow: visible;
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: none;
+      }
+
+      .community-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .community-content {
+        grid-column: auto;
+        order: 2;
+        padding: 0;
+        height: auto;
+        overflow: visible;
+        padding-right: 0;
+        padding-bottom: 0;
+        width: 100%;
+      }
+
+      .community-shell.is-collapsed .community-content {
+        grid-column: auto;
+        grid-row: auto;
+        padding-left: 0;
+        width: 100%;
+      }
+
+      .community-filters-body {
+        display: grid;
+        gap: 0;
+        max-height: none !important;
+        opacity: 1 !important;
+        overflow: visible;
+        margin-top: 0 !important;
+        transition: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+      #mobile-menu-btn {
+        display: inline-flex;
+      }
+
+      .topbar-nav {
+        display: none;
+      }
+
+      .topbar-inner {
+        padding: 0 16px;
+      }
+
+      header nav aside {
+        width: min(82vw, 320px) !important;
+      }
+
+      .topbar-left {
+        gap: 14px;
+      }
+
+      .topbar-actions {
+        gap: 12px;
+      }
+
+      .header-action-row {
+        gap: 10px !important;
+      }
+
+      .community-page {
+        padding: 12px 16px 36px;
+      }
+
+      .community-shell,
+      .community-shell.is-collapsed {
+        gap: 16px;
+      }
+
+      .community-filters,
+      .community-shell.is-collapsed .community-filters {
+        padding: 14px;
+        border-radius: 16px;
+      }
+
+      .community-filter-row {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .community-head {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .community-title {
+        width: 100%;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .community-title-toggle {
+        display: none;
+      }
+
+      .community-title-copy {
+        display: grid;
+        gap: 6px;
+        width: 100%;
+      }
+
+      .community-title p {
+        font-size: 15px;
+        padding-left: 0;
+        border-left: 0;
+      }
+
+      .community-result-hint {
+        font-size: 11px;
+      }
+
+      .community-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+      }
+
+      .community-card {
+        aspect-ratio: 1.02;
+      }
+
+      .community-card-content {
+        padding: 14px 14px 13px;
+      }
+
+      .community-card-content h3 {
+        font-size: 14px;
+      }
+
+      .community-card-meta {
+        font-size: 11px;
+      }
+
+      .community-card-meta span {
+        min-width: 0;
+      }
+
+      .community-loading {
+        min-height: 320px;
+        padding: 12px 0 4px;
+      }
+
+      .community-loading-rings {
+        width: 270px;
+        height: 270px;
+      }
+
+      .community-loading-ring--middle {
+        inset: 46px;
+      }
+
+      .community-loading-ring--inner {
+        inset: 92px;
+      }
+
+      .community-loading-core {
+        width: 96px;
+        height: 96px;
+        padding: 12px;
+      }
+
+      .community-loading-icon {
+        width: 28px;
+        height: 28px;
+        margin-bottom: 6px;
+      }
+
+      .community-loading-label {
+        font-size: 12px;
+        line-height: 1.2;
+      }
+
+      .community-dropdown-menu {
+        max-height: min(260px, 48vh);
+      }
+
+      html.dark .community-filters {
+        background: #111827;
+        border-color: rgba(148, 163, 184, 0.24);
+        box-shadow: 0 16px 32px rgba(2, 6, 23, 0.28);
+      }
+
+      footer form>div {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+      }
+
+      footer form button[type="submit"] {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .topbar-actions {
+        gap: 10px;
+      }
+
+      .header-action-row {
+        gap: 8px !important;
+      }
+
+      #community-feedback-btn {
+        display: none !important;
+      }
+
+      .community-title {
+        gap: 8px;
+        margin-top: 2px;
+      }
+
+      .community-title h1 {
+        font-size: 17px;
+        white-space: normal;
+      }
+
+      .community-title p {
+        font-size: 13px;
+        line-height: 1.3;
+      }
+
+      .community-filter-title {
+        font-size: 12px;
+      }
+
+      .community-filter-group label {
+        font-size: 14px;
+      }
+
+      .community-select,
+      .community-dropdown-trigger {
+        min-height: 44px;
+        font-size: 13px;
+      }
+
+      .community-load-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="css/responsive.css?v=20260331w" />
+</head>
+<body class="community-page-body __className_fff05e bg-background text-foreground">
+  <header class="w-full border-b bottom-2 border-border/40 z-50 sticky top-0 bg-background backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <nav class="lg:px-20 px-5 py-3 mx-auto">
+      <div class="flex justify-evenly w-full">
+        <div class="hidden md:flex gap-10 items-center justify-start flex-1">
+          <a href="/">
+            <div class="flex justify-center items-center leading-5 font-bold text-xl">
+              <img alt="logo" loading="lazy" width="100" height="50" decoding="async" class="dark:hidden" style="color:transparent" srcset="images/image_3.png 1x, images/image.png 2x" src="images/image.png">
+              <img alt="logo" loading="lazy" width="100" height="50" decoding="async" class="hidden dark:flex" style="color:transparent" srcset="images/image_4.png 1x, images/image_2.png 2x" src="images/image_2.png">
+            </div>
+          </a>
+        </div>
+        <div class="hidden md:flex items-center justify-center">
+          <ul class="flex gap-8 items-center text-sm">
+            <li class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer text-foreground"><a href="/">Home</a></li>
+            <li id="community-dashboard-nav" class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer text-foreground" style="display:none;"><a href="/dashboard.html">Dashboard</a></li>
+          </ul>
+        </div>
+        <div class="md:hidden flex items-center gap-3 flex-1">
+          <a href="/" class="flex items-center" aria-label="Yatrify home">
+            <img alt="logo" loading="lazy" width="92" height="36" decoding="async" class="dark:hidden" style="color:transparent" srcset="images/image_3.png 1x, images/image.png 2x" src="images/image.png">
+            <img alt="logo" loading="lazy" width="92" height="36" decoding="async" class="hidden dark:flex" style="color:transparent" srcset="images/image_4.png 1x, images/image_2.png 2x" src="images/image_2.png">
+          </a>
+          <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary underline-offset-4 hover:underline h-10 px-4 py-2 text-xl" aria-label="open side menu">
+            <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+              <path d="M904 160H120c-4.4 0-8 3.6-8 8v64c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-64c0-4.4-3.6-8-8-8zm0 624H120c-4.4 0-8 3.6-8 8v64c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-64c0-4.4-3.6-8-8-8zm0-312H120c-4.4 0-8 3.6-8 8v64c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-64c0-4.4-3.6-8-8-8z"></path>
+            </svg>
+          </button>
+          <aside class="fixed top-0 z-[100] bg-background w-[50%] border-r-2 border-neutral-200 h-full ease-in-out duration-700 left-[-100%] flex flex-col gap-2 min-h-[100svh]">
+            <div class="flex justify-between p-2">
+              <a href="/"><div class="flex flex-col leading-5 font-bold text-md p-1">
+                <img alt="logo" loading="lazy" width="100" height="50" decoding="async" class="dark:hidden" style="color:transparent" srcset="images/image_3.png 1x, images/image.png 2x" src="images/image.png">
+                <img alt="logo" loading="lazy" width="100" height="50" decoding="async" class="hidden dark:flex" style="color:transparent" srcset="images/image_4.png 1x, images/image_2.png 2x" src="images/image_2.png">
+              </div></a>
+              <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary underline-offset-4 hover:underline h-10 px-4 py-2 text-xl" aria-label="close menu">
+                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" fill-rule="evenodd" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M799.855 166.312c.023.007.043.018.084.059l57.69 57.69c.041.041.052.06.059.084a.118.118 0 0 1 0 .069c-.007.023-.018.042-.059.083L569.926 512l287.703 287.703c.041.04.052.06.059.083a.118.118 0 0 1 0 .07c-.007.022-.018.042-.059.083l-57.69 57.69c-.041.041-.06.052-.084.059a.118.118 0 0 1-.069 0c-.023-.007-.042-.018-.083-.059L512 569.926 224.297 857.629c-.04.041-.06.052-.083.059a.118.118 0 0 1-.07 0c-.022-.007-.042-.018-.083-.059l-57.69-57.69c-.041-.041-.052-.06-.059-.084a.118.118 0 0 1 0-.069c.007-.023.018-.042.059-.083L454.073 512 166.371 224.297c-.041-.04-.052-.06-.059-.083a.118.118 0 0 1 0-.07c.007-.022.018-.042.059-.083l57.69-57.69c.041-.041.06-.052.084-.059a.118.118 0 0 1 .069 0c.023.007.042.018.083.059L512 454.073l287.703-287.702c.04-.041.06-.052.083-.059a.118.118 0 0 1 .07 0Z"></path></svg>
+              </button>
+            </div>
+            <ul class="w-full flex flex-col gap-7 justify-center items-start p-5 text-sm font-medium">
+              <li class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer text-foreground"><a href="/">Home</a></li>
+              <li id="community-mobile-dashboard-nav" class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer text-foreground" style="display:none;"><a href="/dashboard.html">Dashboard</a></li>
+              <li id="community-mobile-signin-nav" class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer text-foreground"><a href="/sign-in.html">Sign in</a></li>
+            </ul>
+          </aside>
+        </div>
+        <div class="flex gap-5 justify-end items-center flex-1 header-action-row" style="position:relative;z-index:10005;">
+          <span id="community-credits-wrap" class="header-credits" style="display:none;">Credits <span id="credits-count">0</span></span>
+          <button id="community-feedback-btn" type="button" class="icon-btn" title="Feedback" aria-label="Feedback" style="display:none;">
+            <i data-lucide="message-circle" style="width:18px;height:18px;"></i>
+          </button>
+          <button id="theme-toggle-btn" class="theme-toggle" title="Toggle theme">
+            <svg id="sun-icon" class="dark:hidden lucide lucide-sun-icon lucide-sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg><svg id="moon-icon" class="hidden dark:block lucide lucide-moon-icon lucide-moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+          </button>
+          <a id="community-signin-link" class="header-signin-link" href="/sign-in.html">Sign in</a>
+          <div id="user-profile" style="display:none;position:relative;z-index:10002;">
+            <button id="profile-btn" type="button" style="border:0;background:transparent;padding:0;cursor:pointer;pointer-events:auto;border-radius:50%;overflow:hidden;width:34px;height:34px;display:flex;align-items:center;justify-content:center;">
+              <img id="user-avatar" alt="user" style="width:34px;height:34px;border-radius:50%;object-fit:cover;" />
+            </button>
+            <div id="profile-menu" style="display:none;position:absolute;right:0;top:50px;min-width:240px;background:#fff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,0.15);padding:12px;z-index:10001;">
+              <div style="padding:12px 14px;border-bottom:1px solid #f3f4f6;margin-bottom:8px;">
+                <div id="profile-name" style="font-weight:700;font-size:15px;color:#111;letter-spacing:-0.3px;"></div>
+                <div id="profile-email" style="font-size:12px;color:#6b7280;word-break:break-all;margin-top:4px;"></div>
+              </div>
+              <button id="manage-account" type="button" style="width:100%;text-align:left;border:0;background:transparent;padding:10px 12px;cursor:pointer;font-size:14px;font-weight:500;color:#374151;border-radius:8px;transition:all 0.2s ease;">&#9881;&#65039; Manage account</button>
+              <button id="signout-btn" type="button" style="width:100%;text-align:left;border:0;background:transparent;padding:10px 12px;cursor:pointer;font-size:14px;font-weight:500;color:#dc2626;border-radius:8px;margin-top:4px;transition:all 0.2s ease;">&#128682; Sign out</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+  <main class="page community-page">
+    <div class="community-shell">
+      <aside class="community-filters">
+        <div class="community-filter-toggle">
+          <span class="community-filter-title">Filters</span>
+        </div>
+        <div id="community-filters-body" class="community-filters-body">
+        <div class="community-filter-group">
+          <label for="community-month">Month &amp; Year</label>
+          <div class="community-filter-row">
+            <select id="community-month" class="community-select">
+              <option value="">Month</option>
+              <option>January</option>
+              <option>February</option>
+              <option>March</option>
+              <option>April</option>
+              <option>May</option>
+              <option>June</option>
+              <option>July</option>
+              <option>August</option>
+              <option>September</option>
+              <option>October</option>
+              <option>November</option>
+              <option>December</option>
+            </select>
+            <select id="community-year" class="community-select">
+              <option value="">Year</option>
+              <option>2025</option>
+              <option>2026</option>
+              <option>2027</option>
+              <option>2028</option>
+              <option>2029</option>
+              <option>2030</option>
+            </select>
+          </div>
+        </div>
+        <div class="community-filter-group">
+          <label for="community-theme">Themes</label>
+          <select id="community-theme" class="community-select" hidden>
+            <option value="">Select themes</option>
+            <option>Historical Sites and Landmarks</option>
+            <option>Adventure</option>
+            <option>Local Culture</option>
+            <option>Beaches</option>
+            <option>Hills, Nature and Wildlife</option>
+            <option>Nightlife</option>
+            <option>For the Gram</option>
+            <option>Shopping &amp; Relaxation</option>
+          </select>
+          <div id="community-theme-dropdown" class="community-dropdown">
+            <button id="community-theme-trigger" class="community-dropdown-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+              <span id="community-theme-label" class="community-dropdown-label">Select themes</span>
+              <span class="community-dropdown-caret" aria-hidden="true"></span>
+            </button>
+            <div id="community-theme-menu" class="community-dropdown-menu" role="listbox" aria-labelledby="community-theme-trigger">
+              <button type="button" class="community-dropdown-option" data-theme-value="" aria-selected="true">Select themes</button>
+              <button type="button" class="community-dropdown-option" data-theme-value="Historical Sites and Landmarks" aria-selected="false">Historical Sites and Landmarks</button>
+              <button type="button" class="community-dropdown-option" data-theme-value="Adventure" aria-selected="false">Adventure</button>
+              <button type="button" class="community-dropdown-option" data-theme-value="Local Culture" aria-selected="false">Local Culture</button>
+              <button type="button" class="community-dropdown-option" data-theme-value="Beaches" aria-selected="false">Beaches</button>
+              <button type="button" class="community-dropdown-option" data-theme-value="Hills, Nature and Wildlife" aria-selected="false">Hills, Nature and Wildlife</button>
+              <button type="button" class="community-dropdown-option" data-theme-value="Nightlife" aria-selected="false">Nightlife</button>
+              <button type="button" class="community-dropdown-option" data-theme-value="For the Gram" aria-selected="false">For the Gram</button>
+              <button type="button" class="community-dropdown-option" data-theme-value="Shopping &amp; Relaxation" aria-selected="false">Shopping &amp; Relaxation</button>
+            </div>
+          </div>
+        </div>
+        </div>
+      </aside>
+
+      <section class="community-content is-loading">
+        <div class="community-head">
+          <div class="community-title">
+            <button id="community-panel-toggle" class="community-title-icon community-title-toggle" type="button" aria-label="Toggle filters" aria-expanded="true">
+              <i data-lucide="panel-left" style="width:22px;height:22px;"></i>
+            </button>
+            <div class="community-title-copy">
+              <h1>Community Plans</h1>
+              <p>Plans shared by other fellow travellers</p>
+            </div>
+          </div>
+        </div>
+
+        <div id="community-result-hint" class="community-result-hint" aria-live="polite"></div>
+
+        <div id="community-loading" class="community-loading" aria-live="polite" aria-label="Loading plans">
+          <div class="community-loading-rings">
+            <span class="community-loading-ring community-loading-ring--outer" aria-hidden="true"></span>
+            <span class="community-loading-ring community-loading-ring--middle" aria-hidden="true"></span>
+            <span class="community-loading-ring community-loading-ring--inner" aria-hidden="true"></span>
+            <div class="community-loading-core">
+              <div>
+                <i data-lucide="map-pin-search" class="community-loading-icon" aria-hidden="true"></i>
+                <div class="community-loading-label">Loading<br>Plans</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="community-plan-grid" class="community-grid">
+          <a class="community-card" href="/generated-plan.html?mode=community-readonly&amp;planId=demo-haridwar">
+            <img src="https://incredible-okapi-807.convex.cloud/api/storage/5b1f18eb-1a05-4a82-a7e6-8854f9ee4b28" alt="Haridwar, Uttarakhand" loading="lazy" />
+            <div class="community-card-content">
+              <h3>Haridwar, Uttarakhand</h3>
+              <div class="community-card-meta">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3" y="4.5" width="18" height="16" rx="2"></rect>
+                  <path d="M8 3v3M16 3v3M3 9h18"></path>
+                </svg>
+                <span>Jun 1, 2025 - Jun 5, 2025</span>
+              </div>
+            </div>
+          </a>
+          <a class="community-card" href="/generated-plan.html?mode=community-readonly&amp;planId=demo-kodaikanal">
+            <img src="https://incredible-okapi-807.convex.cloud/api/storage/ccce63dd-308d-4bde-844a-da2ec260b8dc" alt="Kodaikanal, Tamil Nadu" loading="lazy" />
+            <div class="community-card-content">
+              <h3>Kodaikanal, Tamil Nadu</h3>
+              <div class="community-card-meta">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3" y="4.5" width="18" height="16" rx="2"></rect>
+                  <path d="M8 3v3M16 3v3M3 9h18"></path>
+                </svg>
+                <span>Dec 1, 2025 - Dec 2, 2025</span>
+              </div>
+            </div>
+          </a>
+          <a class="community-card" href="/generated-plan.html?mode=community-readonly&amp;planId=demo-cairo">
+            <img src="https://incredible-okapi-807.convex.cloud/api/storage/38b7bc37-2533-4ab6-bf46-d399be46704c" alt="Cairo, Egypt | Luxor, Egypt" loading="lazy" />
+            <div class="community-card-content">
+              <h3>Cairo, Egypt | Luxor, Egypt</h3>
+              <div class="community-card-meta">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3" y="4.5" width="18" height="16" rx="2"></rect>
+                  <path d="M8 3v3M16 3v3M3 9h18"></path>
+                </svg>
+                <span>Jun 12, 2025 - Jun 27, 2025</span>
+              </div>
+            </div>
+          </a>
+          <a class="community-card" href="/generated-plan.html?mode=community-readonly&amp;planId=demo-japan">
+            <img src="https://incredible-okapi-807.convex.cloud/api/storage/2a48443c-fa38-4857-a4ba-c3b54e121e74" alt="Japan | South Korea" loading="lazy" />
+            <div class="community-card-content">
+              <h3>Japan | South Korea</h3>
+              <div class="community-card-meta">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3" y="4.5" width="18" height="16" rx="2"></rect>
+                  <path d="M8 3v3M16 3v3M3 9h18"></path>
+                </svg>
+                <span>Nov 3, 2025 - Nov 18, 2025</span>
+              </div>
+            </div>
+          </a>
+          <a class="community-card" href="/generated-plan.html?mode=community-readonly&amp;planId=demo-buenos-aires">
+            <img src="https://incredible-okapi-807.convex.cloud/api/storage/51bf7561-0fc2-40bf-be21-0e0c072f2704" alt="Buenos Aires, Argentina" loading="lazy" />
+            <div class="community-card-content">
+              <h3>Buenos Aires, Argentina</h3>
+              <div class="community-card-meta">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3" y="4.5" width="18" height="16" rx="2"></rect>
+                  <path d="M8 3v3M16 3v3M3 9h18"></path>
+                </svg>
+                <span>Aug 5, 2025 - Aug 22, 2025</span>
+              </div>
+            </div>
+          </a>
+          <a class="community-card" href="/generated-plan.html?mode=community-readonly&amp;planId=demo-europe">
+            <img src="https://incredible-okapi-807.convex.cloud/api/storage/7456c6a9-303c-4c5a-b14d-c49b16c6e276" alt="Spain | France | Italy" loading="lazy" />
+            <div class="community-card-content">
+              <h3>Spain | France | Italy</h3>
+              <div class="community-card-meta">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3" y="4.5" width="18" height="16" rx="2"></rect>
+                  <path d="M8 3v3M16 3v3M3 9h18"></path>
+                </svg>
+                <span>Jun 15, 2025 - Jun 30, 2025</span>
+              </div>
+            </div>
+          </a>
+          <a class="community-card" href="/generated-plan.html?mode=community-readonly&amp;planId=demo-south-africa">
+            <img src="https://incredible-okapi-807.convex.cloud/api/storage/2a48443c-fa38-4857-a4ba-c3b54e121e74" alt="South Africa | Zimbabwe" loading="lazy" />
+            <div class="community-card-content">
+              <h3>South Africa | Zimbabwe</h3>
+              <div class="community-card-meta">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3" y="4.5" width="18" height="16" rx="2"></rect>
+                  <path d="M8 3v3M16 3v3M3 9h18"></path>
+                </svg>
+                <span>Jul 10, 2025 - Jul 25, 2025</span>
+              </div>
+            </div>
+          </a>
+          <a class="community-card" href="/generated-plan.html?mode=community-readonly&amp;planId=demo-nz">
+            <img src="https://incredible-okapi-807.convex.cloud/api/storage/38b7bc37-2533-4ab6-bf46-d399be46704c" alt="New Zealand | Bora-Bora | Fiji" loading="lazy" />
+            <div class="community-card-content">
+              <h3>New Zealand | Bora-Bora</h3>
+              <div class="community-card-meta">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3" y="4.5" width="18" height="16" rx="2"></rect>
+                  <path d="M8 3v3M16 3v3M3 9h18"></path>
+                </svg>
+                <span>Feb 5, 2026 - Feb 20, 2026</span>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <div class="community-load">
+          <button id="community-load-more" class="community-load-btn" type="button">Load More</button>
+        </div>
+      </section>
+    </div>
+  </main>
+  <footer class="py-5 mt-10 bg-blue-50 dark:bg-slate-900 dark:text-gray-200 relative z-[1000]">
+    <div class="lg:px-20 px-5 py-2 grid grid-cols-4 justify-between gap-10 lg:grid-cols-6 lg:text-left">
+      <div class="col-span-4 flex w-full flex-col gap-6 lg:col-span-2">
+        <div class="flex items-center gap-2 lg:justify-start">
+          <div class="hidden md:flex gap-10 items-center justify-start flex-1">
+            <a href="/">
+              <div class="flex justify-center items-center leading-5 font-bold text-xl">
+                <img alt="logo" loading="lazy" width="100" height="50" decoding="async" class="dark:hidden" src="/images/image.png" />
+                <img alt="logo" loading="lazy" width="100" height="50" decoding="async" class="hidden dark:block" src="/images/image_2.png" />
+              </div>
+            </a>
+          </div>
+        </div>
+        <p class="text-muted-foreground dark:text-gray-400">Your perfect trip, built for you. Effortlessly plan personalized itineraries that match your travel style.</p>
+        <ul class="flex items-center space-x-6">
+          <li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300">
+            <a href="#">
+              <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                <path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"></path>
+              </svg>
+            </a>
+          </li>
+          <li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300">
+            <a href="#">
+              <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                <path d="M504 256C504 119 393 8 256 8S8 119 8 256c0 123.78 90.69 226.38 209.25 245V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.28c-30.8 0-40.41 19.12-40.41 38.73V256h68.78l-11 71.69h-57.78V501C413.31 482.38 504 379.78 504 256z"></path>
+              </svg>
+            </a>
+          </li>
+          <li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300">
+            <a href="#">
+              <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                <path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8l165-188.5L26.7 48H172.3l100.7 132.1L389.2 48zm-24.8 373.8h39.1L151.1 88.1h-42l255.3 333.7z"></path>
+              </svg>
+            </a>
+          </li>
+          <li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300">
+            <a href="#">
+              <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                <path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"></path>
+              </svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="col-span-2 md:col-span-1">
+        <h3 class="mb-5 font-medium">Support</h3>
+        <ul class="space-y-4 text-sm text-muted-foreground dark:text-gray-400">
+          <li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/help-center.html">Help Center</a></li>
+          <li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/contact-us.html">Contact Us</a></li>
+          <li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/privacy-policy.html">Privacy Policy</a></li>
+          <li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/terms-of-service.html">Terms of Service</a></li>
+        </ul>
+      </div>
+      <div class="col-span-2 md:col-span-1">
+        <h3 class="mb-5 font-medium">Company</h3>
+        <ul class="space-y-4 text-sm text-muted-foreground dark:text-gray-400">
+          <li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/about-us.html">About Us</a></li>
+          <li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/partners.html">Partners</a></li>
+        </ul>
+      </div>
+      <div class="col-span-4 md:col-span-2">
+        <h3 class="mb-2 font-medium">Newsletter</h3>
+        <form class="grid gap-1">
+          <div class="flex justify-evenly w-full space-x-2">
+            <input type="email" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-slate-800 dark:border-slate-700" data-slot="input" placeholder="Email" required="" value="" />
+            <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 px-4 py-2 dark:bg-slate-700 dark:hover:bg-slate-600" data-slot="button" type="submit">Subscribe</button>
+          </div>
+        </form>
+        <p class="mt-2 ml-1 text-xs font-medium text-muted-foreground dark:text-gray-400">By submitting, you agree to our<a href="/privacy-policy.html" class="ml-1 text-primary dark:text-blue-400 hover:underline">Privacy Policy</a></p>
+      </div>
+    </div>
+  </footer>
+  <script src="/js/clerk-loader.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/plan-service.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script>
+    (function () {
+      var profileBtn = document.getElementById('profile-btn');
+      var profileMenu = document.getElementById('profile-menu');
+      var nameEl = document.getElementById('profile-name');
+      var emailEl = document.getElementById('profile-email');
+      var manageBtn = document.getElementById('manage-account');
+      var signOutBtn = document.getElementById('signout-btn');
+      var avatar = document.getElementById('user-avatar');
+      var creditsCount = document.getElementById('credits-count');
+      var creditsWrap = document.getElementById('community-credits-wrap');
+      var feedbackBtn = document.getElementById('community-feedback-btn');
+      var signInLink = document.getElementById('community-signin-link');
+      var desktopDashboardNav = document.getElementById('community-dashboard-nav');
+      var mobileDashboardNav = document.getElementById('community-mobile-dashboard-nav');
+      var mobileSignInNav = document.getElementById('community-mobile-signin-nav');
+      var profileWrap = document.getElementById('user-profile');
+      var themeToggle = document.getElementById('theme-toggle-btn');
+      var clerkReady = false;
+
+      function closeMenu() {
+        if (profileMenu) profileMenu.style.display = 'none';
+      }
+
+      if (profileBtn) {
+        profileBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          if (!(window.Clerk && window.Clerk.user)) {
+            window.location.href = '/sign-in.html';
+            return;
+          }
+          if (profileMenu && profileMenu.style.display === 'none') {
+            profileMenu.style.display = 'block';
+          } else {
+            closeMenu();
+          }
+        });
+      }
+
+      document.addEventListener('click', closeMenu);
+
+      var mobileMenuButton = document.querySelector('button[aria-label="open side menu"]');
+      var mobileMenuDrawer = mobileMenuButton ? mobileMenuButton.parentElement.querySelector('aside') : null;
+      var mobileMenuCloseBtn = mobileMenuDrawer ? mobileMenuDrawer.querySelector('button[aria-label="close menu"]') : null;
+
+      function openMobileMenu() {
+        if (!mobileMenuDrawer) return;
+        mobileMenuDrawer.style.left = '0';
+        mobileMenuDrawer.dataset.state = 'open';
+      }
+
+      function closeMobileMenu() {
+        if (!mobileMenuDrawer) return;
+        mobileMenuDrawer.style.left = '-100%';
+        mobileMenuDrawer.dataset.state = 'closed';
+      }
+
+      if (mobileMenuButton) {
+        mobileMenuButton.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          openMobileMenu();
+        });
+      }
+
+      if (mobileMenuCloseBtn) {
+        mobileMenuCloseBtn.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          closeMobileMenu();
+        });
+      }
+
+      document.addEventListener('click', function (e) {
+        if (!mobileMenuDrawer || mobileMenuDrawer.dataset.state !== 'open') return;
+        if (mobileMenuDrawer.contains(e.target)) return;
+        if (mobileMenuButton && mobileMenuButton.contains(e.target)) return;
+        closeMobileMenu();
+      });
+
+      function buildInitialsAvatar(initial) {
+        var safe = String(initial || "U").trim().charAt(0) || "U";
+        var svg =
+          '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">' +
+          '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">' +
+          '<stop offset="0%" stop-color="#60a5fa"/><stop offset="100%" stop-color="#2563eb"/>' +
+          '</linearGradient></defs>' +
+          '<rect width="80" height="80" rx="40" fill="url(#g)"/>' +
+          '<text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-family="ui-sans-serif,system-ui" font-size="34" font-weight="700" fill="#fff">' +
+          safe.toUpperCase() +
+          '</text></svg>';
+        return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+      }
+
+      function setHeaderAuthState(isAuthenticated) {
+        if (desktopDashboardNav) desktopDashboardNav.style.display = isAuthenticated ? '' : 'none';
+        if (mobileDashboardNav) mobileDashboardNav.style.display = isAuthenticated ? '' : 'none';
+        if (mobileSignInNav) mobileSignInNav.style.display = isAuthenticated ? 'none' : '';
+        if (creditsWrap) creditsWrap.style.display = isAuthenticated ? 'inline-block' : 'none';
+        if (feedbackBtn) feedbackBtn.style.display = isAuthenticated ? 'inline-flex' : 'none';
+        if (signInLink) signInLink.style.display = isAuthenticated ? 'none' : 'inline-flex';
+        if (profileWrap) profileWrap.style.display = isAuthenticated ? 'inline-flex' : 'none';
+      }
+
+      function updateUI() {
+        if (!window.Clerk) {
+          setHeaderAuthState(false);
+          return;
+        }
+        if (window.Clerk.user) {
+          setHeaderAuthState(true);
+          var fullName = [window.Clerk.user.firstName, window.Clerk.user.lastName].filter(Boolean).join(' ').trim();
+          var initial = fullName ? fullName.charAt(0) : "U";
+          if (avatar) {
+            avatar.onerror = function () {
+              avatar.onerror = null;
+              avatar.src = buildInitialsAvatar(initial);
+            };
+            avatar.src = window.Clerk.user.imageUrl || buildInitialsAvatar(initial);
+          }
+          if (nameEl) {
+            nameEl.textContent = fullName || 'Account';
+          }
+          if (emailEl) {
+            emailEl.textContent = window.Clerk.user.primaryEmailAddress ? window.Clerk.user.primaryEmailAddress.emailAddress : '';
+          }
+          loadCredits();
+        } else if (clerkReady) {
+          setHeaderAuthState(false);
+          if (avatar) avatar.src = buildInitialsAvatar("U");
+          if (nameEl) nameEl.textContent = "";
+          if (emailEl) emailEl.textContent = "";
+          closeMenu();
+        }
+      }
+
+      function bindClerk(clerk) {
+        if (!clerk) return;
+        clerkReady = true;
+        updateUI();
+        if (typeof clerk.addListener === "function" && !clerk.__communityHeaderBound) {
+          clerk.__communityHeaderBound = true;
+          clerk.addListener(function () {
+            updateUI();
+          });
+        }
+      }
+
+      function ensureClerkLoaded() {
+        if (window.Clerk) {
+          return window.Clerk.loaded ? Promise.resolve(window.Clerk) : window.Clerk.load().then(function () { return window.Clerk; });
+        }
+        if (typeof window.__loadYatrifyClerk === "function") {
+          return window.__loadYatrifyClerk(true).then(function (clerk) {
+            if (!clerk) throw new Error("Clerk SDK not available");
+            if (typeof clerk.load === "function" && !clerk.loaded) {
+              return clerk.load().then(function () { return window.Clerk || clerk; });
+            }
+            return window.Clerk || clerk;
+          });
+        }
+        return Promise.reject(new Error("Clerk SDK not available"));
+      }
+
+      function loadCredits() {
+        if (!creditsCount || !window.YatrifyPlanService) return;
+        window.YatrifyPlanService.getUserMe().then(function (payload) {
+          var credits = Number(payload && payload.credits);
+          creditsCount.textContent = Number.isFinite(credits) ? String(credits) : "-";
+        }).catch(function () {
+          creditsCount.textContent = "-";
+        });
+      }
+
+      function renderLucideIcons() {
+        if (!window.lucide || typeof window.lucide.createIcons !== "function") return;
+        window.lucide.createIcons({
+          attrs: { "stroke-width": "2.1", "stroke-linecap": "round", "stroke-linejoin": "round" }
+        });
+      }
+
+      if (manageBtn) {
+        manageBtn.addEventListener('click', function () {
+          if (window.Clerk && typeof window.Clerk.openUserProfile === "function") {
+            window.Clerk.openUserProfile();
+          }
+        });
+      }
+
+      if (signOutBtn) {
+        signOutBtn.addEventListener('click', function () {
+          if (window.Clerk && typeof window.Clerk.signOut === "function") {
+            window.Clerk.signOut().then(function () {
+              window.location.href = '/';
+            }).catch(function () {
+              window.location.reload();
+            });
+          }
+        });
+      }
+
+      if (themeToggle) {
+        themeToggle.addEventListener('click', function () {
+          var html = document.documentElement;
+          if (html.classList.contains('dark')) {
+            html.classList.remove('dark');
+            html.style.colorScheme = 'light';
+            localStorage.setItem('theme', 'light');
+          } else {
+            html.classList.add('dark');
+            html.style.colorScheme = 'dark';
+            localStorage.setItem('theme', 'dark');
+          }
+        });
+      }
+
+      var savedTheme = localStorage.getItem('theme') || 'light';
+      if (savedTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+        document.documentElement.style.colorScheme = 'dark';
+      }
+
+      window.addEventListener('load', function () {
+        ensureClerkLoaded().then(function (clerk) {
+          bindClerk(clerk);
+          renderLucideIcons();
+        }).catch(function () {
+          setHeaderAuthState(false);
+          renderLucideIcons();
+        });
+      });
+    })();
+  </script>
+  <script>
+    (function () {
+      var COMMUNITY_READONLY_MODE = "community-readonly";
+      var grid = document.getElementById("community-plan-grid");
+      if (!grid || !window.YatrifyPlanService) return;
+
+      var monthSelect = document.getElementById("community-month");
+      var yearSelect = document.getElementById("community-year");
+      var themeSelect = document.getElementById("community-theme");
+      var themeDropdown = document.getElementById("community-theme-dropdown");
+      var themeTrigger = document.getElementById("community-theme-trigger");
+      var themeLabel = document.getElementById("community-theme-label");
+      var themeMenu = document.getElementById("community-theme-menu");
+      var themeOptions = themeMenu ? Array.prototype.slice.call(themeMenu.querySelectorAll("[data-theme-value]")) : [];
+      var loadMoreBtn = document.getElementById("community-load-more");
+      var loadMoreWrap = loadMoreBtn ? loadMoreBtn.parentElement : null;
+      var hint = document.getElementById("community-result-hint");
+      var contentSection = document.querySelector(".community-content");
+      var shell = document.querySelector(".community-shell");
+      var page = document.querySelector(".community-page");
+      var panelToggle = document.getElementById("community-panel-toggle");
+      var desktopMq = window.matchMedia("(min-width: 1025px)");
+      var sidebarStorageKey = "communityPlansSidebarCollapsed";
+
+      var allPlans = [];
+      var pageSize = 8;
+      var visibleCount = pageSize;
+      var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+      function escapeHtml(value) {
+        return String(value || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      function parseDate(iso) {
+        if (!iso) return null;
+        var raw = String(iso || "").trim();
+        var dt = null;
+        if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+          var parts = raw.split("-").map(Number);
+          dt = new Date(parts[0], parts[1] - 1, parts[2]);
+        } else {
+          dt = new Date(raw);
+        }
+        if (Number.isNaN(dt.getTime())) return null;
+        return dt;
+      }
+
+      function formatDateLabel(iso) {
+        var dt = parseDate(iso);
+        if (!dt) return "";
+        return new Intl.DateTimeFormat("en-US", { day: "numeric", month: "short", year: "numeric" }).format(dt);
+      }
+
+      function cleanLocationPart(value) {
+        return String(value || "").replace(/\s+/g, " ").trim();
+      }
+
+      function parseDestinationParts(rawDestination) {
+        var raw = cleanLocationPart(rawDestination);
+        if (!raw) {
+          return { city: "", state: "", country: "" };
+        }
+        var parts = raw.split(",").map(function (part) {
+          return cleanLocationPart(part);
+        }).filter(Boolean);
+        if (!parts.length) {
+          return { city: "", state: "", country: "" };
+        }
+        if (parts.length === 1) {
+          return { city: parts[0], state: "", country: "" };
+        }
+        if (parts.length === 2) {
+          return { city: parts[0], state: "", country: parts[1] };
+        }
+        return {
+          city: parts[0],
+          state: parts.slice(1, parts.length - 1).join(", "),
+          country: parts[parts.length - 1]
+        };
+      }
+
+      function buildDestinationLabel(plan) {
+        var parsed = parseDestinationParts(plan && (plan.destination || plan.destination_name));
+        var city = cleanLocationPart((plan && (plan.destinationCity || plan.destination_city)) || parsed.city);
+        var state = cleanLocationPart((plan && (plan.destinationState || plan.destination_state)) || parsed.state);
+        var country = cleanLocationPart((plan && (plan.destinationCountry || plan.destination_country)) || parsed.country);
+
+        var cityKey = city.toLowerCase();
+        var stateKey = state.toLowerCase();
+        var countryKey = country.toLowerCase();
+        if (state && cityKey && stateKey === cityKey) state = "";
+        if (country && ((cityKey && countryKey === cityKey) || (stateKey && countryKey === stateKey))) country = "";
+
+        var parts = [city, state, country].filter(Boolean);
+        if (!parts.length) {
+          return cleanLocationPart(plan && plan.destination) || "Community Plan";
+        }
+        return parts.join(", ");
+      }
+
+      var calendarIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M8 3v3M16 3v3M3 9h18"></path></svg>';
+
+      function normalizeText(value) {
+        return String(value || "").trim().toLowerCase();
+      }
+
+      function getSelectedMonthIndex() {
+        var label = monthSelect ? String(monthSelect.value || "").trim() : "";
+        if (!label) return null;
+        var idx = monthNames.indexOf(label);
+        return idx >= 0 ? idx : null;
+      }
+
+      function getSelectedYear() {
+        var raw = yearSelect ? String(yearSelect.value || "").trim() : "";
+        if (!raw) return null;
+        var year = parseInt(raw, 10);
+        return Number.isFinite(year) ? year : null;
+      }
+
+      function getSelectedTheme() {
+        var raw = themeSelect ? String(themeSelect.value || "").trim() : "";
+        return normalizeText(raw);
+      }
+
+      function closeThemeDropdown() {
+        if (!themeDropdown || !themeTrigger) return;
+        themeDropdown.classList.remove("is-open");
+        themeTrigger.setAttribute("aria-expanded", "false");
+      }
+
+      function openThemeDropdown() {
+        if (!themeDropdown || !themeTrigger) return;
+        themeDropdown.classList.add("is-open");
+        themeTrigger.setAttribute("aria-expanded", "true");
+      }
+
+      function syncThemeDropdownUi() {
+        if (!themeSelect || !themeLabel || !themeOptions.length) return;
+        var current = String(themeSelect.value || "");
+        themeLabel.textContent = current || "Select themes";
+        themeOptions.forEach(function (option) {
+          option.setAttribute("aria-selected", option.getAttribute("data-theme-value") === current ? "true" : "false");
+        });
+      }
+
+      function getPlanStartDate(plan) {
+        var startDate = plan ? (plan.visitStartDate || plan.startDate) : null;
+        return parseDate(startDate);
+      }
+
+      function matchesTheme(plan, theme) {
+        if (!theme) return true;
+        var list = plan && Array.isArray(plan.themes) ? plan.themes : [];
+        return list.some(function (t) {
+          return normalizeText(t) === theme;
+        });
+      }
+
+      function applyFilters(plans) {
+        var monthIdx = getSelectedMonthIndex();
+        var year = getSelectedYear();
+        var theme = getSelectedTheme();
+
+        return (plans || []).filter(function (plan) {
+          if (theme && !matchesTheme(plan, theme)) return false;
+          if (monthIdx === null && year === null) return true;
+
+          var start = getPlanStartDate(plan);
+          if (!start) return false;
+          if (monthIdx !== null && start.getMonth() !== monthIdx) return false;
+          if (year !== null && start.getFullYear() !== year) return false;
+          return true;
+        });
+      }
+
+      function setLoadMoreVisible(isVisible) {
+        if (!loadMoreWrap) return;
+        loadMoreWrap.style.display = isVisible ? "flex" : "none";
+      }
+
+      function setHint(text) {
+        if (!hint) return;
+        hint.textContent = String(text || "");
+      }
+
+      function renderLoaderIcons() {
+        if (!window.lucide || typeof window.lucide.createIcons !== "function") return;
+        window.lucide.createIcons({
+          attrs: { "stroke-width": "2.1", "stroke-linecap": "round", "stroke-linejoin": "round" }
+        });
+      }
+
+      function setLoading(isLoading) {
+        if (!contentSection) return;
+        contentSection.classList.toggle("is-loading", !!isLoading);
+        if (isLoading) {
+          renderLoaderIcons();
+        }
+      }
+
+      function isSidebarCollapsed() {
+        return !!(shell && shell.classList.contains("is-collapsed"));
+      }
+
+      function applySidebarState(collapsed) {
+        if (!shell || !page || !panelToggle) return;
+        shell.classList.toggle("is-collapsed", !!collapsed);
+        page.classList.toggle("is-collapsed", !!collapsed);
+        panelToggle.setAttribute("aria-expanded", collapsed ? "false" : "true");
+        try {
+          localStorage.setItem(sidebarStorageKey, collapsed ? "1" : "0");
+        } catch (_) { }
+      }
+
+      function buildCardHtml(plan) {
+        var destination = buildDestinationLabel(plan) || "Community Plan";
+        var title = destination;
+        var imageSrc = plan.heroImageUrl || "";
+        if (!imageSrc) {
+          imageSrc = "https://source.unsplash.com/800x600/?" + encodeURIComponent(String(destination).replace(/\s+/g, ","));
+        }
+        var startDate = plan.visitStartDate || plan.startDate;
+        var endDate = plan.visitEndDate || plan.endDate;
+        var dateText = startDate && endDate ? formatDateLabel(startDate) + " - " + formatDateLabel(endDate) : "";
+        var href = "/generated-plan.html?mode=" + encodeURIComponent(COMMUNITY_READONLY_MODE) + "&planId=" + encodeURIComponent(plan.id);
+        return (
+          '<a href="' + href + '" class="community-card">' +
+          '<img src="' + escapeHtml(imageSrc) + '" alt="' + escapeHtml(destination) + '" loading="lazy" />' +
+          '<div class="community-card-content">' +
+          '<h3>' + escapeHtml(title) + '</h3>' +
+          (dateText ? '<div class="community-card-meta">' + calendarIcon + '<span>' + escapeHtml(dateText) + '</span></div>' : '') +
+          '</div></a>'
+        );
+      }
+
+      function renderCurrent() {
+        var filtered = applyFilters(allPlans);
+        var showing = filtered.slice(0, Math.max(0, visibleCount));
+
+        if (!filtered.length) {
+          setHint("0 plans");
+          setLoadMoreVisible(false);
+          grid.innerHTML = '<div class="community-empty"><strong>No plans found</strong><p>Try changing month, year, or theme filters.</p></div>';
+          return;
+        }
+
+        setHint(showing.length + " of " + filtered.length + " plans");
+        grid.innerHTML = showing.map(buildCardHtml).join("");
+        setLoadMoreVisible(filtered.length > showing.length);
+      }
+
+      function resetAndRender() {
+        visibleCount = pageSize;
+        renderCurrent();
+      }
+
+      if (monthSelect) monthSelect.addEventListener("change", function () {
+        resetAndRender();
+      });
+      if (yearSelect) yearSelect.addEventListener("change", function () {
+        resetAndRender();
+      });
+      if (themeSelect) themeSelect.addEventListener("change", function () {
+        resetAndRender();
+      });
+      if (themeTrigger && themeDropdown) {
+        themeTrigger.addEventListener("click", function () {
+          if (themeDropdown.classList.contains("is-open")) {
+            closeThemeDropdown();
+          } else {
+            openThemeDropdown();
+          }
+        });
+      }
+      if (themeOptions.length && themeSelect) {
+        themeOptions.forEach(function (option) {
+          option.addEventListener("click", function () {
+            themeSelect.value = option.getAttribute("data-theme-value") || "";
+            syncThemeDropdownUi();
+            closeThemeDropdown();
+            resetAndRender();
+          });
+        });
+      }
+      document.addEventListener("click", function (event) {
+        if (!themeDropdown || !themeDropdown.classList.contains("is-open")) return;
+        if (themeDropdown.contains(event.target)) return;
+        closeThemeDropdown();
+      });
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") closeThemeDropdown();
+      });
+
+      syncThemeDropdownUi();
+      if (loadMoreBtn) {
+        loadMoreBtn.addEventListener("click", function () {
+          visibleCount += pageSize;
+          renderCurrent();
+        });
+      }
+
+      setLoading(true);
+      setHint("Loading community plans...");
+      setLoadMoreVisible(false);
+
+      window.YatrifyPlanService.listCommunityPlans().then(function (payload) {
+        var list = Array.isArray(payload) ? payload : (payload && payload.plans ? payload.plans : []);
+        allPlans = list || [];
+        setLoading(false);
+        resetAndRender();
+      }).catch(function () {
+        allPlans = [];
+        setLoading(false);
+        setHint("Could not load community plans");
+        setLoadMoreVisible(false);
+        grid.innerHTML = '<div class="community-empty"><strong>Could not load plans</strong><p>Please try again in a bit.</p></div>';
+      });
+
+      if (panelToggle) {
+        panelToggle.addEventListener("click", function () {
+          if (!desktopMq.matches) return;
+          applySidebarState(!isSidebarCollapsed());
+          closeThemeDropdown();
+        });
+      }
+
+      if (desktopMq.addEventListener) {
+        desktopMq.addEventListener("change", function (event) {
+          if (!event.matches) {
+            applySidebarState(false);
+          }
+        });
+      } else if (desktopMq.addListener) {
+        desktopMq.addListener(function (event) {
+          if (!event.matches) {
+            applySidebarState(false);
+          }
+        });
+      }
+
+      if (desktopMq.matches) {
+        try {
+          applySidebarState(localStorage.getItem(sidebarStorageKey) === "1");
+        } catch (_) {
+          applySidebarState(false);
+        }
+      } else {
+        applySidebarState(false);
+      }
+    })();
+  </script>
+<script src="/js/credits-modal.js"></script>
+<script src="/js/page-transition.js"></script>
+<script src="/js/page-data-loader.js"></script>
+  <script src="/js/newsletter.js"></script>
+</body>
+</html>
+

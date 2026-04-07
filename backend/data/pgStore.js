@@ -137,6 +137,106 @@ export function createPgStore(pool) {
     }
   }
 
+  async function grantCreditsFromPurchase(userId, purchase = {}) {
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+
+      const creditsAdded = Math.max(0, Number(purchase.creditsAdded || 0));
+      const amountSubunits = Math.max(0, Number(purchase.amountSubunits || 0));
+      const insertReceipt = await client.query(
+        `INSERT INTO payment_receipts (
+           id,
+           user_id,
+           provider,
+           razorpay_order_id,
+           razorpay_payment_id,
+           razorpay_signature,
+           amount_subunits,
+           currency,
+           credits_added,
+           status,
+           method,
+           payload
+         )
+         VALUES ($1, $2, 'razorpay', $3, $4, $5, $6, $7, $8, $9, $10, $11::jsonb)
+         ON CONFLICT (razorpay_payment_id)
+         DO NOTHING
+         RETURNING id`,
+        [
+          randomUUID(),
+          userId,
+          String(purchase.razorpayOrderId || "").trim() || null,
+          String(purchase.razorpayPaymentId || "").trim() || null,
+          String(purchase.razorpaySignature || "").trim() || null,
+          amountSubunits,
+          String(purchase.currency || "INR").trim().toUpperCase() || "INR",
+          creditsAdded,
+          String(purchase.status || "").trim() || null,
+          String(purchase.method || "").trim() || null,
+          JSON.stringify(purchase.payload || {}),
+        ]
+      );
+
+      if (!insertReceipt.rows[0]) {
+        const existingUser = await client.query(
+          "SELECT credits FROM users WHERE id = $1 LIMIT 1",
+          [userId]
+        );
+        await client.query("ROLLBACK");
+        return {
+          duplicated: true,
+          credits: existingUser.rows[0] ? Number(existingUser.rows[0].credits || 0) : 0,
+        };
+      }
+
+      const updatedCredits = await client.query(
+        `UPDATE users
+           SET credits = credits + $2,
+               updated_at = NOW()
+         WHERE id = $1
+         RETURNING credits`,
+        [userId, creditsAdded]
+      );
+
+      if (!updatedCredits.rows[0]) {
+        throw new Error("User not found for credit purchase");
+      }
+
+      const creditTransactionId = randomUUID();
+      await client.query(
+        `INSERT INTO credit_transactions (id, user_id, plan_id, delta, reason)
+         VALUES ($1, $2, $3, $4, $5)`,
+        [
+          creditTransactionId,
+          userId,
+          null,
+          creditsAdded,
+          `purchase:${String(purchase.razorpayPaymentId || "").trim() || "unknown"}`,
+        ]
+      );
+
+      await client.query(
+        `UPDATE payment_receipts
+            SET credit_transaction_id = $2,
+                updated_at = NOW()
+          WHERE id = $1`,
+        [insertReceipt.rows[0].id, creditTransactionId]
+      );
+
+      await client.query("COMMIT");
+      return {
+        duplicated: false,
+        credits: Number(updatedCredits.rows[0].credits || 0),
+      };
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
   async function listPlansForUser(userId) {
     const result = await pool.query(
       `SELECT p.*,
@@ -611,6 +711,7 @@ export function createPgStore(pool) {
     getUserByClerkId,
     updateUserPlanTier,
     consumeCredits,
+    grantCreditsFromPurchase,
     listPlansForUser,
     getPlanAccess,
     getPlanById,

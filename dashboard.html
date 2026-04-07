@@ -131,9 +131,14 @@
       text-decoration: none;
       text-underline-offset: 4px;
     }
-
     .header-credits:hover {
-      text-decoration: underline;
+      background: rgba(15, 23, 42, 0.08);
+      color: #0f172a;
+    }
+
+    html.dark .header-credits:hover {
+      background: rgba(148, 163, 184, 0.16);
+      color: #ffffff;
     }
 
     .icon-btn {
@@ -946,7 +951,9 @@
   </style>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-  <link rel="preload" as="script" href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></head>
+  <link rel="preload" as="script" href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js">
+  <link rel="stylesheet" href="css/responsive.css?v=20260331o">
+</head>
 
 <body class="__className_fff05e">
   <header
@@ -971,13 +978,17 @@
               <a href="/">Home</a></li>
             <li
               class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer text-foreground">
-              <a href="/dashboard.html">Dashboard</a></li>
-            <li
-              class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer text-foreground">
-              <a href="/#public-plans">Community Plans</a></li>
+              <a href="/community-plans.html">Community Plans</a></li>
           </ul>
         </div>
-        <div class="md:hidden flex gap-6 flex-1">
+        <div class="md:hidden flex items-center gap-3 flex-1">
+          <a href="/" class="flex items-center" aria-label="Yatrify home">
+            <img alt="logo" loading="lazy" width="92" height="36" decoding="async" class="dark:hidden"
+              style="color:transparent" srcset="images/image_3.png 1x, images/image.png 2x" src="images/image.png">
+            <img alt="logo" loading="lazy" width="92" height="36" decoding="async" class="hidden dark:flex"
+              style="color:transparent" srcset="images/image_4.png 1x, images/image_2.png 2x"
+              src="images/image_2.png">
+          </a>
           <button
             class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary underline-offset-4 hover:underline h-10 px-4 py-2 text-xl"
             aria-label="open side menu">
@@ -1018,10 +1029,7 @@
                 <a href="/">Home</a></li>
               <li
                 class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer text-foreground">
-                <a href="/dashboard.html">Dashboard</a></li>
-              <li
-                class="hover:underline hover:underline-offset-4 transition-all duration-300 cursor-pointer text-foreground">
-                <a href="/#public-plans">Community Plans</a></li>
+                <a href="/community-plans.html">Community Plans</a></li>
             </ul>
           </aside>
         </div>
@@ -1196,16 +1204,16 @@
         <ul class="space-y-4 text-sm text-muted-foreground dark:text-gray-400">
           <li class="font-medium"><a
               class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
-              href="/help-center">Help Center</a></li>
+              href="/help-center.html">Help Center</a></li>
           <li class="font-medium"><a
               class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
-              href="/contact-us">Contact Us</a></li>
+              href="/contact-us.html">Contact Us</a></li>
           <li class="font-medium"><a
               class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
-              href="/privacy-policy">Privacy Policy</a></li>
+              href="/privacy-policy.html">Privacy Policy</a></li>
           <li class="font-medium"><a
               class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
-              href="/terms-of-service">Terms of Service</a></li>
+              href="/terms-of-service.html">Terms of Service</a></li>
         </ul>
       </div>
       <div class="col-span-2 md:col-span-1">
@@ -1213,10 +1221,10 @@
         <ul class="space-y-4 text-sm text-muted-foreground dark:text-gray-400">
           <li class="font-medium"><a
               class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
-              href="/about-us">About Us</a></li>
+              href="/about-us.html">About Us</a></li>
           <li class="font-medium"><a
               class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400"
-              href="/partners">Partners</a></li>
+              href="/partners.html">Partners</a></li>
         </ul>
       </div>
       <div class="col-span-4 md:col-span-2">
@@ -1229,7 +1237,7 @@
               data-slot="button" type="submit">Subscribe</button></div>
         </form>
         <p class="mt-2 ml-1 text-xs font-medium text-muted-foreground dark:text-gray-400">By submitting, you agree to
-          our<a href="/privacy-policy" class="ml-1 text-primary dark:text-blue-400 hover:underline">Privacy Policy</a>
+          our<a href="/privacy-policy.html" class="ml-1 text-primary dark:text-blue-400 hover:underline">Privacy Policy</a>
         </p>
       </div>
     </div>
@@ -1285,6 +1293,45 @@
       }
 
       document.addEventListener('click', closeMenu);
+
+      var mobileMenuButton = document.querySelector('button[aria-label="open side menu"]');
+      var mobileMenuDrawer = mobileMenuButton ? mobileMenuButton.parentElement.querySelector('aside') : null;
+      var mobileMenuCloseBtn = mobileMenuDrawer ? mobileMenuDrawer.querySelector('button[aria-label="close menu"]') : null;
+
+      function openMobileMenu() {
+        if (!mobileMenuDrawer) return;
+        mobileMenuDrawer.style.left = '0';
+        mobileMenuDrawer.dataset.state = 'open';
+      }
+
+      function closeMobileMenu() {
+        if (!mobileMenuDrawer) return;
+        mobileMenuDrawer.style.left = '-100%';
+        mobileMenuDrawer.dataset.state = 'closed';
+      }
+
+      if (mobileMenuButton) {
+        mobileMenuButton.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          openMobileMenu();
+        });
+      }
+
+      if (mobileMenuCloseBtn) {
+        mobileMenuCloseBtn.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          closeMobileMenu();
+        });
+      }
+
+      document.addEventListener('click', function (e) {
+        if (!mobileMenuDrawer || mobileMenuDrawer.dataset.state !== 'open') return;
+        if (mobileMenuDrawer.contains(e.target)) return;
+        if (mobileMenuButton && mobileMenuButton.contains(e.target)) return;
+        closeMobileMenu();
+      });
 
       if (manageBtn) {
         manageBtn.addEventListener('click', function () {
@@ -1777,4 +1824,7 @@
 </body>
 
 </html>
+
+
+
 

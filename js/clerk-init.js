@@ -53,8 +53,8 @@ window.addEventListener('load', function () {
   function applyRedirectToAuthLinks() {
     var signInLink = document.getElementById("signin-link");
     var signUpLink = document.getElementById("signup-link");
-    if (signInLink) signInLink.setAttribute("href", appendAuthRedirect("/sign-in/"));
-    if (signUpLink) signUpLink.setAttribute("href", appendAuthRedirect("/sign-up/"));
+    if (signInLink) signInLink.setAttribute("href", appendAuthRedirect("/sign-in.html"));
+    if (signUpLink) signUpLink.setAttribute("href", appendAuthRedirect("/sign-up.html"));
   }
 
 
@@ -82,7 +82,10 @@ window.addEventListener('load', function () {
       '#dashboard-link:hover{color:#111827!important;background:transparent!important;text-decoration:underline!important}',
       'html.dark #dashboard-link{color:#e5e7eb!important}',
       'html.dark #dashboard-link:hover{color:#ffffff!important}',
-      '#signin-link,#signup-link{height:36px;padding:6px 12px;font-size:14px;font-weight:600;border-radius:8px}',
+      '#signin-link{display:inline-flex;align-items:center;justify-content:center;font-size:15px;font-weight:500;color:#111827!important;text-decoration:none!important;text-underline-offset:4px;padding:0!important;border:0!important;background:transparent!important;border-radius:0!important;white-space:nowrap}',
+      '#signin-link:hover{color:#111827!important;background:transparent!important;text-decoration:underline!important}',
+      'html.dark #signin-link{color:#e5e7eb!important}',
+      'html.dark #signin-link:hover{color:#ffffff!important}',
       '#user-profile{display:inline-flex;align-items:center}',
       '#profile-btn{width:34px;height:34px;border-radius:999px;overflow:hidden;display:flex;align-items:center;justify-content:center}',
       '#user-avatar{width:34px;height:34px;border-radius:999px;object-fit:cover}'
@@ -127,13 +130,10 @@ window.addEventListener('load', function () {
     var themeBtn = document.getElementById('theme-toggle-btn');
     var profile = document.getElementById('user-profile');
     var signInLink = document.getElementById('signin-link');
-    var signUpLink = document.getElementById('signup-link');
-
     if (dashboardLink) container.appendChild(dashboardLink);
     if (themeBtn) container.appendChild(themeBtn);
     if (profile) container.appendChild(profile);
     if (signInLink) container.appendChild(signInLink);
-    if (signUpLink) container.appendChild(signUpLink);
   }
 
   function ensureProfileMenu(profile) {
@@ -175,7 +175,6 @@ window.addEventListener('load', function () {
   function updateHeaderAuth() {
     var dashboardLink = document.getElementById('dashboard-link');
     var signInLink = document.getElementById('signin-link');
-    var signUpLink = document.getElementById('signup-link');
     var profile = document.getElementById('user-profile');
     var avatar = document.getElementById('user-avatar');
     var nameEl = document.getElementById('profile-name');
@@ -187,7 +186,6 @@ window.addEventListener('load', function () {
       if (dashboardLink) dashboardLink.style.display = 'none';
       if (profile) profile.style.display = 'none';
       if (signInLink) signInLink.style.display = 'inline-flex';
-      if (signUpLink) signUpLink.style.display = 'inline-flex';
       if (container) container.classList.remove('is-loading');
       document.documentElement.classList.remove('auth-loading');
       return;
@@ -196,7 +194,6 @@ window.addEventListener('load', function () {
     if (dashboardLink) dashboardLink.style.display = 'inline-block';
     if (profile) profile.style.display = 'inline-flex';
     if (signInLink) signInLink.style.display = 'none';
-    if (signUpLink) signUpLink.style.display = 'none';
     if (avatar) avatar.src = window.Clerk.user.imageUrl || '';
     if (nameEl) {
       var name = [window.Clerk.user.firstName, window.Clerk.user.lastName].filter(Boolean).join(' ');
@@ -309,14 +306,14 @@ window.addEventListener('load', function () {
       document.body.style.overflow = 'hidden';
       if (window.Clerk && !signInMounted && signInNode) {
         window.Clerk.mountSignIn(signInNode, {
-          signUpUrl: appendAuthRedirect('/sign-up/'),
+          signUpUrl: appendAuthRedirect('/sign-up.html'),
           afterSignInUrl: getPostAuthUrl()
         });
         signInMounted = true;
       }
       if (window.Clerk && !signUpMounted && signUpNode) {
         window.Clerk.mountSignUp(signUpNode, {
-          signInUrl: appendAuthRedirect('/sign-in/'),
+          signInUrl: appendAuthRedirect('/sign-in.html'),
           afterSignInUrl: getPostAuthUrl(),
           afterSignUpUrl: getPostAuthUrl()
         });
@@ -380,7 +377,7 @@ window.addEventListener('load', function () {
       var signInNode = document.getElementById('clerk-sign-in');
       if (signInNode) {
         window.Clerk.mountSignIn(signInNode, {
-          signUpUrl: appendAuthRedirect('/sign-up/'),
+          signUpUrl: appendAuthRedirect('/sign-up.html'),
           afterSignInUrl: getPostAuthUrl()
         });
       }
@@ -388,7 +385,7 @@ window.addEventListener('load', function () {
       var signUpNode = document.getElementById('clerk-sign-up');
       if (signUpNode) {
         window.Clerk.mountSignUp(signUpNode, {
-          signInUrl: appendAuthRedirect('/sign-in/'),
+          signInUrl: appendAuthRedirect('/sign-in.html'),
           afterSignInUrl: getPostAuthUrl(),
           afterSignUpUrl: getPostAuthUrl()
         });

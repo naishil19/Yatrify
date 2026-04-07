@@ -3,6 +3,7 @@ import OpenAI from "openai";
 import { Pool } from "pg";
 import { Webhook } from "svix";
 import dotenv from "dotenv";
+import { createHmac, randomUUID, timingSafeEqual } from "crypto";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -18,6 +19,7 @@ dotenv.config({ path: path.resolve(__dirname, ".env"), override: false });
 const app = express();
 const port = process.env.PORT || 4000;
 const MOCK_AI = String(process.env.MOCK_AI || "").trim().toLowerCase() === "true";
+const RAZORPAY_API_BASE_URL = "https://api.razorpay.com/v1";
 
 const allowedOrigins = String(
   process.env.CORS_ORIGINS ||
@@ -62,6 +64,111 @@ function getClerkClient() {
     clerkClient = createClerkClient({ secretKey });
   }
   return clerkClient;
+}
+
+function getRazorpayCredentials() {
+  const keyId = String(process.env.RAZORPAY_KEY_ID || "").trim();
+  const keySecret = String(process.env.RAZORPAY_KEY_SECRET || "").trim();
+  if (!keyId || !keySecret) return null;
+  return { keyId, keySecret };
+}
+
+function getCreditPackConfig() {
+  const credits = Number(process.env.RAZORPAY_CREDIT_PACK_CREDITS || 5);
+  const amountSubunits = Number.parseInt(
+    String(process.env.RAZORPAY_CREDIT_PACK_AMOUNT || "25000"),
+    10
+  );
+  const currency = String(process.env.RAZORPAY_CREDIT_PACK_CURRENCY || "INR")
+    .trim()
+    .toUpperCase();
+
+  return {
+    credits: Number.isFinite(credits) && credits > 0 ? credits : 5,
+    amountSubunits:
+      Number.isInteger(amountSubunits) && amountSubunits > 0 ? amountSubunits : 25000,
+    currency: currency || "INR",
+  };
+}
+
+function buildRazorpayBasicAuth(credentials) {
+  return `Basic ${Buffer.from(`${credentials.keyId}:${credentials.keySecret}`).toString("base64")}`;
+}
+
+async function razorpayApiRequest(method, endpoint, payload) {
+  const credentials = getRazorpayCredentials();
+  if (!credentials) {
+    throw new Error("RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET not set");
+  }
+
+  const headers = {
+    Authorization: buildRazorpayBasicAuth(credentials),
+    Accept: "application/json",
+  };
+
+  const options = {
+    method,
+    headers,
+  };
+
+  if (payload !== undefined) {
+    headers["Content-Type"] = "application/json";
+    options.body = JSON.stringify(payload);
+  }
+
+  const response = await fetch(`${RAZORPAY_API_BASE_URL}${endpoint}`, options);
+  const raw = await response.text().catch(() => "");
+  let data = {};
+  try {
+    data = raw ? JSON.parse(raw) : {};
+  } catch {
+    data = {};
+  }
+
+  if (!response.ok) {
+    const detail =
+      data && data.error && data.error.description
+        ? String(data.error.description)
+        : raw || `Razorpay request failed with status ${response.status}`;
+    const error = new Error(detail);
+    error.status = response.status;
+    error.detail = detail;
+    throw error;
+  }
+
+  return data;
+}
+
+function signaturesMatch(expected, received) {
+  const expectedBuffer = Buffer.from(String(expected || ""), "utf8");
+  const receivedBuffer = Buffer.from(String(received || ""), "utf8");
+  if (!expectedBuffer.length || expectedBuffer.length !== receivedBuffer.length) {
+    return false;
+  }
+  return timingSafeEqual(expectedBuffer, receivedBuffer);
+}
+
+async function ensurePaymentTables() {
+  if (!pool) return;
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS payment_receipts (
+      id UUID PRIMARY KEY,
+      user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+      credit_transaction_id UUID REFERENCES credit_transactions(id) ON DELETE SET NULL,
+      provider TEXT NOT NULL DEFAULT 'razorpay',
+      razorpay_order_id TEXT UNIQUE,
+      razorpay_payment_id TEXT UNIQUE NOT NULL,
+      razorpay_signature TEXT,
+      amount_subunits BIGINT NOT NULL DEFAULT 0,
+      currency TEXT DEFAULT 'INR',
+      credits_added NUMERIC(6,2) NOT NULL DEFAULT 0,
+      status TEXT,
+      method TEXT,
+      payload JSONB DEFAULT '{}'::jsonb,
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW()
+    );
+  `);
 }
 
 function escapeHtml(value) {
@@ -530,9 +637,12 @@ app.get("/health", (_req, res) => {
 });
 
 app.get("/api/public-config", (_req, res) => {
+  const razorpayCredentials = getRazorpayCredentials();
   return res.json({
     clerkPublishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || "",
     apiBaseUrl: process.env.API_BASE_URL || `http://localhost:${port}`,
+    razorpayKeyId: razorpayCredentials ? razorpayCredentials.keyId : "",
+    creditPack: getCreditPackConfig(),
   });
 });
 
@@ -910,6 +1020,187 @@ function normalizeFeasibilityResult(rawResult, payload) {
     missingExperiences,
     alternativeDestinations,
   };
+}
+
+const BUDGET_ALLOCATION_BLUEPRINT = [
+  { group: "essentials", id: "accommodation", label: "Accommodation", pct: 33 },
+  { group: "essentials", id: "food", label: "Food", pct: 13 },
+  { group: "essentials", id: "insurance", label: "Insurance", pct: 1 },
+  { group: "essentials", id: "contingency", label: "Contingency", pct: 7 },
+  { group: "activities", id: "activitiesIncluded", label: "Activities Included", pct: 6 },
+  { group: "activities", id: "activitiesOptional", label: "Activities Optional", pct: 8 },
+  { group: "transport", id: "travelStartReturn", label: "Travel Start/Return", pct: 22 },
+  { group: "transport", id: "intercityTransport", label: "Intercity Transport", pct: 6 },
+  { group: "transport", id: "intracityTransport", label: "Intracity Transport", pct: 4 },
+  { group: "transport", id: "visa", label: "Visa", pct: 0 },
+];
+
+function toNonNegativeInteger(value) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return 0;
+  return Math.max(0, Math.round(numeric));
+}
+
+function allocateBudgetByBlueprint(totalBudget) {
+  const normalizedTotal = toNonNegativeInteger(totalBudget);
+  if (!normalizedTotal) {
+    return BUDGET_ALLOCATION_BLUEPRINT.map((entry) => ({
+      id: entry.id,
+      amount: 0,
+    }));
+  }
+
+  const rawShares = BUDGET_ALLOCATION_BLUEPRINT.map((entry) => {
+    const exact = (normalizedTotal * Number(entry.pct || 0)) / 100;
+    const base = Math.floor(exact);
+    return {
+      id: entry.id,
+      base,
+      fraction: exact - base,
+      pct: Number(entry.pct || 0),
+    };
+  });
+  let used = rawShares.reduce((sum, item) => sum + item.base, 0);
+  let remainder = Math.max(0, normalizedTotal - used);
+
+  rawShares
+    .slice()
+    .sort((left, right) => {
+      if (right.fraction !== left.fraction) return right.fraction - left.fraction;
+      if (right.pct !== left.pct) return right.pct - left.pct;
+      return String(left.id).localeCompare(String(right.id));
+    })
+    .forEach((item) => {
+      if (remainder <= 0) return;
+      const target = rawShares.find((entry) => entry.id === item.id);
+      if (!target) return;
+      target.base += 1;
+      remainder -= 1;
+    });
+
+  used = rawShares.reduce((sum, item) => sum + item.base, 0);
+  if (used !== normalizedTotal) {
+    const delta = normalizedTotal - used;
+    if (rawShares.length) {
+      rawShares[0].base = Math.max(0, rawShares[0].base + delta);
+    }
+  }
+
+  return rawShares.map((item) => ({
+    id: item.id,
+    amount: Math.max(0, Math.round(item.base)),
+  }));
+}
+
+function buildBudgetRangeFromTotals(minValue, maxValue, currencyCode) {
+  const minBudget = toNonNegativeInteger(minValue);
+  const maxBudget = Math.max(minBudget, toNonNegativeInteger(maxValue));
+  const minSplit = allocateBudgetByBlueprint(minBudget);
+  const maxSplit = allocateBudgetByBlueprint(maxBudget);
+  const currency = String(currencyCode || "INR").trim().toUpperCase() || "INR";
+
+  const minMap = {};
+  const maxMap = {};
+  minSplit.forEach((item) => {
+    minMap[item.id] = toNonNegativeInteger(item.amount);
+  });
+  maxSplit.forEach((item) => {
+    maxMap[item.id] = toNonNegativeInteger(item.amount);
+  });
+
+  const output = {
+    currency,
+    essentials: [],
+    activities: [],
+    transport: [],
+  };
+  BUDGET_ALLOCATION_BLUEPRINT.forEach((entry) => {
+    const minAmount = toNonNegativeInteger(minMap[entry.id]);
+    const maxAmount = Math.max(minAmount, toNonNegativeInteger(maxMap[entry.id]));
+    output[entry.group].push({
+      id: entry.id,
+      label: entry.label,
+      pct: Number(entry.pct || 0),
+      min: minAmount,
+      max: maxAmount,
+    });
+  });
+  return output;
+}
+
+function normalizeBudgetRangeSeed(rawSeed, fallbackCurrency) {
+  if (!rawSeed || typeof rawSeed !== "object") return null;
+  const currency = String(rawSeed.currency || fallbackCurrency || "INR").trim().toUpperCase() || "INR";
+  const idToEntry = {};
+  ["essentials", "activities", "transport"].forEach((group) => {
+    const list = Array.isArray(rawSeed[group]) ? rawSeed[group] : [];
+    list.forEach((item) => {
+      const id = String(item && item.id ? item.id : "").trim();
+      if (!id) return;
+      idToEntry[id] = {
+        id,
+        label: String(item && item.label ? item.label : "").trim(),
+        pct: toNonNegativeInteger(item && item.pct),
+        min: toNonNegativeInteger(item && item.min),
+        max: toNonNegativeInteger(item && item.max),
+      };
+    });
+  });
+
+  const hasAnySupported = BUDGET_ALLOCATION_BLUEPRINT.some((entry) => !!idToEntry[entry.id]);
+  if (!hasAnySupported) return null;
+
+  const output = {
+    currency,
+    essentials: [],
+    activities: [],
+    transport: [],
+  };
+  BUDGET_ALLOCATION_BLUEPRINT.forEach((entry) => {
+    const seeded = idToEntry[entry.id];
+    const minAmount = seeded ? seeded.min : 0;
+    const maxAmount = seeded ? Math.max(seeded.max, minAmount) : minAmount;
+    output[entry.group].push({
+      id: entry.id,
+      label: seeded && seeded.label ? seeded.label : entry.label,
+      pct: seeded && Number.isFinite(Number(seeded.pct)) ? Number(seeded.pct) : Number(entry.pct),
+      min: minAmount,
+      max: maxAmount,
+    });
+  });
+  return output;
+}
+
+function extractBudgetRangeSeedFromRequest(rawInput, normalizedPayload) {
+  const body = rawInput && typeof rawInput === "object" ? rawInput : {};
+  const fallbackCurrency = String(
+    (normalizedPayload && normalizedPayload.currency) || body.currency || "INR"
+  ).trim().toUpperCase();
+
+  const explicitSeed = normalizeBudgetRangeSeed(body.budgetRangeSeed, fallbackCurrency);
+  if (explicitSeed) return explicitSeed;
+
+  const feasibility =
+    body.feasibility && typeof body.feasibility === "object"
+      ? body.feasibility
+      : body.step4Data && typeof body.step4Data === "object"
+        ? body.step4Data
+        : null;
+  if (!feasibility) return null;
+
+  let minValue = Number(feasibility.suggestedBudgetMin);
+  if (!Number.isFinite(minValue)) minValue = Number(feasibility.budgetMin);
+  let maxValue = Number(feasibility.suggestedBudgetMax);
+  if (!Number.isFinite(maxValue)) maxValue = Number(feasibility.budgetMax);
+
+  if (!Number.isFinite(minValue) && !Number.isFinite(maxValue)) return null;
+  if (!Number.isFinite(minValue)) minValue = maxValue;
+  if (!Number.isFinite(maxValue)) maxValue = minValue;
+
+  const seededCurrency = String(feasibility.currency || fallbackCurrency || "INR")
+    .trim()
+    .toUpperCase();
+  return buildBudgetRangeFromTotals(minValue, maxValue, seededCurrency);
 }
 
 function normalizeGeminiTripPayload(payload) {
@@ -1554,9 +1845,64 @@ function countDestinationHintMatches(text, landmarkHints) {
   return matched.size;
 }
 
+function countNormalizedWords(value) {
+  const text = String(value || "").replace(/\s+/g, " ").trim();
+  if (!text) return 0;
+  return text.split(" ").filter(Boolean).length;
+}
+
+function countParagraphBlocks(value) {
+  const text = String(value || "").replace(/\r/g, "").trim();
+  if (!text) return 0;
+  return text
+    .split(/\n\s*\n+/g)
+    .map((part) => part.replace(/\s+/g, " ").trim())
+    .filter(Boolean).length;
+}
+
+function countMarkdownBoldPlaceMentions(value) {
+  const text = String(value || "");
+  const matches = text.match(/\*\*(?=\S)([\s\S]*?\S)\*\*/g);
+  return Array.isArray(matches) ? matches.length : 0;
+}
+
 function evaluateGeminiSectionsQuality(parsed, payload) {
   const trip = normalizeGeminiTripPayload(payload || {});
   const issues = [];
+  const highlights = parsed && parsed.tripHighlights && typeof parsed.tripHighlights === "object"
+    ? parsed.tripHighlights
+    : {};
+  const weather = parsed && parsed.weatherAnalysis && typeof parsed.weatherAnalysis === "object"
+    ? parsed.weatherAnalysis
+    : {};
+  const tripSummaryWords = countNormalizedWords(highlights.summary);
+  const tripSummaryParagraphs = countParagraphBlocks(highlights.summary);
+  const tripSummaryBoldPlaceMentions = countMarkdownBoldPlaceMentions(highlights.summary);
+  const weatherExpectedWords = countNormalizedWords(weather.expectedConditions);
+  const weatherBestTimeWords = countNormalizedWords(weather.bestTimeToVisit);
+  const minTripSummaryWords = 150;
+  const maxTripSummaryWords = 250;
+  const minWeatherExpectedWords = Math.min(160, Math.max(80, trip.totalDays * 16));
+  const minWeatherBestTimeWords = Math.min(140, Math.max(70, trip.totalDays * 14));
+  if (tripSummaryWords < minTripSummaryWords) {
+    issues.push(`trip_highlights_too_short:${tripSummaryWords}_of_${minTripSummaryWords}`);
+  }
+  if (tripSummaryWords > maxTripSummaryWords) {
+    issues.push(`trip_highlights_too_long:${tripSummaryWords}_over_${maxTripSummaryWords}`);
+  }
+  if (tripSummaryParagraphs < 2 || tripSummaryParagraphs > 3) {
+    issues.push(`trip_highlights_paragraph_count_invalid:${tripSummaryParagraphs}`);
+  }
+  if (tripSummaryBoldPlaceMentions < 3) {
+    issues.push(`trip_highlights_bold_places_low:${tripSummaryBoldPlaceMentions}_of_3`);
+  }
+  if (weatherExpectedWords < minWeatherExpectedWords) {
+    issues.push(`weather_expected_too_short:${weatherExpectedWords}_of_${minWeatherExpectedWords}`);
+  }
+  if (weatherBestTimeWords < minWeatherBestTimeWords) {
+    issues.push(`weather_best_time_too_short:${weatherBestTimeWords}_of_${minWeatherBestTimeWords}`);
+  }
+
   const itinerary = Array.isArray(parsed && parsed.itinerary) ? parsed.itinerary : [];
   if (itinerary.length !== trip.totalDays) {
     issues.push(`itinerary_days_mismatch:${itinerary.length}_of_${trip.totalDays}`);
@@ -1636,6 +1982,11 @@ function evaluateGeminiSectionsQuality(parsed, payload) {
       genericPhraseHits,
       landmarkHintMatches: hintMatches,
       packingItems: packing.length,
+      tripSummaryWords,
+      tripSummaryParagraphs,
+      tripSummaryBoldPlaceMentions,
+      weatherExpectedWords,
+      weatherBestTimeWords,
     },
   };
 }
@@ -1658,7 +2009,7 @@ function buildGeminiSectionsPrompt(payload, options = {}) {
       : "";
 
   return [
-    "Return only valid JSON. Do not use markdown.",
+    "Return only valid JSON. Do not wrap output in markdown code fences.",
     "You are an expert local travel planner generating real-life, actionable trip content for a travel web app.",
     "Your output must be specific, practical, and destination-grounded.",
     "",
@@ -1745,6 +2096,13 @@ function buildGeminiSectionsPrompt(payload, options = {}) {
     "Rules:",
     `- Itinerary array must have exactly ${data.totalDays} items.`,
     "- Use realistic and concise text per field with useful details.",
+    "- Do not use reusable canned copy. Keep wording specific to this exact destination, date range, and preferences.",
+    "- tripHighlights.summary must be 2-3 paragraphs and around 150-250 words with meaningful narrative details.",
+    "- In tripHighlights.summary, suggest visiting places and format place names in markdown bold as **Place Name**.",
+    "- Include at least 3 bold place suggestions inside tripHighlights.summary.",
+    "- Use markdown bold only for place names (not random adjectives).",
+    "- weatherAnalysis.expectedConditions must be around 90-150 words with practical weather expectations (temperature band, precipitation/wind, and day/night feel).",
+    "- weatherAnalysis.bestTimeToVisit must be around 80-130 words with why this trip window works, trade-offs, and practical timing advice.",
     "- Each itinerary day title and schedule should include real place names for the destination.",
     "- Every itinerary day must be meaningfully different from every other day. Do not reuse the same sightseeing order or the same morning/afternoon/evening/night plan across multiple days.",
     "- Give each day a distinct theme or anchor so Day 1, Day 2, Day 3, etc. feel like separate parts of the trip, not copies of each other.",
@@ -1996,9 +2354,19 @@ app.post("/api/feasibility", express.json(), async (req, res) => {
   }
 });
 
-async function generateGeminiSections(payload) {
+async function generateGeminiSections(payload, options = {}) {
+  const normalized = normalizeGeminiTripPayload(payload || {});
+  const settings = options && typeof options === "object" ? options : {};
+  const seededBudgetRange = normalizeBudgetRangeSeed(settings.budgetRangeSeed, normalized.currency);
   if (isMockAiEnabled()) {
-    return buildMockGeminiSections(payload);
+    const mockResult = buildMockGeminiSections(normalized);
+    if (seededBudgetRange && mockResult && mockResult.parsed) {
+      mockResult.parsed.budgetRange = seededBudgetRange;
+    }
+    if (mockResult && mockResult.meta) {
+      mockResult.meta.budgetSeeded = !!seededBudgetRange;
+    }
+    return mockResult;
   }
 
   const apiKey = String(process.env.GEMINI_API_KEY || "").trim();
@@ -2007,7 +2375,6 @@ async function generateGeminiSections(payload) {
   }
 
   const configuredModel = String(process.env.GEMINI_MODEL || "gemini-2.0-flash").trim();
-  const normalized = normalizeGeminiTripPayload(payload || {});
   const startedAt = Date.now();
 
   const modelCandidates = dedupeStrings([
@@ -2088,6 +2455,12 @@ async function generateGeminiSections(payload) {
     throw err;
   }
 
+  if (seededBudgetRange) {
+    bestOutput.parsed = Object.assign({}, bestOutput.parsed, {
+      budgetRange: seededBudgetRange,
+    });
+  }
+
   return {
     parsed: bestOutput.parsed,
     meta: {
@@ -2096,6 +2469,7 @@ async function generateGeminiSections(payload) {
       usedGoogleSearch: bestOutput.usedGoogleSearch,
       elapsedMs: Date.now() - startedAt,
       quality: bestOutput.quality,
+      budgetSeeded: !!seededBudgetRange,
     },
   };
 }
@@ -2464,6 +2838,139 @@ app.get("/api/users/me", requireAuth, requireDb, async (req, res) => {
   }
 });
 
+app.post("/api/payments/credits/order", requireAuth, requireDb, express.json(), async (req, res) => {
+  try {
+    const user = await getAuthedUser(req);
+    if (!user) return res.status(401).json({ error: "Unauthorized" });
+
+    const razorpayCredentials = getRazorpayCredentials();
+    if (!razorpayCredentials) {
+      return res.status(500).json({ error: "Razorpay is not configured" });
+    }
+
+    const creditPack = getCreditPackConfig();
+    const receipt = `credits_${user.id}_${randomUUID().replace(/-/g, "").slice(0, 20)}`.slice(0, 40);
+    const order = await razorpayApiRequest("POST", "/orders", {
+      amount: creditPack.amountSubunits,
+      currency: creditPack.currency,
+      receipt,
+      notes: {
+        product: "credits",
+        user_id: String(user.id),
+        clerk_user_id: String(user.clerk_user_id || ""),
+        credits: String(creditPack.credits),
+      },
+    });
+
+    return res.json({
+      key: razorpayCredentials.keyId,
+      orderId: order.id,
+      amount: Number(order.amount || creditPack.amountSubunits),
+      currency: String(order.currency || creditPack.currency),
+      credits: creditPack.credits,
+      name: "Yatrify",
+      description: `${creditPack.credits} credits pack`,
+      email: user.email || "",
+      firstName: user.first_name || "",
+      lastName: user.last_name || "",
+    });
+  } catch (error) {
+    console.error("POST /api/payments/credits/order failed:", error);
+    return res.status(error && error.status ? error.status : 500).json({
+      error: error && error.detail ? error.detail : error.message || "Unable to create payment order",
+    });
+  }
+});
+
+app.post("/api/payments/credits/verify", requireAuth, requireDb, express.json(), async (req, res) => {
+  try {
+    const user = await getAuthedUser(req);
+    if (!user) return res.status(401).json({ error: "Unauthorized" });
+
+    const body = req.body && typeof req.body === "object" ? req.body : {};
+    const razorpayPaymentId = String(body.razorpay_payment_id || "").trim();
+    const razorpayOrderId = String(body.razorpay_order_id || "").trim();
+    const razorpaySignature = String(body.razorpay_signature || "").trim();
+
+    if (!razorpayPaymentId || !razorpayOrderId || !razorpaySignature) {
+      return res.status(400).json({ error: "Missing Razorpay payment details" });
+    }
+
+    const razorpayCredentials = getRazorpayCredentials();
+    if (!razorpayCredentials) {
+      return res.status(500).json({ error: "Razorpay is not configured" });
+    }
+
+    const generatedSignature = createHmac("sha256", razorpayCredentials.keySecret)
+      .update(`${razorpayOrderId}|${razorpayPaymentId}`)
+      .digest("hex");
+
+    if (!signaturesMatch(generatedSignature, razorpaySignature)) {
+      return res.status(400).json({ error: "Invalid payment signature" });
+    }
+
+    const [order, payment] = await Promise.all([
+      razorpayApiRequest("GET", `/orders/${encodeURIComponent(razorpayOrderId)}`),
+      razorpayApiRequest("GET", `/payments/${encodeURIComponent(razorpayPaymentId)}`),
+    ]);
+
+    if (String(payment.order_id || "") !== razorpayOrderId) {
+      return res.status(400).json({ error: "Payment does not belong to this order" });
+    }
+
+    const orderUserId = order && order.notes ? String(order.notes.user_id || "").trim() : "";
+    if (!orderUserId || orderUserId !== String(user.id)) {
+      return res.status(403).json({ error: "Payment does not belong to this user" });
+    }
+
+    const creditPack = getCreditPackConfig();
+    const orderCredits = order && order.notes ? Number(order.notes.credits || creditPack.credits) : creditPack.credits;
+    const paymentStatus = String(payment.status || "").trim().toLowerCase();
+    if (paymentStatus !== "captured" && paymentStatus !== "authorized") {
+      return res.status(400).json({ error: "Payment is not in a successful state yet" });
+    }
+
+    const grantResult = await store.grantCreditsFromPurchase(user.id, {
+      razorpayOrderId,
+      razorpayPaymentId,
+      razorpaySignature,
+      amountSubunits: Number(payment.amount || order.amount || creditPack.amountSubunits || 0),
+      currency: String(payment.currency || order.currency || creditPack.currency || "INR"),
+      creditsAdded:
+        Number.isFinite(orderCredits) && orderCredits > 0 ? orderCredits : creditPack.credits,
+      status: paymentStatus,
+      method: String(payment.method || "").trim(),
+      payload: {
+        order,
+        payment,
+      },
+    });
+
+    const updatedUser = await reconcileUserPlanTier(
+      Object.assign({}, user, {
+        credits: grantResult && Number.isFinite(Number(grantResult.credits))
+          ? Number(grantResult.credits)
+          : Number(user.credits || 0),
+      })
+    );
+
+    return res.json({
+      ok: true,
+      duplicated: !!(grantResult && grantResult.duplicated),
+      credits: grantResult ? Number(grantResult.credits || 0) : Number(user.credits || 0),
+      packCredits:
+        Number.isFinite(orderCredits) && orderCredits > 0 ? orderCredits : creditPack.credits,
+      planTier: updatedUser ? derivePlanTierFromUser(updatedUser) : derivePlanTierFromUser(user),
+      razorpayPaymentId,
+    });
+  } catch (error) {
+    console.error("POST /api/payments/credits/verify failed:", error);
+    return res.status(error && error.status ? error.status : 500).json({
+      error: error && error.detail ? error.detail : error.message || "Unable to verify payment",
+    });
+  }
+});
+
 app.get("/api/plans", requireAuth, requireDb, async (req, res) => {
   try {
     const user = await getAuthedUser(req);
@@ -2479,7 +2986,9 @@ app.post("/api/plans/generate", requireAuth, requireDb, express.json(), async (r
   try {
     const user = await getAuthedUser(req);
     if (!user) return res.status(401).json({ error: "Unauthorized" });
-    const payload = normalizeGeminiTripPayload(req.body || {});
+    const rawInput = req.body || {};
+    const payload = normalizeGeminiTripPayload(rawInput);
+    const budgetRangeSeed = extractBudgetRangeSeedFromRequest(rawInput, payload);
 
     const totalDays = diffDaysInclusive(payload.startDate, payload.endDate);
     if (!totalDays) {
@@ -2493,7 +3002,7 @@ app.post("/api/plans/generate", requireAuth, requireDb, express.json(), async (r
       return res.status(402).json({ error: "Insufficient credits" });
     }
 
-    const generated = await generateGeminiSections(payload);
+    const generated = await generateGeminiSections(payload, { budgetRangeSeed });
     const plan = await store.createPlan(user.id, payload, generated.parsed, {});
     const creditsResult = await store.consumeCredits(user.id, 1, "generate", plan.id);
     if (!creditsResult) {
@@ -2928,6 +3437,35 @@ app.get("/api/csc/countries/:iso2/cities", async (req, res) => {
   }
 });
 
+app.get("/api/csc/countries/:iso2/states", async (req, res) => {
+  const iso2 = String(req.params.iso2 || "").trim().toUpperCase();
+  if (!iso2) {
+    return res.status(400).json({ error: "Country code is required" });
+  }
+  try {
+    const states = await fetchCSCJson(`/countries/${encodeURIComponent(iso2)}/states`);
+    return res.json(states);
+  } catch (error) {
+    return res.status(500).json({ error: "Unable to fetch states from CSC API" });
+  }
+});
+
+app.get("/api/csc/countries/:iso2/states/:stateIso2/cities", async (req, res) => {
+  const iso2 = String(req.params.iso2 || "").trim().toUpperCase();
+  const stateIso2 = String(req.params.stateIso2 || "").trim().toUpperCase();
+  if (!iso2 || !stateIso2) {
+    return res.status(400).json({ error: "Country code and state code are required" });
+  }
+  try {
+    const cities = await fetchCSCJson(
+      `/countries/${encodeURIComponent(iso2)}/states/${encodeURIComponent(stateIso2)}/cities`
+    );
+    return res.json(cities);
+  } catch (error) {
+    return res.status(500).json({ error: "Unable to fetch state cities from CSC API" });
+  }
+});
+
 // Clerk webhook endpoint
 app.post("/webhooks/clerk", express.raw({ type: "application/json" }), async (req, res) => {
   const secret = process.env.CLERK_WEBHOOK_SECRET;
@@ -2995,8 +3533,16 @@ app.post("/webhooks/clerk", express.raw({ type: "application/json" }), async (re
   res.json({ received: true });
 });
 
-app.listen(port, () => {
-  console.log(`API listening on ${port}`);
-});
+async function startServer() {
+  try {
+    await ensurePaymentTables();
+    app.listen(port, () => {
+      console.log(`API listening on ${port}`);
+    });
+  } catch (error) {
+    console.error("Unable to start API server:", error);
+    process.exit(1);
+  }
+}
 
-
+startServer();
