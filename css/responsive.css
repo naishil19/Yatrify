@@ -660,3 +660,44 @@ html.dark .header-credits:hover {
   }
 }
 
+/* Keep swapped light/dark SVG logos clipped inside their containers */
+header .logo-wrap,
+header a[href="/"] > div[class*="leading-5"][class*="font-bold"],
+footer a[href="/"] > div[class*="leading-5"][class*="font-bold"] {
+  height: 44px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+header .logo-wrap img,
+header a[href="/"] img[alt="logo"],
+footer a[href="/"] img[alt="logo"] {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Slight logo size increase without changing header height */
+@media (min-width: 768px) {
+  header .logo-wrap img,
+  header a[href="/"] img[alt="logo"],
+  footer a[href="/"] img[alt="logo"] {
+    width: 104px;
+    height: 52px;
+    object-fit: contain;
+    transform: none;
+  }
+}
+
+/* Keep standard site headers aligned with the same wrapper gutter as footer */
+header.w-full > nav {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+@media (min-width: 1024px) {
+  header.w-full > nav {
+    padding-left: 80px;
+    padding-right: 80px;
+  }
+}
