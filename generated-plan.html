@@ -99,6 +99,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      position: relative;
     }
 
     .topbar-left {
@@ -123,13 +124,36 @@
     .logo-wrap {
       display: inline-flex;
       align-items: center;
+      line-height: 0;
+      border: 0;
+      outline: none;
+      box-shadow: none;
+      background: transparent;
+      text-decoration: none;
+    }
+
+    .logo-wrap:focus,
+    .logo-wrap:focus-visible {
+      outline: none;
+      box-shadow: none;
+    }
+
+    header.topbar .logo-wrap {
+      width: 100px;
+      flex: 0 0 100px;
     }
 
     .logo-wrap img {
       display: block;
-      width: 88px;
-      height: 44px;
+      width: 100px;
+      height: 47px;
       object-fit: contain;
+    }
+
+    header.topbar .logo-wrap img {
+      width: 100px !important;
+      height: 47px !important;
+      max-width: 100px;
     }
 
     .logo-dark {
@@ -156,7 +180,7 @@
     .topbar-nav a {
       color: var(--text);
       text-decoration: none;
-      font-size: 13px;
+      font-size: 0.875rem;
       font-weight: 500;
     }
 
@@ -5272,6 +5296,12 @@
 
 
   <script src="/js/clerk-loader.js"></script>
+  <script src="/js/error-page.js"></script>
+  <script>
+    if (window.YatrifyErrorPage) {
+      window.YatrifyErrorPage.installGlobalHandlers();
+    }
+  </script>
   <script src="/js/api-client.js"></script>
   <script src="/js/plan-service.js"></script>
   <script src="/js/plan-context.js"></script>

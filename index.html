@@ -158,6 +158,29 @@
     html.dark #dashboard-link:hover {
       color: #ffffff !important;
     }
+
+    header.w-full.border-b.bottom-2.border-border\/40.z-50.sticky.top-0.bg-background.backdrop-blur.supports-\[backdrop-filter\]\:bg-background\/60 {
+      height: 60px;
+    }
+
+    header.w-full.border-b.bottom-2.border-border\/40.z-50.sticky.top-0.bg-background.backdrop-blur.supports-\[backdrop-filter\]\:bg-background\/60 > nav {
+      height: 100%;
+      padding-top: 0;
+      padding-bottom: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    header.w-full.border-b.bottom-2.border-border\/40.z-50.sticky.top-0.bg-background.backdrop-blur.supports-\[backdrop-filter\]\:bg-background\/60 > nav > div.flex.justify-evenly.w-full {
+      height: 100%;
+      align-items: center;
+    }
+
+    header.w-full.border-b.bottom-2.border-border\/40.z-50.sticky.top-0.bg-background.backdrop-blur.supports-\[backdrop-filter\]\:bg-background\/60 img[alt="logo"] {
+      width: 100px;
+      height: 54px;
+      object-fit: contain;
+    }
   </style>
   <link rel="stylesheet" href="css/responsive.css?v=20260331w" />
 </head>
@@ -169,9 +192,9 @@
       <div class="flex justify-evenly w-full">
         <div class="hidden md:flex gap-10 items-center justify-start flex-1"><a href="/">
             <div class="flex justify-center items-center leading-5 font-bold text-xl"><img alt="logo" loading="lazy"
-                width="88" height="44" decoding="async" data-nimg="1" class="block dark:hidden" style="color:transparent"
+                width="100" height="54" decoding="async" data-nimg="1" class="block dark:hidden" style="color:transparent"
                 src="images/logo_light.svg"><img alt="logo"
-                loading="lazy" width="88" height="44" decoding="async" data-nimg="1" class="hidden dark:block"
+                loading="lazy" width="100" height="54" decoding="async" data-nimg="1" class="hidden dark:block"
                 style="color:transparent"
                 src="images/logo_dark.svg"></div>
           </a></div>
@@ -194,9 +217,9 @@
         </div>
         <div class="md:hidden flex items-center gap-3 flex-1">
           <a href="/" class="flex items-center" aria-label="Yatrify home">
-            <img alt="logo" loading="lazy" width="80" height="40" decoding="async" class="block dark:hidden"
+            <img alt="logo" loading="lazy" width="100" height="54" decoding="async" class="block dark:hidden"
               style="color:transparent" src="images/logo_light.svg">
-            <img alt="logo" loading="lazy" width="80" height="40" decoding="async" class="hidden dark:block"
+            <img alt="logo" loading="lazy" width="100" height="54" decoding="async" class="hidden dark:block"
               style="color:transparent"
               src="images/logo_dark.svg">
           </a>
@@ -212,9 +235,9 @@
             class="fixed top-0 z-[100] bg-background w-[50%] border-r-2 border-neutral-200 h-full ease-in-out duration-700 left-[-100%] flex flex-col gap-2 min-h-[100svh]">
             <div class="flex justify-between p-2"><a href="/">
                 <div class="flex flex-col leading-5 font-bold text-md p-1"><img alt="logo" loading="lazy" width="100"
-                    height="50" decoding="async" data-nimg="1" class="block dark:hidden" style="color:transparent"
+                    height="54" decoding="async" data-nimg="1" class="block dark:hidden" style="color:transparent"
                     src="images/logo_light.svg"><img alt="logo"
-                    loading="lazy" width="88" height="44" decoding="async" data-nimg="1" class="hidden dark:block"
+                    loading="lazy" width="100" height="54" decoding="async" data-nimg="1" class="hidden dark:block"
                     style="color:transparent"
                     src="images/logo_dark.svg"></div>
               </a><button
@@ -1153,9 +1176,9 @@
             <div class="flex items-center gap-2 lg:justify-start">
               <div class="hidden md:flex gap-10 items-center justify-start flex-1"><a href="/">
                   <div class="flex justify-center items-center leading-5 font-bold text-xl"><img alt="logo"
-                      loading="lazy" width="88" height="44" decoding="async" data-nimg="1" class="block dark:hidden"
+                      loading="lazy" width="100" height="54" decoding="async" data-nimg="1" class="block dark:hidden"
                       style="color:transparent"
-                      src="images/logo_light.svg"><img alt="logo" loading="lazy" width="88" height="44" decoding="async"
+                      src="images/logo_light.svg"><img alt="logo" loading="lazy" width="100" height="54" decoding="async"
                       data-nimg="1" class="hidden dark:block" style="color:transparent"
                       src="images/logo_dark.svg"></div>
                 </a></div>
@@ -1495,6 +1518,12 @@
     </style>
   </div>
   <script src="/js/clerk-loader.js"></script>
+  <script src="/js/error-page.js"></script>
+  <script>
+    if (window.YatrifyErrorPage) {
+      window.YatrifyErrorPage.installGlobalHandlers();
+    }
+  </script>
   <script src="/js/api-client.js"></script>
   <script src="/js/plan-service.js"></script>
   <script src="/js/credits-modal.js"></script>
@@ -1548,7 +1577,7 @@
           return window.Clerk.loaded ? Promise.resolve() : window.Clerk.load();
         }
         if (typeof window.__loadYatrifyClerk === 'function') {
-          return window.__loadYatrifyClerk(true).then(function () {
+          return window.__loadYatrifyClerk(false).then(function () {
             if (!window.Clerk) throw new Error('Clerk SDK not available');
             return window.Clerk.loaded ? Promise.resolve() : window.Clerk.load();
           });
@@ -1610,24 +1639,32 @@
         window.location.href = 'dashboard.html';
       }
 
-      function getPlanListFromPayload(payload) {
-        if (Array.isArray(payload)) return payload;
-        if (payload && Array.isArray(payload.plans)) return payload.plans;
-        return [];
+      function fetchSignedInUserCredits() {
+        if (!window.YatrifyApiClient) {
+          return Promise.resolve(null);
+        }
+        var loadProfile = typeof window.YatrifyApiClient.fetchUserProfile === 'function'
+          ? window.YatrifyApiClient.fetchUserProfile
+          : function () {
+              return window.YatrifyApiClient.authFetch('/api/users/me').then(function (response) {
+                return response.json();
+              });
+            };
+        return loadProfile().then(function (payload) {
+          var totalCredits = Number(payload && payload.credits);
+          return Number.isFinite(totalCredits) ? Math.max(0, totalCredits) : null;
+        }).catch(function () {
+          return null;
+        });
       }
 
-      function routeBasedOnPlanCount() {
-        if (!window.YatrifyPlanService || typeof window.YatrifyPlanService.listPlans !== 'function') {
-          redirectToNewPlan();
-          return Promise.resolve();
-        }
-        return window.YatrifyPlanService.listPlans().then(function (payload) {
-          var plans = getPlanListFromPayload(payload);
-          if (plans.length > 0) {
+      function routeBasedOnCredits() {
+        return fetchSignedInUserCredits().then(function (totalCredits) {
+          if (typeof totalCredits === 'number' && totalCredits < 2) {
             redirectToDashboard();
-          } else {
-            redirectToNewPlan();
+            return;
           }
+          redirectToNewPlan();
         }).catch(function () {
           redirectToNewPlan();
         });
@@ -1671,7 +1708,7 @@
             openModal('sign-in');
             return;
           }
-          routeBasedOnPlanCount();
+          routeBasedOnCredits();
         }).catch(function () {
           setPendingAdventureRedirect();
           openModal('sign-in');
@@ -1734,7 +1771,7 @@
         }
         if (buyCreditsBtn) renderBuyCreditsButtonLabel(buyCreditsBtn, 'Buy Credits');
         if (window.Clerk && window.Clerk.user && consumePendingAdventureRedirect()) {
-          routeBasedOnPlanCount();
+          routeBasedOnCredits();
         }
       }
 
@@ -1858,13 +1895,19 @@
         }
       });
 
-      window.addEventListener('load', function () {
+      function bootIndexAuth() {
         ensureClerkLoaded().then(function () {
           updateUI();
           window.Clerk.addListener(updateUI);
         }).catch(function () {
         });
-      });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', bootIndexAuth, { once: true });
+      } else {
+        bootIndexAuth();
+      }
 
       // Theme Toggle Functionality
       function initTheme() {

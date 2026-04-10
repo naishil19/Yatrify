@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "dev": "node backend/server.js"
+  },
   "dependencies": {
     "@anthropic-ai/claude-code": "^2.1.34"
   }

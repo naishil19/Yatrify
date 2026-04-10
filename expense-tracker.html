@@ -95,6 +95,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      position: relative;
     }
 
     .topbar-left {
@@ -120,13 +121,36 @@
     .logo-wrap {
       display: inline-flex;
       align-items: center;
+      line-height: 0;
+      border: 0;
+      outline: none;
+      box-shadow: none;
+      background: transparent;
+      text-decoration: none;
+    }
+
+    .logo-wrap:focus,
+    .logo-wrap:focus-visible {
+      outline: none;
+      box-shadow: none;
+    }
+
+    header.topbar .logo-wrap {
+      width: 100px;
+      flex: 0 0 100px;
     }
 
     .logo-wrap img {
       display: block;
-      width: 88px;
-      height: 44px;
+      width: 100px;
+      height: 47px;
       object-fit: contain;
+    }
+
+    header.topbar .logo-wrap img {
+      width: 100px !important;
+      height: 47px !important;
+      max-width: 100px;
     }
 
     .logo-dark {
@@ -153,7 +177,7 @@
     .topbar-nav a {
       color: var(--text);
       text-decoration: none;
-      font-size: 13px;
+      font-size: 0.875rem;
       font-weight: 500;
     }
 
@@ -3967,15 +3991,48 @@
       }
 
       /* ── Topbar data ── */
+      function applyCreditsToTopbar(payload) {
+        var cc = document.getElementById("credits-count");
+        if (!cc) return false;
+        var credits = Number(payload && payload.credits);
+        if (!Number.isFinite(credits)) return false;
+        cc.textContent = String(Math.max(0, credits));
+        return true;
+      }
+
+      function getCachedTopbarProfile() {
+        if (!window.YatrifyApiClient || typeof window.YatrifyApiClient.getCachedUserProfile !== "function") {
+          return null;
+        }
+        return window.YatrifyApiClient.getCachedUserProfile({ maxAgeMs: 0 });
+      }
+
+      async function refreshTopbarCredits(options) {
+        var opts = options && typeof options === "object" ? options : {};
+        if (opts.useCache !== false && applyCreditsToTopbar(getCachedTopbarProfile())) {
+          return true;
+        }
+        if (!window.YatrifyPlanService || typeof window.YatrifyPlanService.getUserMe !== "function") {
+          return false;
+        }
+        try {
+          var payload = await window.YatrifyPlanService.getUserMe({ forceRefresh: opts.forceRefresh === true });
+          return applyCreditsToTopbar(payload);
+        } catch (_) {
+          return applyCreditsToTopbar(getCachedTopbarProfile());
+        }
+      }
+
       async function setupTopbarData() {
         var cc = document.getElementById("credits-count");
+        if (!applyCreditsToTopbar(getCachedTopbarProfile()) && cc) {
+          cc.textContent = "—";
+        }
         if (window.YatrifyPlanService) {
           try {
-            var payload = await window.YatrifyPlanService.getUserMe();
-            var credits = Number(payload && payload.credits);
-            if (cc) cc.textContent = Number.isFinite(credits) ? String(credits) : "—";
+            await refreshTopbarCredits({ forceRefresh: true });
           } catch (_) {
-            if (cc) cc.textContent = "—";
+            if (cc && !applyCreditsToTopbar(getCachedTopbarProfile())) cc.textContent = "—";
           }
         }
 
@@ -4065,6 +4122,8 @@
         function setGuest() {
           if (signInLink) signInLink.style.display = "inline-flex";
           if (profileWrap) profileWrap.style.display = "none";
+          var cc = document.getElementById("credits-count");
+          if (cc) cc.textContent = "—";
           markHeaderAuthReady();
           closeProfileMenu();
           if (avatarImg) {
@@ -4112,6 +4171,7 @@
               if (avatarLetter) avatarLetter.style.display = "inline-flex";
             }
           }
+          refreshTopbarCredits({ useCache: true, forceRefresh: true }).catch(function () {});
         }
 
         if (!profileBtn || profileBtn.dataset.bound === "true") return Promise.resolve();

@@ -16,7 +16,7 @@ function applySavedTheme() {
 
 applySavedTheme();
 
-window.addEventListener('load', function () {
+function initGlobalHeaderAuth() {
   function getAuthRedirectTarget() {
     var fromGlobal = String(window.__YATRIFY_AUTH_REDIRECT_URL || "").trim();
     if (fromGlobal) return fromGlobal;
@@ -180,9 +180,23 @@ window.addEventListener('load', function () {
     var nameEl = document.getElementById('profile-name');
     var emailEl = document.getElementById('profile-email');
     var container = getHeaderActionsContainer();
+    var cachedProfile = window.YatrifyAuthCache && typeof window.YatrifyAuthCache.getProfile === 'function'
+      ? window.YatrifyAuthCache.getProfile({ maxAgeMs: 0 })
+      : null;
 
     if (!window.Clerk || !window.Clerk.user) {
       applyRedirectToAuthLinks();
+      if (cachedProfile && cachedProfile.userId) {
+        if (dashboardLink) dashboardLink.style.display = 'inline-block';
+        if (profile) profile.style.display = 'inline-flex';
+        if (signInLink) signInLink.style.display = 'none';
+        if (avatar && cachedProfile.imageUrl) avatar.src = cachedProfile.imageUrl;
+        if (nameEl) nameEl.textContent = cachedProfile.fullName || cachedProfile.firstName || 'Account';
+        if (emailEl) emailEl.textContent = cachedProfile.email || '';
+        if (container) container.classList.remove('is-loading');
+        document.documentElement.classList.remove('auth-loading');
+        return;
+      }
       if (dashboardLink) dashboardLink.style.display = 'none';
       if (profile) profile.style.display = 'none';
       if (signInLink) signInLink.style.display = 'inline-flex';
@@ -221,6 +235,19 @@ window.addEventListener('load', function () {
         if (window.Clerk) window.Clerk.signOut({ redirectUrl: window.location.href });
       });
     }
+  }
+
+  function prepareHeaderShell(authApi) {
+    ensureHeaderStyles();
+    applyRedirectToAuthLinks();
+    var headerActions = getHeaderActionsContainer();
+    ensureThemeToggle(headerActions);
+    ensureProfileMenu(document.getElementById('user-profile'));
+    wireProfileMenu();
+    bindMenuActions();
+    orderHeaderActions();
+    bindAuthLinkModals(authApi);
+    updateHeaderAuth();
   }
 
   function ensureGlobalAuthModal() {
@@ -391,16 +418,7 @@ window.addEventListener('load', function () {
         });
       }
 
-      ensureHeaderStyles();
-      applyRedirectToAuthLinks();
-      var headerActions = getHeaderActionsContainer();
-      ensureThemeToggle(headerActions);
-      ensureProfileMenu(document.getElementById('user-profile'));
-      wireProfileMenu();
-      bindMenuActions();
-      orderHeaderActions();
-      bindAuthLinkModals(authApi);
-      updateHeaderAuth();
+      prepareHeaderShell(authApi);
       window.Clerk.addListener(function () {
         updateHeaderAuth();
         bindMenuActions();
@@ -410,7 +428,7 @@ window.addEventListener('load', function () {
     }).catch(function () {
       clerkInitStarted = false;
       if (typeof window.__loadYatrifyClerk === 'function') {
-        window.__loadYatrifyClerk(true).finally(function () {
+        window.__loadYatrifyClerk(false).finally(function () {
           waitForClerk(80);
         });
       }
@@ -430,7 +448,7 @@ window.addEventListener('load', function () {
       return;
     }
     if (typeof window.__loadYatrifyClerk === 'function') {
-      window.__loadYatrifyClerk(true).finally(function () {
+      window.__loadYatrifyClerk(false).finally(function () {
         waitForClerk(180);
       });
       return;
@@ -438,8 +456,15 @@ window.addEventListener('load', function () {
     waitForClerk(180);
   }
 
+  prepareHeaderShell(ensureGlobalAuthModal());
   bootstrapClerk();
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initGlobalHeaderAuth, { once: true });
+} else {
+  initGlobalHeaderAuth();
+}
 
 
 

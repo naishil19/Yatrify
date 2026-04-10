@@ -6,6 +6,10 @@
     <title>Create Plan - Yatrify</title>
     <link rel="icon" href="/images/favicon.ico?v=20260408" type="image/x-icon" />
     <link rel="shortcut icon" href="/images/favicon.ico?v=20260408" type="image/x-icon" />
+    <link rel="preload" as="image" href="/images/Step1.svg" />
+    <link rel="preload" as="image" href="/images/Step2.svg" />
+    <link rel="preload" as="image" href="/images/Step3.svg" />
+    <link rel="preload" as="image" href="/images/Step4.svg" />
     <link rel="stylesheet" href="css/2a2e7898d4f6aad7.css" />
     <style>
       :root {
@@ -65,6 +69,11 @@
         background: var(--scrollbar-thumb-hover);
       }
       html.dark body {
+        --bg: #020817;
+        --text: #e2e8f0;
+        --muted: #94a3b8;
+        --border: #334155;
+        --chip: #111827;
         background: #020817;
         color: #e2e8f0;
       }
@@ -134,12 +143,13 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        position: relative;
       }
       .topbar-left {
         display: flex;
         align-items: center;
         gap: 28px;
-        flex: 1 1 auto;
+        flex: 0 0 auto;
         min-width: 0;
         justify-content: flex-start;
       }
@@ -158,8 +168,8 @@
       }
       .logo-wrap img {
       display: block;
-        width: 88px;
-        height: 44px;
+        width: 100px;
+        height: 47px;
         object-fit: contain;
       }
       .logo-dark {
@@ -178,11 +188,14 @@
         padding: 0;
         margin: 0;
         align-items: center;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
       }
       .topbar-nav a {
         color: var(--text);
         text-decoration: none;
-        font-size: 13px;
+        font-size: 0.875rem;
         font-weight: 500;
       }
       .topbar-nav a:hover {
@@ -338,6 +351,8 @@ html.dark .theme-toggle:hover {
       @media (max-width: 1280px) {
         .topbar-nav {
           display: none;
+          position: static;
+          transform: none;
         }
         #mobile-menu-btn {
           display: inline-flex;
@@ -407,17 +422,18 @@ html.dark .theme-toggle:hover {
         margin-top: 10px;
         width: 100%;
         height: 220px;
-        background: rgba(255, 255, 255, 0.15);
-        border-radius: 16px;
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: 600;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
       }
-      .left-illustration:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 12px 26px rgba(0, 0, 0, 0.2);
+      .left-illustration img {
+        width: 120%;
+        height: 120%;
+        max-width: 120%;
+        max-height: 120%;
+        object-fit: contain;
+        display: block;
       }
       .left-title {
         font-size: 20px;
@@ -2195,19 +2211,7 @@ html.dark .theme-toggle:hover {
             <span class="step-dot" data-dot="4">4</span>
           </div>
           <div class="left-illustration" id="left-illustration">
-            <svg width="220" height="180" viewBox="0 0 220 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="18" y="20" width="184" height="120" rx="14" fill="rgba(255,255,255,0.2)" />
-              <rect x="34" y="36" width="60" height="72" rx="6" fill="#ffffff" />
-              <rect x="42" y="46" width="18" height="18" rx="4" fill="#60a5fa" />
-              <rect x="65" y="46" width="18" height="18" rx="4" fill="#93c5fd" />
-              <rect x="42" y="70" width="41" height="8" rx="4" fill="#dbeafe" />
-              <circle cx="148" cy="76" r="24" fill="#ffffff" />
-              <path d="M148 52C136 52 126 61 126 73C126 91 148 114 148 114C148 114 170 91 170 73C170 61 160 52 148 52Z" fill="#2563eb" />
-              <circle cx="148" cy="73" r="8" fill="#ffffff" />
-              <rect x="30" y="126" width="160" height="10" rx="5" fill="rgba(255,255,255,0.4)" />
-              <circle cx="50" cy="140" r="10" fill="#fde68a" />
-              <path d="M170 112L182 100L196 112L182 108Z" fill="#f472b6" />
-            </svg>
+            <img src="/images/Step1.svg" alt="Step 1 illustration" loading="eager" decoding="async" fetchpriority="high" />
           </div>
           <div class="left-phase" id="left-phase">Set the Course, Own the Journey</div>
           <div class="left-subtitle" id="left-subtitle">
@@ -2559,6 +2563,12 @@ html.dark .theme-toggle:hover {
     <footer class="py-5 mt-10 bg-blue-50 dark:bg-slate-900 dark:text-gray-200 relative z-[1000]"><div class="lg:px-20 px-5 py-2 grid grid-cols-4 justify-between gap-10 lg:grid-cols-6 lg:text-left"><div class="col-span-4 flex w-full flex-col gap-6 lg:col-span-2"><div class="flex items-center gap-2 lg:justify-start"><div class="hidden md:flex gap-10 items-center justify-start flex-1"><a href="/"><div class="flex justify-center items-center leading-5 font-bold text-xl"><img alt="logo" loading="lazy" width="88" height="44" decoding="async" data-nimg="1" class="block dark:hidden" style="color:transparent" src="images/logo_light.svg"><img alt="logo" loading="lazy" width="88" height="44" decoding="async" data-nimg="1" class="hidden dark:block" style="color:transparent" src="images/logo_dark.svg"></div></a></div></div><p class="text-muted-foreground dark:text-gray-400">Your perfect trip, built for you. Effortlessly plan personalized itineraries that match your travel style.</p><ul class="flex items-center space-x-6"><li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300"><a href="#"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"></path></svg></a></li><li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300"><a href="#"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M504 256C504 119 393 8 256 8S8 119 8 256c0 123.78 90.69 226.38 209.25 245V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.28c-30.8 0-40.41 19.12-40.41 38.73V256h68.78l-11 71.69h-57.78V501C413.31 482.38 504 379.78 504 256z"></path></svg></a></li><li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300"><a href="#"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8l165-188.5L26.7 48H172.3l100.7 132.1L389.2 48zm-24.8 373.8h39.1L151.1 88.1h-42l255.3 333.7z"></path></svg></a></li><li class="font-medium duration-200 hover:scale-110 hover:text-muted-foreground dark:hover:text-gray-300"><a href="#"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" class="size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"></path></svg></a></li></ul></div><div class="col-span-2 md:col-span-1"><h3 class="mb-5 font-medium">Support</h3><ul class="space-y-4 text-sm text-muted-foreground dark:text-gray-400"><li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/help-center.html">Help Center</a></li><li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/contact-us.html">Contact Us</a></li><li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/privacy-policy.html">Privacy Policy</a></li><li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/terms-of-service.html">Terms of Service</a></li></ul></div><div class="col-span-2 md:col-span-1"><h3 class="mb-5 font-medium">Company</h3><ul class="space-y-4 text-sm text-muted-foreground dark:text-gray-400"><li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/about-us.html">About Us</a></li><li class="font-medium"><a class="text-muted-foreground dark:text-gray-400 hover:text-primary dark:hover:text-blue-400" href="/partners.html">Partners</a></li></ul></div><div class="col-span-4 md:col-span-2"><h3 class="mb-2 font-medium">Newsletter</h3><form class="grid gap-1"><div class="flex justify-evenly w-full space-x-2"><input type="email" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-slate-800 dark:border-slate-700" data-slot="input" placeholder="Email" required="" value=""><button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 px-4 py-2 dark:bg-slate-700 dark:hover:bg-slate-600" data-slot="button" type="submit">Subscribe</button></div></form><p class="mt-2 ml-1 text-xs font-medium text-muted-foreground dark:text-gray-400">By submitting, you agree to our<a href="/privacy-policy.html" class="ml-1 text-primary dark:text-blue-400 hover:underline">Privacy Policy</a></p></div></div></footer>
 
     <script src="/js/clerk-loader.js"></script>
+    <script src="/js/error-page.js"></script>
+    <script>
+      if (window.YatrifyErrorPage) {
+        window.YatrifyErrorPage.installGlobalHandlers();
+      }
+    </script>
     <script src="/js/api-client.js"></script>
     <script src="/js/plan-service.js"></script>
     <script src="/js/credits-modal.js"></script>
@@ -2791,7 +2801,12 @@ html.dark .theme-toggle:hover {
           3: "Add budget, passengers, and your special requests.",
           4: "Reviewing your travel plan details."
         };
-        var leftIllustrationDefaultMarkup = leftIllustration ? leftIllustration.innerHTML : "";
+        var leftIllustrationStepMarkup = {
+          1: '<img src="/images/Step1.svg" alt="Step 1 illustration" loading="eager" decoding="async" fetchpriority="high" />',
+          2: '<img src="/images/Step2.svg" alt="Step 2 illustration" loading="eager" decoding="async" />',
+          3: '<img src="/images/Step3.svg" alt="Step 3 illustration" loading="eager" decoding="async" />'
+        };
+        var leftIllustrationDefaultMarkup = leftIllustrationStepMarkup[1];
         var leftIllustrationFeasibilityMarkup = '' +
           '<svg width="220" height="180" viewBox="0 0 220 180" fill="none" xmlns="http://www.w3.org/2000/svg">' +
           '<rect x="20" y="24" width="180" height="116" rx="18" fill="rgba(255,255,255,0.14)" />' +
@@ -3455,10 +3470,10 @@ html.dark .theme-toggle:hover {
           if (!leftIllustration) return;
           if (step === 4) {
             leftIllustration.classList.add("feasibility");
-            leftIllustration.innerHTML = leftIllustrationFeasibilityMarkup;
+            leftIllustration.innerHTML = '<img src="/images/Step4.svg" alt="Step 4 illustration" loading="eager" decoding="async" />';
           } else {
             leftIllustration.classList.remove("feasibility");
-            leftIllustration.innerHTML = leftIllustrationDefaultMarkup;
+            leftIllustration.innerHTML = leftIllustrationStepMarkup[step] || leftIllustrationDefaultMarkup;
           }
         }
 
@@ -4627,7 +4642,7 @@ html.dark .theme-toggle:hover {
             return window.Clerk.loaded ? Promise.resolve() : window.Clerk.load();
           }
           if (typeof window.__loadYatrifyClerk === "function") {
-            return window.__loadYatrifyClerk(true).then(function () {
+            return window.__loadYatrifyClerk(false).then(function () {
               if (!window.Clerk) throw new Error("Clerk SDK not available");
               return window.Clerk.loaded ? Promise.resolve() : window.Clerk.load();
             });
@@ -5362,7 +5377,7 @@ html.dark .theme-toggle:hover {
           if (currentStep > 1) setStep(currentStep - 1);
         });
 
-        window.addEventListener("load", function () {
+        function bootPageAuth() {
           initTheme();
           loadCredits();
           ensureClerkLoaded().then(function () {
@@ -5371,7 +5386,13 @@ html.dark .theme-toggle:hover {
             window.Clerk.addListener(updateHeaderUI);
           }).catch(function () {
           });
-        });
+        }
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", bootPageAuth, { once: true });
+        } else {
+          bootPageAuth();
+        }
 
         setupLocationAutocomplete("startCity");
         setupLocationAutocomplete("destination");
@@ -5389,7 +5410,3 @@ html.dark .theme-toggle:hover {
   <script src="/js/newsletter.js"></script>
 </body>
 </html>
-
-
-
-

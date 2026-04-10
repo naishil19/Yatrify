@@ -12,6 +12,8 @@ import { createStore } from "./data/store.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const FRONTEND_ROOT_DIR = path.resolve(__dirname, "..");
+const FRONTEND_ASSET_DIRS = ["css", "js", "images", "fonts", "_next", "Screenshots"];
 
 dotenv.config({ path: path.resolve(__dirname, "../.env.local") });
 dotenv.config({ path: path.resolve(__dirname, ".env"), override: false });
@@ -23,7 +25,7 @@ const RAZORPAY_API_BASE_URL = "https://api.razorpay.com/v1";
 
 const allowedOrigins = String(
   process.env.CORS_ORIGINS ||
-    "http://localhost:5500,http://127.0.0.1:5500,http://localhost:8000,http://127.0.0.1:8000"
+    "http://localhost:4000,http://127.0.0.1:4000"
 )
   .split(",")
   .map((item) => item.trim())
@@ -184,6 +186,88 @@ function isMockAiEnabled() {
   return MOCK_AI;
 }
 
+function isLikelyAssetPath(requestPath) {
+  const pathname = String(requestPath || "");
+  if (!pathname) return false;
+
+  const isFromAssetDir = FRONTEND_ASSET_DIRS.some(
+    (dir) => pathname === `/${dir}` || pathname.startsWith(`/${dir}/`)
+  );
+  if (isFromAssetDir) return true;
+
+  const ext = path.extname(pathname).toLowerCase();
+  return !!ext && ext !== ".html";
+}
+
+function deriveNotFoundPageTitle(requestPath) {
+  const pathname = String(requestPath || "").trim();
+  if (!pathname || pathname === "/") {
+    return "Yatrify - Your Smart Travel Planner";
+  }
+
+  const cleanPath = pathname.split("?")[0].split("#")[0];
+  const normalized = cleanPath.replace(/\/+$/, "");
+  const slug = path.basename(normalized).replace(/\.html$/i, "");
+
+  const knownTitles = {
+    dashboard: "Dashboard - Yatrify",
+    index: "Yatrify - Your Smart Travel Planner",
+    "plans-newplan": "Create Plan - Yatrify",
+    "generated-plan": "Generated Plan - Yatrify",
+  };
+
+  if (knownTitles[slug]) return knownTitles[slug];
+  if (!slug) return "Yatrify - Your Smart Travel Planner";
+
+  const prettyTitle = slug
+    .split(/[-_]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    .join(" ");
+
+  return prettyTitle ? `${prettyTitle} - Yatrify` : "Yatrify - Your Smart Travel Planner";
+}
+
+function sendFrontendNotFoundPage(res, options) {
+  const details = options && typeof options === "object" ? options : {};
+  const scenario = String(details.scenario || "MISTYPED_URL").trim().toUpperCase();
+  const resource = String(details.resource || "").trim();
+  const pageTitle = String(
+    details.pageTitle || deriveNotFoundPageTitle(details.requestPath || resource)
+  ).trim();
+
+  const renderOptions = {
+    scenario,
+    resource,
+    pageTitle,
+    replaceBody: true,
+  };
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${escapeHtml(pageTitle || "Yatrify")}</title>
+  <link rel="icon" href="/images/favicon.ico?v=20260408" type="image/x-icon">
+</head>
+<body>
+  <noscript>This page needs JavaScript enabled to show the custom 404 design.</noscript>
+  <script src="/js/error-page.js"></script>
+  <script>
+    (function () {
+      var options = ${JSON.stringify(renderOptions)};
+      if (window.YatrifyErrorPage && typeof window.YatrifyErrorPage.render === "function") {
+        window.YatrifyErrorPage.render(options);
+      }
+    })();
+  </script>
+</body>
+</html>`;
+
+  return res.status(404).type("html").send(html);
+}
+
 let cachedInviteLogoDataUri = null;
 
 function normalizeInviteLogoUrl(rawUrl) {
@@ -322,7 +406,7 @@ async function sendCollaboratorInviteEmail(options = {}) {
   const appBaseUrl = String(
     process.env.APP_BASE_URL ||
       options.appBaseUrl ||
-      "http://localhost:5500"
+      "http://localhost:4000"
   ).replace(/\/+$/, "");
   if (!fromEmail) {
     return { sent: false, skipped: true, reason: "BREVO_FROM_EMAIL not configured" };
@@ -621,13 +705,18 @@ function setCors(req, res) {
 }
 
 app.use((req, res, next) => {
-  if (req.path.startsWith("/api/")) {
+  if (req.path === "/api" || req.path.startsWith("/api/")) {
     setCors(req, res);
   }
   next();
 });
 
 app.options("/api/*", (req, res) => {
+  setCors(req, res);
+  return res.sendStatus(204);
+});
+
+app.options("/api", (req, res) => {
   setCors(req, res);
   return res.sendStatus(204);
 });
@@ -3232,7 +3321,7 @@ app.post("/api/plans/:id/collaborators", requireAuth, requireDb, express.json(),
         destination,
         inviterName,
         inviterEmail: user.email || "",
-        appBaseUrl: process.env.APP_BASE_URL || req.headers.origin || "http://localhost:5500",
+        appBaseUrl: process.env.APP_BASE_URL || req.headers.origin || "http://localhost:4000",
       });
     } catch (mailError) {
       emailDelivery = { sent: false, skipped: false, reason: mailError.message || "send failed" };
@@ -3533,11 +3622,67 @@ app.post("/webhooks/clerk", express.raw({ type: "application/json" }), async (re
   res.json({ received: true });
 });
 
+FRONTEND_ASSET_DIRS.forEach((dirName) => {
+  const dirPath = path.join(FRONTEND_ROOT_DIR, dirName);
+  if (fs.existsSync(dirPath)) {
+    app.use(`/${dirName}`, express.static(dirPath, { fallthrough: true }));
+  }
+});
+
+app.get("/", (_req, res) => {
+  return res.sendFile(path.join(FRONTEND_ROOT_DIR, "index.html"));
+});
+
+app.get("/404.html", (req, res) => {
+  return sendFrontendNotFoundPage(res, {
+    scenario: req.query && req.query.scenario ? req.query.scenario : "MISTYPED_URL",
+    resource: req.query && req.query.resource ? req.query.resource : "",
+    requestPath: req.query && req.query.resource ? req.query.resource : req.path,
+  });
+});
+
+app.get(/^\/([a-z0-9-]+)(?:\.html)?$/i, (req, res, next) => {
+  const slug = String(req.params[0] || "").trim().toLowerCase();
+  if (!slug) return next();
+  if (slug === "api" || slug === "health" || slug === "webhooks") return next();
+
+  const filePath = path.join(FRONTEND_ROOT_DIR, `${slug}.html`);
+  if (fs.existsSync(filePath)) {
+    return res.sendFile(filePath);
+  }
+  return next();
+});
+
+app.use("/api", (_req, res) => {
+  return res.status(404).json({
+    error: "API endpoint not found",
+    scenario: "API_ENDPOINT_NOT_FOUND",
+  });
+});
+
+app.use((req, res) => {
+  if (req.method !== "GET" && req.method !== "HEAD") {
+    return res.status(404).json({ error: "Not Found" });
+  }
+
+  const scenario = isLikelyAssetPath(req.path) ? "MISSING_ASSET" : "MISTYPED_URL";
+  const resource = String(req.originalUrl || req.path || "").trim();
+  return sendFrontendNotFoundPage(res, { scenario, resource, requestPath: req.path });
+});
+
 async function startServer() {
   try {
     await ensurePaymentTables();
-    app.listen(port, () => {
+    const server = app.listen(port, () => {
       console.log(`API listening on ${port}`);
+    });
+    server.on("error", (error) => {
+      if (error && error.code === "EADDRINUSE") {
+        console.error(`Port ${port} is already in use. Stop the existing server and try again.`);
+      } else {
+        console.error("Unable to start API server:", error);
+      }
+      process.exit(1);
     });
   } catch (error) {
     console.error("Unable to start API server:", error);

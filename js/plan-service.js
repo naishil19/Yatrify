@@ -5,7 +5,10 @@
     return res.json();
   }
 
-  function getUserMe() {
+  function getUserMe(options) {
+    if (api && typeof api.fetchUserProfile === "function") {
+      return api.fetchUserProfile(options);
+    }
     return api.authFetch("/api/users/me").then(json);
   }
 

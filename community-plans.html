@@ -61,8 +61,8 @@
 
     .logo-wrap img {
       display: block;
-      width: 88px;
-      height: 44px;
+      width: 100px;
+      height: 47px;
       object-fit: contain;
     }
 
@@ -90,7 +90,7 @@
     .topbar-nav a {
       color: #0f172a;
       text-decoration: none;
-      font-size: 13px;
+      font-size: 0.875rem;
       font-weight: 500;
     }
 
@@ -105,6 +105,29 @@
 
     #mobile-menu-btn {
       display: none;
+    }
+
+    .community-page-body > header {
+      height: 60px;
+    }
+
+    .community-page-body > header > nav {
+      height: 100%;
+      padding-top: 0;
+      padding-bottom: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .community-page-body > header > nav > div.flex.justify-evenly.w-full {
+      height: 100%;
+      align-items: center;
+    }
+
+    .community-page-body > header a[href="/"] > div[class*="leading-5"][class*="font-bold"],
+    .community-page-body > footer a[href="/"] > div[class*="leading-5"][class*="font-bold"] {
+      height: 54px;
+      line-height: 0;
     }
 
     .header-credits {
@@ -1347,8 +1370,8 @@
         </div>
         <div class="md:hidden flex items-center gap-3 flex-1">
           <a href="/" class="flex items-center" aria-label="Yatrify home">
-            <img alt="logo" loading="lazy" width="80" height="40" decoding="async" class="block dark:hidden" style="color:transparent" src="images/logo_light.svg">
-            <img alt="logo" loading="lazy" width="80" height="40" decoding="async" class="hidden dark:block" style="color:transparent" src="images/logo_dark.svg">
+            <img alt="logo" loading="lazy" width="88" height="44" decoding="async" class="block dark:hidden" style="color:transparent" src="images/logo_light.svg">
+            <img alt="logo" loading="lazy" width="88" height="44" decoding="async" class="hidden dark:block" style="color:transparent" src="images/logo_dark.svg">
           </a>
           <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary underline-offset-4 hover:underline h-10 px-4 py-2 text-xl" aria-label="open side menu">
             <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
@@ -1617,8 +1640,8 @@
           <div class="hidden md:flex gap-10 items-center justify-start flex-1">
             <a href="/">
               <div class="flex justify-center items-center leading-5 font-bold text-xl">
-                <img alt="logo" loading="lazy" width="88" height="44" decoding="async" class="block dark:hidden" src="/images/logo_light.svg" />
-                <img alt="logo" loading="lazy" width="88" height="44" decoding="async" class="hidden dark:block" src="/images/logo_dark.svg" />
+                <img alt="logo" loading="lazy" width="100" height="54" decoding="async" class="block dark:hidden" src="/images/logo_light.svg" />
+                <img alt="logo" loading="lazy" width="100" height="54" decoding="async" class="hidden dark:block" src="/images/logo_dark.svg" />
               </div>
             </a>
           </div>
@@ -1840,7 +1863,7 @@
           return window.Clerk.loaded ? Promise.resolve(window.Clerk) : window.Clerk.load().then(function () { return window.Clerk; });
         }
         if (typeof window.__loadYatrifyClerk === "function") {
-          return window.__loadYatrifyClerk(true).then(function (clerk) {
+          return window.__loadYatrifyClerk(false).then(function (clerk) {
             if (!clerk) throw new Error("Clerk SDK not available");
             if (typeof clerk.load === "function" && !clerk.loaded) {
               return clerk.load().then(function () { return window.Clerk || clerk; });
@@ -1909,15 +1932,26 @@
         document.documentElement.style.colorScheme = 'dark';
       }
 
-      window.addEventListener('load', function () {
+      function bootCommunityHeader() {
+        loadCredits();
+        renderLucideIcons();
         ensureClerkLoaded().then(function (clerk) {
           bindClerk(clerk);
-          renderLucideIcons();
         }).catch(function () {
-          setHeaderAuthState(false);
-          renderLucideIcons();
+          var cachedProfile = window.YatrifyAuthCache && typeof window.YatrifyAuthCache.getProfile === "function"
+            ? window.YatrifyAuthCache.getProfile({ maxAgeMs: 0 })
+            : null;
+          if (!cachedProfile || !cachedProfile.userId) {
+            setHeaderAuthState(false);
+          }
         });
-      });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', bootCommunityHeader, { once: true });
+      } else {
+        bootCommunityHeader();
+      }
     })();
   </script>
   <script>
