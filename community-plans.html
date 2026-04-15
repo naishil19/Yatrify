@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Yatrify - Community Plans</title>
   <link rel="stylesheet" href="/css/2a2e7898d4f6aad7.css" />
+  <script>
+    document.documentElement.classList.add("yatrify-header-auth-loading");
+  </script>
   <link rel="icon" href="/images/favicon.ico" type="image/x-icon" sizes="16x16" />
   <style id="community-plans-inline-style">
     /* Header + wrapper (reuse the same elements/classes as other pages) */
@@ -62,7 +65,7 @@
     .logo-wrap img {
       display: block;
       width: 100px;
-      height: 47px;
+      height: 50px;
       object-fit: contain;
     }
 
@@ -126,7 +129,7 @@
 
     .community-page-body > header a[href="/"] > div[class*="leading-5"][class*="font-bold"],
     .community-page-body > footer a[href="/"] > div[class*="leading-5"][class*="font-bold"] {
-      height: 54px;
+      height: 50px;
       line-height: 0;
     }
 
@@ -1396,7 +1399,7 @@
           </aside>
         </div>
         <div class="flex gap-5 justify-end items-center flex-1 header-action-row" style="position:relative;z-index:10005;">
-          <span id="community-credits-wrap" class="header-credits" style="display:none;">Credits <span id="credits-count">0</span></span>
+          <span id="community-credits-wrap" class="header-credits" style="display:none;">Credits <span id="credits-count">-</span></span>
           <button id="community-feedback-btn" type="button" class="icon-btn" title="Feedback" aria-label="Feedback" style="display:none;">
             <i data-lucide="message-circle" style="width:18px;height:18px;"></i>
           </button>
@@ -1729,6 +1732,55 @@
       var profileWrap = document.getElementById('user-profile');
       var themeToggle = document.getElementById('theme-toggle-btn');
       var clerkReady = false;
+      var headerAuthResolved = false;
+      var headerProfileReady = false;
+      var headerCreditsReady = false;
+      var headerReleaseTimer = null;
+
+      function releaseHeaderLoading(force) {
+        if (!force && !(headerAuthResolved && headerProfileReady && headerCreditsReady)) return;
+        if (headerReleaseTimer) {
+          clearTimeout(headerReleaseTimer);
+          headerReleaseTimer = null;
+        }
+        document.documentElement.classList.remove('yatrify-header-auth-loading');
+      }
+
+      function startHeaderReleaseFallback() {
+        if (headerReleaseTimer) return;
+        headerReleaseTimer = window.setTimeout(function () {
+          if (!headerAuthResolved) return;
+          if (window.Clerk && window.Clerk.user && !headerCreditsReady) return;
+          releaseHeaderLoading(true);
+        }, 1800);
+      }
+
+      function hydrateHeaderFromCache() {
+        var cachedProfile = window.YatrifyAuthCache && typeof window.YatrifyAuthCache.getProfile === "function"
+          ? window.YatrifyAuthCache.getProfile({ maxAgeMs: 0 })
+          : null;
+        if (!cachedProfile || !cachedProfile.userId) return false;
+        setHeaderAuthState(true);
+        headerAuthResolved = true;
+        headerProfileReady = true;
+        if (avatar && cachedProfile.imageUrl) {
+          avatar.style.display = "block";
+          avatar.src = cachedProfile.imageUrl;
+        }
+        if (nameEl) {
+          nameEl.textContent = cachedProfile.fullName || cachedProfile.firstName || "Account";
+        }
+        if (emailEl) {
+          emailEl.textContent = cachedProfile.email || "";
+        }
+        if (creditsCount && Number.isFinite(Number(cachedProfile.credits))) {
+          creditsCount.removeAttribute("data-loading");
+          creditsCount.textContent = String(Number(cachedProfile.credits));
+          headerCreditsReady = true;
+        }
+        releaseHeaderLoading();
+        return true;
+      }
 
       function closeMenu() {
         if (profileMenu) profileMenu.style.display = 'none';
@@ -1816,19 +1868,32 @@
 
       function updateUI() {
         if (!window.Clerk) {
-          setHeaderAuthState(false);
+          if (clerkReady) {
+            setHeaderAuthState(false);
+            headerAuthResolved = true;
+            headerProfileReady = true;
+            headerCreditsReady = true;
+            releaseHeaderLoading();
+          }
           return;
         }
         if (window.Clerk.user) {
+          headerAuthResolved = true;
           setHeaderAuthState(true);
           var fullName = [window.Clerk.user.firstName, window.Clerk.user.lastName].filter(Boolean).join(' ').trim();
           var initial = fullName ? fullName.charAt(0) : "U";
           if (avatar) {
+            var fallbackAvatar = buildInitialsAvatar(initial);
+            headerProfileReady = true;
+            avatar.style.display = "block";
+            avatar.onload = null;
             avatar.onerror = function () {
               avatar.onerror = null;
-              avatar.src = buildInitialsAvatar(initial);
+              avatar.src = fallbackAvatar;
             };
-            avatar.src = window.Clerk.user.imageUrl || buildInitialsAvatar(initial);
+            avatar.src = window.Clerk.user.imageUrl || fallbackAvatar;
+          } else {
+            headerProfileReady = true;
           }
           if (nameEl) {
             nameEl.textContent = fullName || 'Account';
@@ -1836,13 +1901,22 @@
           if (emailEl) {
             emailEl.textContent = window.Clerk.user.primaryEmailAddress ? window.Clerk.user.primaryEmailAddress.emailAddress : '';
           }
-          loadCredits();
+          headerCreditsReady = false;
+          loadCredits().finally(function () {
+            headerCreditsReady = true;
+            releaseHeaderLoading();
+          });
+          releaseHeaderLoading();
         } else if (clerkReady) {
           setHeaderAuthState(false);
           if (avatar) avatar.src = buildInitialsAvatar("U");
           if (nameEl) nameEl.textContent = "";
           if (emailEl) emailEl.textContent = "";
           closeMenu();
+          headerAuthResolved = true;
+          headerProfileReady = true;
+          headerCreditsReady = true;
+          releaseHeaderLoading();
         }
       }
 
@@ -1875,12 +1949,20 @@
       }
 
       function loadCredits() {
-        if (!creditsCount || !window.YatrifyPlanService) return;
-        window.YatrifyPlanService.getUserMe().then(function (payload) {
+        if (!creditsCount || !window.YatrifyPlanService) {
+          headerCreditsReady = true;
+          releaseHeaderLoading();
+          return Promise.resolve();
+        }
+        creditsCount.setAttribute("data-loading", "true");
+        creditsCount.textContent = "";
+        return window.YatrifyPlanService.getUserMe().then(function (payload) {
           var credits = Number(payload && payload.credits);
-          creditsCount.textContent = Number.isFinite(credits) ? String(credits) : "-";
+          creditsCount.removeAttribute("data-loading");
+          creditsCount.textContent = Number.isFinite(credits) ? String(credits) : "—";
         }).catch(function () {
-          creditsCount.textContent = "-";
+          creditsCount.removeAttribute("data-loading");
+          creditsCount.textContent = "—";
         });
       }
 
@@ -1933,7 +2015,12 @@
       }
 
       function bootCommunityHeader() {
-        loadCredits();
+        document.documentElement.classList.add('yatrify-header-auth-loading');
+        headerAuthResolved = false;
+        headerProfileReady = false;
+        headerCreditsReady = false;
+        startHeaderReleaseFallback();
+        hydrateHeaderFromCache();
         renderLucideIcons();
         ensureClerkLoaded().then(function (clerk) {
           bindClerk(clerk);
@@ -1944,6 +2031,10 @@
           if (!cachedProfile || !cachedProfile.userId) {
             setHeaderAuthState(false);
           }
+          headerAuthResolved = true;
+          headerProfileReady = true;
+          headerCreditsReady = true;
+          releaseHeaderLoading(true);
         });
       }
 

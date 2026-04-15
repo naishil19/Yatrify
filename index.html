@@ -311,6 +311,7 @@
             style="font-size:15px;"
             class="inline-flex items-center justify-center whitespace-nowrap font-medium text-foreground hover:underline hover:underline-offset-4 bg-transparent p-0 border-0">Sign
             in</button>
+          <span id="header-auth-spinner" class="header-auth-spinner" aria-hidden="true"></span>
         </div>
       </div>
     </nav>
@@ -1896,10 +1897,15 @@
       });
 
       function bootIndexAuth() {
+        document.documentElement.classList.add('auth-loading');
+        if (signInBtn) signInBtn.style.display = 'none';
         ensureClerkLoaded().then(function () {
+          document.documentElement.classList.remove('auth-loading');
           updateUI();
           window.Clerk.addListener(updateUI);
         }).catch(function () {
+          document.documentElement.classList.remove('auth-loading');
+          if (signInBtn) signInBtn.style.display = 'inline-flex';
         });
       }
 

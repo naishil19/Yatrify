@@ -141,13 +141,13 @@ body > footer {
     .logo-wrap img {
       display: block;
       width: 100px;
-      height: 47px;
+      height: 50px;
       object-fit: contain;
     }
 
     header.topbar .logo-wrap img {
       width: 100px !important;
-      height: 47px !important;
+      height: 50px !important;
       max-width: 100px;
     }
 
@@ -378,7 +378,8 @@ body > footer {
       white-space: nowrap;
       text-decoration: none;
       text-underline-offset: 4px;
-    }
+    }
+
     .header-credits:hover {
       background: rgba(15, 23, 42, 0.08);
       color: #0f172a;
@@ -1199,7 +1200,7 @@ body > footer {
             <p id="destination-empty" class="destination-empty" style="display:none;">No plans found.</p>
           </div>
         </div>
-        <span class="header-credits">Credits <span id="credits-count">2</span></span>
+        <span class="header-credits">Credits <span id="credits-count">-</span></span>
         <button type="button" class="icon-btn" title="Feedback" aria-label="Feedback">
           <i data-lucide="message-circle" style="width:18px;height:18px;"></i>
         </button>
@@ -1223,6 +1224,7 @@ body > footer {
               d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" />
           </svg>
         </button>
+        <span class="header-auth-spinner" aria-hidden="true"></span>
         <a id="header-signin-link" class="header-signin" href="/sign-in.html">Sign in</a>
         <div id="user-profile" class="profile-pill" aria-label="User profile">
           <button id="profile-btn" type="button" aria-label="Profile">
@@ -1696,13 +1698,23 @@ body > footer {
 
   async function setupTopbarData() {
     var creditsCount = document.getElementById("credits-count");
+    if (creditsCount) {
+      creditsCount.setAttribute("data-loading", "true");
+      creditsCount.textContent = "";
+    }
     if (window.YatrifyPlanService) {
       try {
         var payload = await window.YatrifyPlanService.getUserMe();
         var credits = Number(payload && payload.credits);
-        if (creditsCount) creditsCount.textContent = Number.isFinite(credits) ? String(credits) : "—";
+        if (creditsCount) {
+          creditsCount.removeAttribute("data-loading");
+          creditsCount.textContent = Number.isFinite(credits) ? String(credits) : "—";
+        }
       } catch (_) {
-        if (creditsCount) creditsCount.textContent = "—";
+        if (creditsCount) {
+          creditsCount.removeAttribute("data-loading");
+          creditsCount.textContent = "—";
+        }
       }
     }
 
@@ -1810,6 +1822,7 @@ body > footer {
       if (profileWrap) profileWrap.style.display = "none";
       markHeaderAuthReady();
       closeProfileMenu();
+      if (profileBtn) profileBtn.removeAttribute("data-loading");
       if (avatarImg) {
         avatarImg.style.display = "none";
         avatarImg.removeAttribute("src");
@@ -1843,14 +1856,22 @@ body > footer {
       if (avatarLetter) avatarLetter.textContent = initial;
       if (avatarImg) {
         if (user.imageUrl) {
-          avatarImg.src = user.imageUrl;
+          if (profileBtn) profileBtn.setAttribute("data-loading", "true");
+          avatarImg.onload = function () {
+            if (profileBtn) profileBtn.removeAttribute("data-loading");
+            avatarImg.style.display = "block";
+            if (avatarLetter) avatarLetter.style.display = "none";
+          };
           avatarImg.onerror = function () {
+            if (profileBtn) profileBtn.removeAttribute("data-loading");
             avatarImg.style.display = "none";
             if (avatarLetter) avatarLetter.style.display = "inline-flex";
           };
-          avatarImg.style.display = "block";
+          avatarImg.style.display = "none";
           if (avatarLetter) avatarLetter.style.display = "none";
+          avatarImg.src = user.imageUrl;
         } else {
+          if (profileBtn) profileBtn.removeAttribute("data-loading");
           avatarImg.style.display = "none";
           if (avatarLetter) avatarLetter.style.display = "inline-flex";
         }

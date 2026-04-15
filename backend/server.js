@@ -1268,7 +1268,11 @@ function extractBudgetRangeSeedFromRequest(rawInput, normalizedPayload) {
 
   const explicitSeed = normalizeBudgetRangeSeed(body.budgetRangeSeed, fallbackCurrency);
   if (explicitSeed) return explicitSeed;
+  return null;
+}
 
+function extractBudgetGuidanceFromRequest(rawInput, normalizedPayload) {
+  const body = rawInput && typeof rawInput === "object" ? rawInput : {};
   const feasibility =
     body.feasibility && typeof body.feasibility === "object"
       ? body.feasibility
@@ -1286,10 +1290,81 @@ function extractBudgetRangeSeedFromRequest(rawInput, normalizedPayload) {
   if (!Number.isFinite(minValue)) minValue = maxValue;
   if (!Number.isFinite(maxValue)) maxValue = minValue;
 
-  const seededCurrency = String(feasibility.currency || fallbackCurrency || "INR")
-    .trim()
-    .toUpperCase();
-  return buildBudgetRangeFromTotals(minValue, maxValue, seededCurrency);
+  const normalizedMin = toNonNegativeInteger(minValue);
+  const normalizedMax = Math.max(normalizedMin, toNonNegativeInteger(maxValue));
+  const currency = String(
+    feasibility.currency ||
+    (normalizedPayload && normalizedPayload.currency) ||
+    body.currency ||
+    "INR"
+  ).trim().toUpperCase() || "INR";
+
+  return {
+    currency,
+    suggestedBudgetMin: normalizedMin,
+    suggestedBudgetMax: normalizedMax,
+  };
+}
+
+function normalizeBudgetRangePercentages(rawBudgetRange, fallbackCurrency) {
+  const normalized = normalizeBudgetRangeSeed(rawBudgetRange, fallbackCurrency || "INR");
+  if (!normalized) return null;
+
+  const entries = [];
+  ["essentials", "activities", "transport"].forEach((group) => {
+    const list = Array.isArray(normalized[group]) ? normalized[group] : [];
+    list.forEach((item) => {
+      const minAmount = toNonNegativeInteger(item.min);
+      const maxAmount = Math.max(minAmount, toNonNegativeInteger(item.max));
+      const midpoint = (minAmount + maxAmount) / 2;
+      entries.push({
+        item,
+        midpoint,
+        base: 0,
+        fraction: 0,
+      });
+    });
+  });
+
+  const totalMidpoint = entries.reduce((sum, entry) => sum + entry.midpoint, 0);
+  if (totalMidpoint <= 0) {
+    entries.forEach((entry) => {
+      entry.item.pct = 0;
+    });
+    return normalized;
+  }
+
+  entries.forEach((entry) => {
+    const exact = (entry.midpoint * 100) / totalMidpoint;
+    entry.base = Math.max(0, Math.floor(exact));
+    entry.fraction = exact - entry.base;
+  });
+
+  let used = entries.reduce((sum, entry) => sum + entry.base, 0);
+  let remainder = Math.max(0, 100 - used);
+  entries
+    .slice()
+    .sort((left, right) => {
+      if (right.fraction !== left.fraction) return right.fraction - left.fraction;
+      if (right.midpoint !== left.midpoint) return right.midpoint - left.midpoint;
+      return String(left.item && left.item.id || "").localeCompare(String(right.item && right.item.id || ""));
+    })
+    .forEach((entry) => {
+      if (remainder <= 0) return;
+      entry.base += 1;
+      remainder -= 1;
+    });
+
+  used = entries.reduce((sum, entry) => sum + entry.base, 0);
+  if (entries.length && used !== 100) {
+    entries[0].base = Math.max(0, entries[0].base + (100 - used));
+  }
+
+  entries.forEach((entry) => {
+    entry.item.pct = toNonNegativeInteger(entry.base);
+  });
+
+  return normalized;
 }
 
 function normalizeGeminiTripPayload(payload) {
@@ -1405,7 +1480,25 @@ function buildMockTripHighlights(trip) {
 
 function buildMockItineraryDay(trip, dayNumber, landmarkHints) {
   const city = trip.destination || "the destination";
+  const origin = trip.startCity || "your origin city";
   const theme = landmarkHints[(dayNumber - 1) % Math.max(1, landmarkHints.length)] || `${city} exploration`;
+  const transport = normalizePayloadArray(trip.transport).map((value) => String(value || "").toLowerCase());
+  const hasFlight = transport.some((value) => value.includes("flight") || value.includes("plane") || value.includes("air"));
+  const hasTrain = transport.some((value) => value.includes("train") || value.includes("rail"));
+  const hasBus = transport.some((value) => value.includes("bus"));
+  const hasRoad = transport.some((value) => value.includes("road") || value.includes("car") || value.includes("drive"));
+  const wantsSurface = hasTrain || hasBus || hasRoad;
+  const routeText = `${origin} to ${city}`;
+  const quickBookings = [];
+  if (wantsSurface) {
+    if (hasTrain) quickBookings.push(`Search train tickets ${routeText}`);
+    else if (hasBus) quickBookings.push(`Search bus tickets ${routeText}`);
+    else quickBookings.push(`Open driving directions ${routeText}`);
+  } else if (hasFlight) {
+    quickBookings.push(`Search flights ${routeText}`);
+  }
+  quickBookings.push(`Reserve stays in ${city}`);
+  quickBookings.push(`Prebook tickets for a top attraction in ${city}`);
   return {
     dayNumber,
     title: `${theme} - Day ${dayNumber}`,
@@ -1429,10 +1522,7 @@ function buildMockItineraryDay(trip, dayNumber, landmarkHints) {
       `Short heritage walk around ${theme}`,
       `Local cafe or market stop in ${city}`,
     ],
-    quickBookings: [
-      `Reserve entry or transport for ${theme}`,
-      `Book a local guide if needed`,
-    ],
+    quickBookings: quickBookings.slice(0, 4),
   };
 }
 
@@ -2096,6 +2186,17 @@ function buildGeminiSectionsPrompt(payload, options = {}) {
     previousJson && JSON.stringify(previousJson).length > 0
       ? JSON.stringify(previousJson).slice(0, 7000)
       : "";
+  const budgetGuidance =
+    options.budgetGuidance && typeof options.budgetGuidance === "object"
+      ? options.budgetGuidance
+      : null;
+  const guidanceMin = budgetGuidance ? toNonNegativeInteger(budgetGuidance.suggestedBudgetMin) : 0;
+  const guidanceMax = budgetGuidance
+    ? Math.max(guidanceMin, toNonNegativeInteger(budgetGuidance.suggestedBudgetMax))
+    : 0;
+  const guidanceCurrency = budgetGuidance
+    ? String(budgetGuidance.currency || data.currency || "INR").trim().toUpperCase() || "INR"
+    : data.currency || "INR";
 
   return [
     "Return only valid JSON. Do not wrap output in markdown code fences.",
@@ -2117,6 +2218,11 @@ function buildGeminiSectionsPrompt(payload, options = {}) {
     `Transport: ${data.transport.length ? data.transport.join(", ") : "None"}`,
     `Currency: ${data.currency}`,
     `Budget input: ${data.budget || "Not provided"}`,
+    `Budget guidance range: ${
+      budgetGuidance
+        ? `${guidanceCurrency} ${guidanceMin.toLocaleString("en-IN")} - ${guidanceMax.toLocaleString("en-IN")}`
+        : "Not provided"
+    }`,
     `Passengers: ${data.passengers || "Not specified"}`,
     `Extra preferences: ${data.preferences || "None"}`,
     `Destination landmark hints: ${
@@ -2127,6 +2233,14 @@ function buildGeminiSectionsPrompt(payload, options = {}) {
     "Use real popular attractions/landmarks and practical movement between spots.",
     "Do not write generic template text like 'explore local attractions' without naming places.",
     "In itinerary slot text, include concrete place names and practical transit/area context.",
+    "",
+    "QuickBookings rules:",
+    "- quickBookings must be realistic booking actions (not generic advice). Examples: hotel bookings, attraction tickets, transport searches, guided tours, passes.",
+    "- quickBookings must respect the selected Transport:",
+    "  - If Transport does NOT include Flights, do NOT suggest flights/air tickets/airport transfers.",
+    "  - If Transport includes Road or Buses, prefer driving directions, intercity cab, or bus ticket searches for the route.",
+    "  - If Transport includes Trains, suggest train ticket searches for the route.",
+    "- Include 3-5 quickBookings per day. Keep labels short and clear (no markdown).",
     "",
     "Output schema:",
     "{",
@@ -2163,19 +2277,19 @@ function buildGeminiSectionsPrompt(payload, options = {}) {
     '  "budgetRange": {',
     '    "currency": "INR",',
     '    "essentials": [',
-    '      { "id": "accommodation", "label": "Accommodation", "pct": 33, "min": 25000, "max": 40000 },',
-    '      { "id": "food", "label": "Food", "pct": 13, "min": 9000, "max": 17000 },',
-    '      { "id": "insurance", "label": "Insurance", "pct": 1, "min": 800, "max": 2500 },',
-    '      { "id": "contingency", "label": "Contingency", "pct": 7, "min": 4500, "max": 10000 }',
+    '      { "id": "accommodation", "label": "Accommodation", "pct": 0, "min": 0, "max": 0 },',
+    '      { "id": "food", "label": "Food", "pct": 0, "min": 0, "max": 0 },',
+    '      { "id": "insurance", "label": "Insurance", "pct": 0, "min": 0, "max": 0 },',
+    '      { "id": "contingency", "label": "Contingency", "pct": 0, "min": 0, "max": 0 }',
     "    ],",
     '    "activities": [',
-    '      { "id": "activitiesIncluded", "label": "Activities Included", "pct": 6, "min": 6000, "max": 12000 },',
-    '      { "id": "activitiesOptional", "label": "Activities Optional", "pct": 8, "min": 7000, "max": 15000 }',
+    '      { "id": "activitiesIncluded", "label": "Activities Included", "pct": 0, "min": 0, "max": 0 },',
+    '      { "id": "activitiesOptional", "label": "Activities Optional", "pct": 0, "min": 0, "max": 0 }',
     "    ],",
     '    "transport": [',
-    '      { "id": "travelStartReturn", "label": "Travel Start/Return", "pct": 22, "min": 12000, "max": 30000 },',
-    '      { "id": "intercityTransport", "label": "Intercity Transport", "pct": 6, "min": 3000, "max": 9000 },',
-    '      { "id": "intracityTransport", "label": "Intracity Transport", "pct": 4, "min": 2500, "max": 7000 },',
+    '      { "id": "travelStartReturn", "label": "Travel Start/Return", "pct": 0, "min": 0, "max": 0 },',
+    '      { "id": "intercityTransport", "label": "Intercity Transport", "pct": 0, "min": 0, "max": 0 },',
+    '      { "id": "intracityTransport", "label": "Intracity Transport", "pct": 0, "min": 0, "max": 0 },',
     '      { "id": "visa", "label": "Visa", "pct": 0, "min": 0, "max": 0 }',
     "    ]",
     "  },",
@@ -2193,6 +2307,7 @@ function buildGeminiSectionsPrompt(payload, options = {}) {
     "- weatherAnalysis.expectedConditions must be around 90-150 words with practical weather expectations (temperature band, precipitation/wind, and day/night feel).",
     "- weatherAnalysis.bestTimeToVisit must be around 80-130 words with why this trip window works, trade-offs, and practical timing advice.",
     "- Each itinerary day title and schedule should include real place names for the destination.",
+    "- Do not use markdown formatting (like **bold**, _italics_, or lists) inside itinerary schedule fields (morning/afternoon/evening/night). Return plain text only in those fields.",
     "- Every itinerary day must be meaningfully different from every other day. Do not reuse the same sightseeing order or the same morning/afternoon/evening/night plan across multiple days.",
     "- Give each day a distinct theme or anchor so Day 1, Day 2, Day 3, etc. feel like separate parts of the trip, not copies of each other.",
     "- Avoid rephrasing the same day with slightly different words. The route, activities, and places must change from day to day.",
@@ -2201,6 +2316,13 @@ function buildGeminiSectionsPrompt(payload, options = {}) {
     "- Include realistic local anchors such as neighborhoods, viewpoints, ghats, beaches, markets, districts, temples, forts, museums, or monuments where relevant.",
     "- Budget values must be integers, non-negative, and min <= max.",
     "- Use only allowed budget ids shown in schema.",
+    "- Budget percentages must be realistic and trip-specific. Do not reuse a fixed template split across trips.",
+    "- Use the category percentages to reflect this exact trip context (duration, hotel style, route distance, activities intensity, and transport mode).",
+    "- The sum of all category pct values should be close to 100 (acceptable range: 96 to 104 due rounding).",
+    "- Set visa pct and amounts above 0 only when cross-border travel is likely; otherwise keep visa at 0.",
+    budgetGuidance
+      ? `- Budget totals should align with guidance. Keep summed category min/max close to ${guidanceCurrency} ${guidanceMin.toLocaleString("en-IN")} - ${guidanceMax.toLocaleString("en-IN")} (within about +/-15%).`
+      : "",
     "- packingChecklist should contain 12-18 actionable items.",
     "- Packing checklist items must be specific and practical, not just category labels. Include must-have items such as documents, wallet/cards, medicines, chargers, power bank, weather protection, footwear, toiletries, clothing layers, and destination-specific gear.",
     "- Avoid generic one-word checklist items unless they are truly essential, and do not repeat the same packing item in different words.",
@@ -2447,10 +2569,30 @@ async function generateGeminiSections(payload, options = {}) {
   const normalized = normalizeGeminiTripPayload(payload || {});
   const settings = options && typeof options === "object" ? options : {};
   const seededBudgetRange = normalizeBudgetRangeSeed(settings.budgetRangeSeed, normalized.currency);
+  const budgetGuidance =
+    settings.budgetGuidance && typeof settings.budgetGuidance === "object"
+      ? {
+          currency: String(settings.budgetGuidance.currency || normalized.currency || "INR").trim().toUpperCase() || "INR",
+          suggestedBudgetMin: toNonNegativeInteger(settings.budgetGuidance.suggestedBudgetMin),
+          suggestedBudgetMax: Math.max(
+            toNonNegativeInteger(settings.budgetGuidance.suggestedBudgetMin),
+            toNonNegativeInteger(settings.budgetGuidance.suggestedBudgetMax)
+          ),
+        }
+      : null;
   if (isMockAiEnabled()) {
     const mockResult = buildMockGeminiSections(normalized);
     if (seededBudgetRange && mockResult && mockResult.parsed) {
       mockResult.parsed.budgetRange = seededBudgetRange;
+    }
+    if (mockResult && mockResult.parsed) {
+      const normalizedBudget = normalizeBudgetRangePercentages(
+        mockResult.parsed.budgetRange,
+        normalized.currency
+      );
+      if (normalizedBudget) {
+        mockResult.parsed.budgetRange = normalizedBudget;
+      }
     }
     if (mockResult && mockResult.meta) {
       mockResult.meta.budgetSeeded = !!seededBudgetRange;
@@ -2477,7 +2619,7 @@ async function generateGeminiSections(payload, options = {}) {
 
   for (let modelIndex = 0; modelIndex < modelCandidates.length; modelIndex += 1) {
     const modelName = modelCandidates[modelIndex];
-    const basePrompt = buildGeminiSectionsPrompt(normalized);
+    const basePrompt = buildGeminiSectionsPrompt(normalized, { budgetGuidance });
     const primary = await requestGeminiSectionsWithFallback({
       apiKey,
       model: modelName,
@@ -2501,6 +2643,7 @@ async function generateGeminiSections(payload, options = {}) {
         isRevision: true,
         focusIssues: baseQuality.issues,
         previousJson: primary.result.parsed,
+        budgetGuidance,
       });
       const revision = await requestGeminiSectionsWithFallback({
         apiKey,
@@ -2547,6 +2690,16 @@ async function generateGeminiSections(payload, options = {}) {
   if (seededBudgetRange) {
     bestOutput.parsed = Object.assign({}, bestOutput.parsed, {
       budgetRange: seededBudgetRange,
+    });
+  }
+
+  const normalizedBudget = normalizeBudgetRangePercentages(
+    bestOutput.parsed && bestOutput.parsed.budgetRange,
+    normalized.currency
+  );
+  if (normalizedBudget) {
+    bestOutput.parsed = Object.assign({}, bestOutput.parsed, {
+      budgetRange: normalizedBudget,
     });
   }
 
@@ -3078,6 +3231,7 @@ app.post("/api/plans/generate", requireAuth, requireDb, express.json(), async (r
     const rawInput = req.body || {};
     const payload = normalizeGeminiTripPayload(rawInput);
     const budgetRangeSeed = extractBudgetRangeSeedFromRequest(rawInput, payload);
+    const budgetGuidance = extractBudgetGuidanceFromRequest(rawInput, payload);
 
     const totalDays = diffDaysInclusive(payload.startDate, payload.endDate);
     if (!totalDays) {
@@ -3091,7 +3245,7 @@ app.post("/api/plans/generate", requireAuth, requireDb, express.json(), async (r
       return res.status(402).json({ error: "Insufficient credits" });
     }
 
-    const generated = await generateGeminiSections(payload, { budgetRangeSeed });
+    const generated = await generateGeminiSections(payload, { budgetRangeSeed, budgetGuidance });
     const plan = await store.createPlan(user.id, payload, generated.parsed, {});
     const creditsResult = await store.consumeCredits(user.id, 1, "generate", plan.id);
     if (!creditsResult) {

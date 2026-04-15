@@ -4,6 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Yatrify - Sign In</title>
+  <script>
+    document.documentElement.classList.add("auth-loading");
+  </script>
   <link rel="stylesheet" href="/css/2a2e7898d4f6aad7.css" />
   <link rel="icon" href="/images/favicon.ico" type="image/x-icon" sizes="16x16" />
   <style>
@@ -298,7 +301,7 @@ html.dark .theme-toggle:hover {
           <a href="/community-plans.html" class="hover:underline hover:underline-offset-4">Community Plans</a>
           <a href="/#pricing" class="hover:underline hover:underline-offset-4">Pricing</a>
         </div>
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3 auth-actions">
           <button id="theme-toggle-btn" class="theme-toggle" title="Toggle theme">
             <svg id="sun-icon" class="dark:hidden lucide lucide-sun-icon lucide-sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg><svg id="moon-icon" class="hidden dark:block lucide lucide-moon-icon lucide-moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
           </button>
@@ -416,18 +419,31 @@ html.dark .theme-toggle:hover {
           if (dashboardLink) dashboardLink.style.display = 'none';
           if (profile) profile.style.display = 'none';
           if (signInLink) signInLink.style.display = 'inline-flex';
+          document.documentElement.classList.remove('auth-loading');
           return;
         }
         if (dashboardLink) dashboardLink.style.display = 'inline-block';
         if (profile) profile.style.display = 'inline-flex';
         if (signInLink) signInLink.style.display = 'none';
-        if (avatar) avatar.src = window.Clerk.user.imageUrl || '';
+        if (avatar) {
+          var imageUrl = window.Clerk.user.imageUrl || '';
+          avatar.style.display = 'block';
+          avatar.onload = null;
+          avatar.onerror = null;
+          avatar.src = imageUrl;
+        }
+        document.documentElement.classList.remove('auth-loading');
       }
 
-      if (!window.Clerk) return;
+      if (!window.Clerk) {
+        document.documentElement.classList.remove('auth-loading');
+        return;
+      }
       window.Clerk.load().then(function () {
         updateHeader();
         window.Clerk.addListener(updateHeader);
+      }).catch(function () {
+        document.documentElement.classList.remove('auth-loading');
       });
     })();
   </script>

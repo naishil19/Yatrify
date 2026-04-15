@@ -63,9 +63,7 @@ function initGlobalHeaderAuth() {
     var style = document.createElement('style');
     style.id = 'global-header-auth-styles';
     style.textContent = [
-      'header nav .auth-actions{display:flex;align-items:center;gap:18px;transition:opacity .2s ease}',
-      'header nav .auth-actions.is-loading{opacity:0;pointer-events:none}',
-      'html.auth-loading header nav .auth-actions, html.auth-loading header nav .flex.items-center.gap-3, html.auth-loading header nav .flex.items-center.gap-5{opacity:0;pointer-events:none}',
+      'header nav .auth-actions{display:flex;align-items:center;gap:18px}',
       '.theme-toggle{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;flex:0 0 34px;padding:0;border:0;background:transparent;color:inherit;cursor:pointer;position:relative;transition:color .2s ease,opacity .2s ease}',
       '.theme-toggle:hover{opacity:.9}',
       'html.dark .theme-toggle{color:#e5e7eb}',
@@ -124,7 +122,7 @@ function initGlobalHeaderAuth() {
     var container = getHeaderActionsContainer();
     if (!container) return;
     if (!container.classList.contains('auth-actions')) {
-      container.classList.add('auth-actions', 'is-loading');
+      container.classList.add('auth-actions');
     }
     var dashboardLink = document.getElementById('dashboard-link');
     var themeBtn = document.getElementById('theme-toggle-btn');
@@ -134,6 +132,13 @@ function initGlobalHeaderAuth() {
     if (themeBtn) container.appendChild(themeBtn);
     if (profile) container.appendChild(profile);
     if (signInLink) container.appendChild(signInLink);
+    if (!document.getElementById('header-auth-spinner')) {
+      var spinner = document.createElement('span');
+      spinner.id = 'header-auth-spinner';
+      spinner.className = 'header-auth-spinner';
+      spinner.setAttribute('aria-hidden', 'true');
+      container.appendChild(spinner);
+    }
   }
 
   function ensureProfileMenu(profile) {
@@ -187,24 +192,31 @@ function initGlobalHeaderAuth() {
     if (!window.Clerk || !window.Clerk.user) {
       applyRedirectToAuthLinks();
       if (cachedProfile && cachedProfile.userId) {
+        document.documentElement.classList.remove('auth-loading');
         if (dashboardLink) dashboardLink.style.display = 'inline-block';
         if (profile) profile.style.display = 'inline-flex';
         if (signInLink) signInLink.style.display = 'none';
         if (avatar && cachedProfile.imageUrl) avatar.src = cachedProfile.imageUrl;
         if (nameEl) nameEl.textContent = cachedProfile.fullName || cachedProfile.firstName || 'Account';
         if (emailEl) emailEl.textContent = cachedProfile.email || '';
-        if (container) container.classList.remove('is-loading');
-        document.documentElement.classList.remove('auth-loading');
         return;
       }
+      if (!window.Clerk) {
+        document.documentElement.classList.add('auth-loading');
+        if (dashboardLink) dashboardLink.style.display = 'none';
+        if (profile) profile.style.display = 'none';
+        if (signInLink) signInLink.style.display = 'none';
+        return;
+      }
+
+      document.documentElement.classList.remove('auth-loading');
       if (dashboardLink) dashboardLink.style.display = 'none';
       if (profile) profile.style.display = 'none';
       if (signInLink) signInLink.style.display = 'inline-flex';
-      if (container) container.classList.remove('is-loading');
-      document.documentElement.classList.remove('auth-loading');
       return;
     }
 
+    document.documentElement.classList.remove('auth-loading');
     if (dashboardLink) dashboardLink.style.display = 'inline-block';
     if (profile) profile.style.display = 'inline-flex';
     if (signInLink) signInLink.style.display = 'none';
@@ -216,8 +228,6 @@ function initGlobalHeaderAuth() {
     if (emailEl) {
       emailEl.textContent = window.Clerk.user.primaryEmailAddress ? window.Clerk.user.primaryEmailAddress.emailAddress : '';
     }
-    if (container) container.classList.remove('is-loading');
-    document.documentElement.classList.remove('auth-loading');
   }
 
   function bindMenuActions() {
@@ -241,6 +251,7 @@ function initGlobalHeaderAuth() {
     ensureHeaderStyles();
     applyRedirectToAuthLinks();
     var headerActions = getHeaderActionsContainer();
+    document.documentElement.classList.add('auth-loading');
     ensureThemeToggle(headerActions);
     ensureProfileMenu(document.getElementById('user-profile'));
     wireProfileMenu();
@@ -249,6 +260,15 @@ function initGlobalHeaderAuth() {
     bindAuthLinkModals(authApi);
     updateHeaderAuth();
   }
+
+  // If Clerk never loads (offline, blocked), don't keep the header stuck in loading forever.
+  setTimeout(function () {
+    if (!window.Clerk) {
+      document.documentElement.classList.remove('auth-loading');
+      var signInLink = document.getElementById('signin-link');
+      if (signInLink) signInLink.style.display = 'inline-flex';
+    }
+  }, 1200);
 
   function ensureGlobalAuthModal() {
     if (document.getElementById('signin-modal')) return null;

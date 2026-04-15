@@ -11,6 +11,192 @@
   transition: color 0.2s ease, background-color 0.2s ease;
 }
 
+header nav ul > li > a,
+header nav .topbar-nav a {
+  text-decoration: none;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
+}
+
+header nav ul > li > a:hover,
+header nav .topbar-nav a:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+header .logo-wrap .logo-light,
+.topbar-inner .logo-wrap .logo-light,
+header a[href="/"] .logo-light,
+footer a[href="/"] .logo-light {
+  display: block !important;
+}
+
+header .logo-wrap .logo-dark,
+.topbar-inner .logo-wrap .logo-dark,
+header a[href="/"] .logo-dark,
+footer a[href="/"] .logo-dark {
+  display: none !important;
+}
+
+html.dark header .logo-wrap .logo-light,
+html.dark .topbar-inner .logo-wrap .logo-light,
+html.dark header a[href="/"] .logo-light,
+html.dark footer a[href="/"] .logo-light {
+  display: none !important;
+}
+
+html.dark header .logo-wrap .logo-dark,
+html.dark .topbar-inner .logo-wrap .logo-dark,
+html.dark header a[href="/"] .logo-dark,
+html.dark footer a[href="/"] .logo-dark {
+  display: block !important;
+}
+
+@keyframes yatrify-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Header auth spinner: shown while we wait for Clerk to resolve session */
+.header-auth-spinner {
+  display: none;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.65;
+}
+
+.header-auth-spinner::after {
+  content: "";
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 999px;
+  animation: yatrify-spin 0.8s linear infinite;
+}
+
+html.auth-loading .header-auth-spinner {
+  display: inline-flex;
+}
+
+html.yatrify-header-auth-loading .header-auth-spinner {
+  display: inline-flex;
+}
+
+html.yatrify-header-auth-loading .topbar-actions,
+html.yatrify-shell-loading .topbar-actions,
+html.yatrify-nav-loading .topbar-actions,
+html.yatrify-header-auth-loading .header-action-row,
+html.yatrify-shell-loading .header-action-row,
+html.yatrify-nav-loading .header-action-row,
+html.auth-loading header nav .auth-actions,
+html.auth-loading header nav .flex.gap-5.justify-end.items-center.flex-1 {
+  position: relative;
+  min-height: 34px;
+}
+
+html.yatrify-header-auth-loading .topbar-actions > *,
+html.yatrify-shell-loading .topbar-actions > *,
+html.yatrify-nav-loading .topbar-actions > *,
+html.yatrify-header-auth-loading .header-action-row > *,
+html.yatrify-shell-loading .header-action-row > *,
+html.yatrify-nav-loading .header-action-row > *,
+html.auth-loading header nav .auth-actions > *,
+html.auth-loading header nav .flex.gap-5.justify-end.items-center.flex-1 > * {
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+html.yatrify-header-auth-loading .topbar-actions::after,
+html.yatrify-shell-loading .topbar-actions::after,
+html.yatrify-nav-loading .topbar-actions::after,
+html.yatrify-header-auth-loading .header-action-row::after,
+html.yatrify-shell-loading .header-action-row::after,
+html.yatrify-nav-loading .header-action-row::after,
+html.auth-loading header nav .auth-actions::after,
+html.auth-loading header nav .flex.gap-5.justify-end.items-center.flex-1::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 50%;
+  width: 34px;
+  height: 34px;
+  margin-top: -17px;
+  border: 3px solid #d1d5db;
+  border-top-color: #3b82f6;
+  border-radius: 999px;
+  animation: yatrify-spin 0.8s linear infinite;
+}
+
+html.auth-loading #signin-link,
+html.auth-loading #open-signin,
+html.auth-loading #header-signin-link,
+html.yatrify-header-auth-loading #signin-link,
+html.yatrify-header-auth-loading #open-signin,
+html.yatrify-header-auth-loading #header-signin-link,
+html.yatrify-shell-loading #signin-link,
+html.yatrify-shell-loading #open-signin,
+html.yatrify-shell-loading #header-signin-link,
+html.yatrify-nav-loading #signin-link,
+html.yatrify-nav-loading #open-signin,
+html.yatrify-nav-loading #header-signin-link {
+  display: none !important;
+}
+
+html.yatrify-header-auth-loading #user-profile,
+html.yatrify-shell-loading #user-profile,
+html.yatrify-nav-loading #user-profile {
+  display: none !important;
+}
+
+#profile-btn[data-loading="true"] {
+  position: relative;
+}
+
+#profile-btn[data-loading="true"] #user-avatar,
+#profile-btn[data-loading="true"] #user-avatar-letter {
+  display: none !important;
+}
+
+#profile-btn[data-loading="true"]::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  margin-left: -8px;
+  margin-top: -8px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 999px;
+  animation: yatrify-spin 0.8s linear infinite;
+  opacity: 0.7;
+}
+
+.header-credits #credits-count {
+  display: inline-block;
+  margin-left: 0;
+}
+
+.header-credits #credits-count[data-loading="true"] {
+  display: inline-block;
+  width: auto;
+  height: auto;
+  min-width: 0;
+  min-height: 0;
+  vertical-align: baseline;
+  font-size: inherit;
+  line-height: inherit;
+  overflow: visible;
+}
+
+.header-credits #credits-count[data-loading="true"]::after {
+  content: none;
+}
+
 .header-credits:hover {
   background: rgba(15, 23, 42, 0.08);
   color: #0f172a;
@@ -19,11 +205,6 @@
 html.dark .header-credits:hover {
   background: rgba(148, 163, 184, 0.16);
   color: #ffffff;
-}
-
-.header-credits #credits-count {
-  display: inline-block;
-  margin-left: 0;
 }
 
 .theme-toggle svg {
@@ -666,8 +847,8 @@ header .logo-wrap,
 header a[href="/"] > div[class*="leading-5"][class*="font-bold"],
 footer a[href="/"] > div[class*="leading-5"][class*="font-bold"] {
   width: 100px;
-  height: 54px;
-  overflow: hidden;
+  height: 50px;
+  overflow: visible;
   display: flex;
   align-items: center;
   flex: 0 0 100px;
@@ -684,7 +865,7 @@ header .logo-wrap img,
 header a[href="/"] img[alt="logo"],
 footer a[href="/"] img[alt="logo"] {
   width: 100px;
-  height: 54px;
+  height: 50px;
   max-width: 100px;
   object-fit: contain;
 }
@@ -695,7 +876,7 @@ footer a[href="/"] img[alt="logo"] {
   header a[href="/"] img[alt="logo"],
   footer a[href="/"] img[alt="logo"] {
     width: 100px;
-    height: 54px;
+    height: 50px;
     object-fit: contain;
     transform: none;
   }

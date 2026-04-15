@@ -5,6 +5,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="css/2a2e7898d4f6aad7.css" data-precedence="next">
+  <script>
+    document.documentElement.classList.add("yatrify-header-auth-loading");
+  </script>
   <title>Dashboard - Yatrify</title>
   <meta name="description" content="Manage your travel plans on Yatrify">
   <link rel="icon" href="/images/favicon.ico?v=20260408" type="image/x-icon">
@@ -1052,7 +1055,7 @@
           </aside>
         </div>
         <div class="flex gap-5 justify-end items-center flex-1 header-action-row" style="position:relative;z-index:10005;">
-          <span class="header-credits">Credits <span id="credits-count">2</span></span>
+          <span class="header-credits">Credits <span id="credits-count">-</span></span>
           <button type="button" class="icon-btn" title="Feedback" aria-label="Feedback">
             <i data-lucide="message-circle" style="width:18px;height:18px;"></i>
           </button>
@@ -1298,8 +1301,56 @@
       var dashboardStateCopy = document.getElementById('dashboard-state-copy');
       var dashboardCountPill = document.getElementById('dashboard-count-pill');
       var clerkReady = false;
+      var headerAuthResolved = false;
+      var headerProfileReady = false;
+      var headerCreditsReady = false;
+      var headerReleaseTimer = null;
       var allPlans = [];
       var heroHydrationCache = Object.create(null);
+
+      function releaseHeaderLoading(force) {
+        if (!force && !(headerAuthResolved && headerProfileReady && headerCreditsReady)) return;
+        if (headerReleaseTimer) {
+          clearTimeout(headerReleaseTimer);
+          headerReleaseTimer = null;
+        }
+        document.documentElement.classList.remove('yatrify-header-auth-loading');
+      }
+
+      function startHeaderReleaseFallback() {
+        if (headerReleaseTimer) return;
+        headerReleaseTimer = window.setTimeout(function () {
+          if (!headerAuthResolved) return;
+          if (window.Clerk && window.Clerk.user && !headerCreditsReady) return;
+          releaseHeaderLoading(true);
+        }, 1800);
+      }
+
+      function hydrateHeaderFromCache() {
+        var cachedProfile = window.YatrifyAuthCache && typeof window.YatrifyAuthCache.getProfile === "function"
+          ? window.YatrifyAuthCache.getProfile({ maxAgeMs: 0 })
+          : null;
+        if (!cachedProfile || !cachedProfile.userId) return false;
+        headerAuthResolved = true;
+        headerProfileReady = true;
+        if (avatar && cachedProfile.imageUrl) {
+          avatar.style.display = "block";
+          avatar.src = cachedProfile.imageUrl;
+        }
+        if (nameEl) {
+          nameEl.textContent = cachedProfile.fullName || cachedProfile.firstName || "Account";
+        }
+        if (emailEl) {
+          emailEl.textContent = cachedProfile.email || "";
+        }
+        if (creditsCount && Number.isFinite(Number(cachedProfile.credits))) {
+          creditsCount.removeAttribute("data-loading");
+          creditsCount.textContent = String(Number(cachedProfile.credits));
+          headerCreditsReady = true;
+        }
+        releaseHeaderLoading();
+        return true;
+      }
 
       function closeMenu() {
         if (profileMenu) profileMenu.style.display = 'none';
@@ -1388,14 +1439,21 @@
       function updateUI() {
         if (!window.Clerk) return;
         if (window.Clerk.user) {
+          headerAuthResolved = true;
           var fullName = [window.Clerk.user.firstName, window.Clerk.user.lastName].filter(Boolean).join(' ').trim();
           var initial = fullName ? fullName.charAt(0) : "U";
           if (avatar) {
+            var fallbackAvatar = buildInitialsAvatar(initial);
+            headerProfileReady = true;
+            avatar.style.display = "block";
+            avatar.onload = null;
             avatar.onerror = function () {
               avatar.onerror = null;
-              avatar.src = buildInitialsAvatar(initial);
+              avatar.src = fallbackAvatar;
             };
-            avatar.src = window.Clerk.user.imageUrl || buildInitialsAvatar(initial);
+            avatar.src = window.Clerk.user.imageUrl || fallbackAvatar;
+          } else {
+            headerProfileReady = true;
           }
           if (nameEl) {
             nameEl.textContent = fullName || 'Account';
@@ -1403,7 +1461,17 @@
           if (emailEl) {
             emailEl.textContent = window.Clerk.user.primaryEmailAddress ? window.Clerk.user.primaryEmailAddress.emailAddress : '';
           }
+          headerCreditsReady = false;
+          loadCredits().finally(function () {
+            headerCreditsReady = true;
+            releaseHeaderLoading();
+          });
+          releaseHeaderLoading();
         } else if (clerkReady) {
+          headerAuthResolved = true;
+          headerProfileReady = true;
+          headerCreditsReady = true;
+          releaseHeaderLoading(true);
           window.location.href = '/';
         }
       }
@@ -1437,12 +1505,20 @@
       }
 
       function loadCredits() {
-        if (!creditsCount || !window.YatrifyPlanService) return;
-        window.YatrifyPlanService.getUserMe().then(function (payload) {
+        if (!creditsCount || !window.YatrifyPlanService) {
+          headerCreditsReady = true;
+          releaseHeaderLoading();
+          return Promise.resolve();
+        }
+        creditsCount.setAttribute("data-loading", "true");
+        creditsCount.textContent = "";
+        return window.YatrifyPlanService.getUserMe().then(function (payload) {
           var credits = Number(payload && payload.credits);
-          creditsCount.textContent = Number.isFinite(credits) ? String(credits) : "-";
+          creditsCount.removeAttribute("data-loading");
+          creditsCount.textContent = Number.isFinite(credits) ? String(credits) : "—";
         }).catch(function () {
-          creditsCount.textContent = "-";
+          creditsCount.removeAttribute("data-loading");
+          creditsCount.textContent = "—";
         });
       }
 
@@ -1829,12 +1905,18 @@
       }
 
       function bootDashboardPage() {
-        loadCredits();
+        document.documentElement.classList.add('yatrify-header-auth-loading');
+        headerAuthResolved = false;
+        headerProfileReady = false;
+        headerCreditsReady = false;
+        startHeaderReleaseFallback();
+        hydrateHeaderFromCache();
         loadPlans();
         renderLucideIcons();
         ensureClerkLoaded().then(function (clerk) {
           bindClerk(clerk);
         }).catch(function () {
+          releaseHeaderLoading(true);
         });
       }
 

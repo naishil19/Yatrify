@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Yatrify - About Us</title>
   <meta name="description" content="Learn about Yatrify - your AI-powered smart travel planner. Discover our mission, team, and vision for transforming travel planning." />
+  <script>
+    document.documentElement.classList.add("auth-loading");
+  </script>
   <link rel="stylesheet" href="/css/2a2e7898d4f6aad7.css" />
   <link rel="icon" href="/images/favicon.ico" type="image/x-icon" sizes="16x16" />
   <style>
@@ -213,7 +216,8 @@
     .dark .team-section .team-subtitle { color: #cbd5e1; }
     .team-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, minmax(280px, 360px));
+      justify-content: center;
       gap: 32px;
     }
     @media (max-width: 768px) {
@@ -399,7 +403,7 @@
           <a href="/community-plans.html" class="hover:underline hover:underline-offset-4">Community Plans</a>
           <a href="/#pricing" class="hover:underline hover:underline-offset-4">Pricing</a>
         </div>
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3 auth-actions">
           <a id="dashboard-link" href="/dashboard.html" style="display:none;font-size:14px;font-weight:500;text-decoration:none;transition:color 0.2s ease;padding:6px 10px;border-radius:8px;" class="text-foreground hover:text-foreground hover:bg-gray-100 dark:hover:bg-gray-800">Dashboard</a>
           <div id="user-profile" style="display:none;position:relative;z-index:10002;">
             <button id="profile-btn" type="button" style="border:0;background:transparent;padding:0;cursor:pointer;pointer-events:auto;border-radius:50%;overflow:hidden;width:36px;height:36px;display:flex;align-items:center;justify-content:center;">
@@ -472,24 +476,24 @@
       <h2>Our <span style="background:linear-gradient(135deg,#3b82f6,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Journey</span></h2>
       <div class="timeline">
         <div class="timeline-item">
-          <div class="timeline-date">2024 - The Idea</div>
+          <div class="timeline-date">January 2026 - The Idea</div>
           <h3>Born From Frustration</h3>
-          <p>We were tired of spending hours planning trips across dozens of tabs. There had to be a better way — so we decided to build it.</p>
+          <p>Two friends, tired of spending hours planning trips across dozens of tabs. We thought - there has to be a better way. So we decided to build it ourselves.</p>
         </div>
         <div class="timeline-item">
-          <div class="timeline-date">2024 - Building</div>
+          <div class="timeline-date">January 2026 - Building</div>
           <h3>AI Meets Travel</h3>
-          <p>We combined cutting-edge AI with deep travel knowledge to create an itinerary planner that actually understands what travelers want.</p>
+          <p>We combined cutting-edge AI with deep travel knowledge to create an itinerary planner that actually understands what travelers want - built from scratch by just the two of us.</p>
         </div>
         <div class="timeline-item">
-          <div class="timeline-date">2025 - Launch</div>
+          <div class="timeline-date">April 2026 - Launch</div>
           <h3>Yatrify Goes Live</h3>
-          <p>We launched with smart itineraries, community plans, and collaborative trip planning — helping thousands plan their dream trips.</p>
+          <p>We launched with smart itineraries, community plans, budget tracking, and booking integrations - turning a January idea into a real product in just 3 months.</p>
         </div>
         <div class="timeline-item">
-          <div class="timeline-date">2025 - Growing</div>
+          <div class="timeline-date">2026 - Growing</div>
           <h3>Expanding Horizons</h3>
-          <p>From meta-searched deals to real-time collaboration, we keep adding features that make travel planning smarter and more enjoyable.</p>
+          <p>From AI-powered plans to Razorpay payments and real-time collaboration, we keep pushing forward to make travel planning smarter for everyone.</p>
         </div>
       </div>
     </section>
@@ -548,26 +552,20 @@
     <!-- Team Section -->
     <section class="team-section">
       <p style="font-size:0.875rem;font-weight:600;color:#3b82f6;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:8px;text-align:center;">THE PEOPLE BEHIND YATRIFY</p>
-      <h2>Meet Our Team</h2>
-      <p class="team-subtitle">A passionate team of travelers, engineers, and dreamers building the future of travel.</p>
+      <h2>Meet The Founders</h2>
+      <p class="team-subtitle">Two friends with one mission — make travel planning smarter, simpler, and more personal for everyone.</p>
       <div class="team-grid">
         <div class="team-card">
-          <div class="avatar">F</div>
-          <h3>Founder</h3>
+          <div class="avatar">D</div>
+          <h3>Deval Patel</h3>
           <p class="role">CEO & Co-Founder</p>
           <p>Visionary traveler and tech enthusiast driven to make trip planning accessible to everyone.</p>
         </div>
         <div class="team-card">
-          <div class="avatar">T</div>
-          <h3>Tech Lead</h3>
+          <div class="avatar">N</div>
+          <h3>Naishil Patel</h3>
           <p class="role">CTO & Co-Founder</p>
           <p>Full-stack engineer passionate about building AI-powered solutions that simplify complex problems.</p>
-        </div>
-        <div class="team-card">
-          <div class="avatar">D</div>
-          <h3>Designer</h3>
-          <p class="role">Head of Design</p>
-          <p>Creating beautiful, intuitive experiences that make every interaction with Yatrify a delight.</p>
         </div>
       </div>
     </section>
@@ -576,7 +574,7 @@
     <section class="cta-section" style="margin-bottom:60px;">
       <h2>Ready to Plan Your Next Adventure?</h2>
       <p>Join thousands of travelers who plan smarter with Yatrify. Start for free today.</p>
-      <a href="/sign-up.html" class="cta-btn">
+      <a id="about-cta-start" href="/sign-in.html?redirect_url=%2Fplans-newplan.html" class="cta-btn">
         Get Started Free
         <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
@@ -666,29 +664,82 @@
       var signInLink = document.getElementById('signin-link');
       var profile = document.getElementById('user-profile');
       var avatar = document.getElementById('user-avatar');
+      var ctaStartBtn = document.getElementById('about-cta-start');
+
+      function getSignInRedirectUrl() {
+        return '/sign-in.html?redirect_url=' + encodeURIComponent('/plans-newplan.html');
+      }
+
+      function resolveClerkForCta() {
+        if (window.Clerk) {
+          if (window.Clerk.loaded) return Promise.resolve(window.Clerk);
+          if (typeof window.Clerk.load === 'function') {
+            return window.Clerk.load().then(function () { return window.Clerk; }).catch(function () { return window.Clerk; });
+          }
+          return Promise.resolve(window.Clerk);
+        }
+        if (typeof window.__loadYatrifyClerk === 'function') {
+          return window.__loadYatrifyClerk(false).then(function (clerk) {
+            if (!clerk) return null;
+            if (typeof clerk.load === 'function' && !clerk.loaded) {
+              return clerk.load().then(function () { return window.Clerk || clerk; });
+            }
+            return window.Clerk || clerk;
+          }).catch(function () {
+            return null;
+          });
+        }
+        return Promise.resolve(null);
+      }
 
       function updateHeader() {
         if (!window.Clerk || !window.Clerk.user) {
           if (dashboardLink) dashboardLink.style.display = 'none';
           if (profile) profile.style.display = 'none';
           if (signInLink) signInLink.style.display = 'inline-flex';
+          document.documentElement.classList.remove('auth-loading');
           return;
         }
         if (dashboardLink) dashboardLink.style.display = 'inline-block';
         if (profile) profile.style.display = 'inline-flex';
         if (signInLink) signInLink.style.display = 'none';
-        if (avatar) avatar.src = window.Clerk.user.imageUrl || '';
+        if (avatar) {
+          var imageUrl = window.Clerk.user.imageUrl || '';
+          avatar.style.display = 'block';
+          avatar.onload = null;
+          avatar.onerror = null;
+          avatar.src = imageUrl;
+        }
+        document.documentElement.classList.remove('auth-loading');
       }
 
-      if (!window.Clerk) return;
+      if (ctaStartBtn) {
+        ctaStartBtn.addEventListener('click', function (e) {
+          e.preventDefault();
+          resolveClerkForCta().then(function (clerk) {
+            if (clerk && clerk.user) {
+              window.location.href = '/plans-newplan.html';
+              return;
+            }
+            window.location.href = getSignInRedirectUrl();
+          }).catch(function () {
+            window.location.href = getSignInRedirectUrl();
+          });
+        });
+      }
+
+      if (!window.Clerk) {
+        document.documentElement.classList.remove('auth-loading');
+        return;
+      }
       window.Clerk.load().then(function () {
         updateHeader();
         window.Clerk.addListener(updateHeader);
+      }).catch(function () {
+        document.documentElement.classList.remove('auth-loading');
       });
     })();
   </script>
   <script src="/js/newsletter.js"></script>
 </body>
 </html>
-
-

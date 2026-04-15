@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Yatrify - Terms of Service</title>
   <meta name="description" content="Read the Terms of Service for using Yatrify, the AI-powered travel itinerary planning platform." />
+  <script>
+    document.documentElement.classList.add("auth-loading");
+  </script>
   <link rel="stylesheet" href="/css/2a2e7898d4f6aad7.css" />
   <link rel="icon" href="/images/favicon.ico" type="image/x-icon" sizes="16x16" />
   <style>
@@ -208,7 +211,7 @@
           <a href="/community-plans.html" class="hover:underline hover:underline-offset-4">Community Plans</a>
           <a href="/#pricing" class="hover:underline hover:underline-offset-4">Pricing</a>
         </div>
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3 auth-actions">
           <a id="dashboard-link" href="/dashboard.html" style="display:none;font-size:14px;font-weight:500;text-decoration:none;transition:color 0.2s ease;padding:6px 10px;border-radius:8px;" class="text-foreground hover:text-foreground hover:bg-gray-100 dark:hover:bg-gray-800">Dashboard</a>
           <div id="user-profile" style="display:none;position:relative;z-index:10002;">
             <button id="profile-btn" type="button" style="border:0;background:transparent;padding:0;cursor:pointer;pointer-events:auto;border-radius:50%;overflow:hidden;width:36px;height:36px;display:flex;align-items:center;justify-content:center;">
@@ -430,18 +433,31 @@
           if (dashboardLink) dashboardLink.style.display = 'none';
           if (profile) profile.style.display = 'none';
           if (signInLink) signInLink.style.display = 'inline-flex';
+          document.documentElement.classList.remove('auth-loading');
           return;
         }
         if (dashboardLink) dashboardLink.style.display = 'inline-block';
         if (profile) profile.style.display = 'inline-flex';
         if (signInLink) signInLink.style.display = 'none';
-        if (avatar) avatar.src = window.Clerk.user.imageUrl || '';
+        if (avatar) {
+          var imageUrl = window.Clerk.user.imageUrl || '';
+          avatar.style.display = 'block';
+          avatar.onload = null;
+          avatar.onerror = null;
+          avatar.src = imageUrl;
+        }
+        document.documentElement.classList.remove('auth-loading');
       }
 
-      if (!window.Clerk) return;
+      if (!window.Clerk) {
+        document.documentElement.classList.remove('auth-loading');
+        return;
+      }
       window.Clerk.load().then(function () {
         updateHeader();
         window.Clerk.addListener(updateHeader);
+      }).catch(function () {
+        document.documentElement.classList.remove('auth-loading');
       });
     })();
   </script>

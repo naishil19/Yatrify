@@ -146,13 +146,13 @@
     .logo-wrap img {
       display: block;
       width: 100px;
-      height: 47px;
+      height: 50px;
       object-fit: contain;
     }
 
     header.topbar .logo-wrap img {
       width: 100px !important;
-      height: 47px !important;
+      height: 50px !important;
       max-width: 100px;
     }
 
@@ -185,7 +185,7 @@
     }
 
     .topbar-nav a:hover {
-      
+      text-decoration: underline;
       text-underline-offset: 4px;
     }
 
@@ -3225,8 +3225,9 @@
       border: 1px solid #dfe4ec;
       border-radius: 14px;
       background: #f4f6fa;
+      position: relative;
       margin-top: 16px;
-      overflow: hidden;
+      overflow: visible;
       box-shadow: 0 10px 18px -14px rgba(15, 23, 42, .28), 0 2px 6px -5px rgba(15, 23, 42, .18);
       transition: background-color .2s ease, border-color .2s ease, box-shadow .2s ease;
     }
@@ -3477,6 +3478,7 @@
       border-top: 1px solid #d6deea;
       padding: 16px 20px 18px;
       background: #f0f3f8;
+      position: relative;
       display: grid;
       gap: 12px;
     }
@@ -3598,6 +3600,186 @@
       background: #fff7ed;
       border-color: #fcd34d;
       color: #c2410c;
+    }
+
+    .booking-chip.booking-chip-trigger {
+      appearance: none;
+      -webkit-appearance: none;
+      text-align: left;
+      font-family: inherit;
+    }
+
+    .booking-chip.booking-chip-trigger .booking-chip-sub {
+      margin-left: 2px;
+      font-size: 12px;
+      opacity: 0.78;
+    }
+
+    .activity-booking-modal {
+      position: absolute;
+      z-index: 20;
+      display: none;
+      width: fit-content;
+      max-width: min(100%, 420px);
+      left: 104px;
+      top: 64px;
+    }
+
+    .activity-booking-modal.open {
+      display: block;
+    }
+
+    .activity-booking-dialog {
+      position: relative;
+      width: fit-content;
+      min-width: 0;
+      max-width: min(100%, 460px);
+      border-radius: 7px;
+      border: 1px solid #dbe5f3;
+      background: #fff;
+      box-shadow: 0 20px 44px -24px rgba(15, 23, 42, 0.42);
+      padding: 9px 9px 9px;
+    }
+
+    .activity-booking-title {
+      margin: 0 0 5px 0;
+      font-size: 15px;
+      line-height: 1.25;
+      color: #be185d;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-align: center;
+    }
+
+    .activity-booking-options {
+      display: grid;
+      gap: 5px;
+    }
+
+    .activity-booking-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      min-height: 36px;
+      padding: 4px 7px;
+      border-radius: 7px;
+      border: 1px solid #dbe5f3;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background-color .18s ease, border-color .18s ease, color .18s ease, box-shadow .18s ease;
+    }
+
+    .activity-booking-option:hover {
+      box-shadow: 0 10px 18px -18px rgba(15, 23, 42, 0.25);
+    }
+
+    .activity-booking-option[data-site="viator"] {
+      background: #edf4ff;
+      color: #1e40af;
+      border-color: #c7dbff;
+    }
+
+    .activity-booking-option[data-site="viator"]:hover {
+      background: #dce9ff;
+      border-color: #9bbcf6;
+      color: #163a9b;
+    }
+
+    .activity-booking-option[data-site="gyg"] {
+      background: #fff1f7;
+      color: #be185d;
+      border-color: #f5bdd5;
+    }
+
+    .activity-booking-option[data-site="gyg"]:hover {
+      background: #ffe0ee;
+      border-color: #f29ac2;
+      color: #a41752;
+    }
+
+    .activity-booking-option-icon {
+      width: 23px;
+      height: 23px;
+      border-radius: 5px;
+      background: #fff;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      flex: 0 0 auto;
+      overflow: hidden;
+    }
+
+    .activity-booking-option-icon img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+    }
+
+    .activity-booking-option-text {
+      flex: 1 1 auto;
+      font-size: 15px;
+    }
+
+    .activity-booking-option:hover .activity-booking-option-text {
+      text-decoration:underline;
+      font-weight: inherit;
+    }
+
+    .activity-booking-option-trailing {
+      flex: 0 0 auto;
+      opacity: 0.9;
+      width: 12px !important;
+      height: 12px !important;
+    }
+
+    html.dark .activity-booking-modal {
+      z-index: 12;
+    }
+
+    html.dark .activity-booking-dialog {
+      background: #0f172a;
+      border-color: #233252;
+      box-shadow: 0 28px 80px -28px rgba(0, 0, 0, 0.65);
+    }
+
+    html.dark .activity-booking-title {
+      color: #f472b6;
+    }
+
+    html.dark .activity-booking-option {
+      border-color: #30405f;
+    }
+
+    html.dark .activity-booking-option[data-site="viator"] {
+      background: #13233f;
+      color: #d9e7ff;
+      border-color: #27508f;
+    }
+
+    html.dark .activity-booking-option[data-site="viator"]:hover {
+      background: #1a325d;
+      border-color: #3b6ec7;
+      color: #f1f6ff;
+    }
+
+    html.dark .activity-booking-option[data-site="gyg"] {
+      background: #331727;
+      color: #ffd7e8;
+      border-color: #8c3d63;
+    }
+
+    html.dark .activity-booking-option[data-site="gyg"]:hover {
+      background: #4a1d37;
+      border-color: #c55c8d;
+      color: #fff0f6;
     }
 
     .tip {
@@ -4746,7 +4928,7 @@
             <p id="destination-empty" class="destination-empty" style="display:none;">No plans found.</p>
           </div>
         </div>
-        <span class="header-credits">Credits <span id="credits-count">2</span></span>
+        <span class="header-credits">Credits <span id="credits-count">-</span></span>
         <button type="button" class="icon-btn" title="Feedback" aria-label="Feedback">
           <i data-lucide="message-circle" style="width:18px;height:18px;"></i>
         </button>
@@ -4770,6 +4952,7 @@
               d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" />
           </svg>
         </button>
+        <span class="header-auth-spinner" aria-hidden="true"></span>
         <a id="header-signin-link" class="header-signin" href="/sign-in/">Sign in</a>
         <div id="user-profile" class="profile-pill" aria-label="User profile">
           <button id="profile-btn" type="button" aria-label="Profile">
@@ -5747,13 +5930,23 @@
         return output;
       }
 
+      function stripItineraryMarkdown(value) {
+        var text = String(value || "").trim();
+        if (!text) return "";
+        text = text.replace(/\*\*([^*]+)\*\*/g, "$1");
+        text = text.replace(/__([^_]+)__/g, "$1");
+        text = text.replace(/(^|[\s(])\*([^*]+)\*(?=[\s).,!?;:]|$)/g, "$1$2");
+        text = text.replace(/(^|[\s(])_([^_]+)_(?=[\s).,!?;:]|$)/g, "$1$2");
+        return text.replace(/\s+/g, " ").trim();
+      }
+
       function normalizeAiSchedule(schedule) {
         var source = schedule && typeof schedule === "object" ? schedule : {};
         return {
-          morning: String(source.morning || "").trim(),
-          afternoon: String(source.afternoon || "").trim(),
-          evening: String(source.evening || "").trim(),
-          night: String(source.night || "").trim()
+          morning: stripItineraryMarkdown(source.morning),
+          afternoon: stripItineraryMarkdown(source.afternoon),
+          evening: stripItineraryMarkdown(source.evening),
+          night: stripItineraryMarkdown(source.night)
         };
       }
 
@@ -6118,6 +6311,7 @@
           if (profileWrap) profileWrap.style.display = "none";
           markHeaderAuthReady();
           closeProfileMenu();
+          if (profileBtn) profileBtn.removeAttribute("data-loading");
           if (avatarImg) {
             avatarImg.style.display = "none";
             avatarImg.removeAttribute("src");
@@ -6151,14 +6345,22 @@
           if (avatarLetter) avatarLetter.textContent = initial;
           if (avatarImg) {
             if (user.imageUrl) {
-              avatarImg.src = user.imageUrl;
+              if (profileBtn) profileBtn.setAttribute("data-loading", "true");
+              avatarImg.onload = function () {
+                if (profileBtn) profileBtn.removeAttribute("data-loading");
+                avatarImg.style.display = "block";
+                if (avatarLetter) avatarLetter.style.display = "none";
+              };
               avatarImg.onerror = function () {
+                if (profileBtn) profileBtn.removeAttribute("data-loading");
                 avatarImg.style.display = "none";
                 if (avatarLetter) avatarLetter.style.display = "inline-flex";
               };
-              avatarImg.style.display = "block";
+              avatarImg.style.display = "none";
               if (avatarLetter) avatarLetter.style.display = "none";
+              avatarImg.src = user.imageUrl;
             } else {
+              if (profileBtn) profileBtn.removeAttribute("data-loading");
               avatarImg.style.display = "none";
               if (avatarLetter) avatarLetter.style.display = "inline-flex";
             }
@@ -6815,10 +7017,15 @@
         var creditsCount = document.getElementById("credits-count");
         var selectedLabel = document.getElementById("destination-selected-label");
 
+        if (creditsCount) {
+          creditsCount.setAttribute("data-loading", "true");
+          creditsCount.textContent = "";
+        }
         await loadUserCredits();
 
         if (isCommunityReadOnly) {
           if (creditsCount) {
+            creditsCount.removeAttribute("data-loading");
             creditsCount.textContent = userCredits !== null ? formatCreditValue(userCredits) : "";
           }
           if (selectedLabel) selectedLabel.textContent = derived.destination.full || "Community Plan";
@@ -6826,7 +7033,8 @@
         }
 
         if (creditsCount) {
-          creditsCount.textContent = userCredits !== null ? formatCreditValue(userCredits) : "?";
+          creditsCount.removeAttribute("data-loading");
+          creditsCount.textContent = userCredits !== null ? formatCreditValue(userCredits) : "—";
         }
 
         await ensurePlanListLoaded();
@@ -7517,10 +7725,10 @@
           dateLabel: String(model.dateLabel || ""),
           title: String(model.title || ""),
           schedule: {
-            morning: String(schedule.morning || ""),
-            afternoon: String(schedule.afternoon || ""),
-            evening: String(schedule.evening || ""),
-            night: String(schedule.night || "")
+            morning: stripItineraryMarkdown(schedule.morning),
+            afternoon: stripItineraryMarkdown(schedule.afternoon),
+            evening: stripItineraryMarkdown(schedule.evening),
+            night: stripItineraryMarkdown(schedule.night)
           },
           foodRecommendations: normalizeTextList(model.foodRecommendations, 4),
           stayOptions: normalizeTextList(model.stayOptions, 4),
@@ -7569,16 +7777,47 @@
         return { cls: "route", icon: "train-front", label: label, trailingIcon: "external-link" };
       }
 
+      function getTransportPreferenceFlags() {
+        var transportPrefs = Array.isArray(derived.plan && derived.plan.transport)
+          ? derived.plan.transport.map(function (value) { return String(value || "").toLowerCase(); })
+          : [];
+        var hasBus = transportPrefs.some(function (value) { return value.indexOf("bus") !== -1; });
+        var hasRoadOrCar = transportPrefs.some(function (value) {
+          return value.indexOf("road") !== -1 || value.indexOf("car") !== -1;
+        });
+        var hasFlight = transportPrefs.some(function (value) {
+          return value.indexOf("flight") !== -1 || value.indexOf("plane") !== -1 || value.indexOf("air") !== -1;
+        });
+        var hasTrain = transportPrefs.some(function (value) { return value.indexOf("train") !== -1; });
+        return {
+          hasBus: hasBus,
+          hasRoadOrCar: hasRoadOrCar,
+          hasFlight: hasFlight,
+          hasTrain: hasTrain
+        };
+      }
+
       function getBookingLinks() {
         var destination = derived && derived.destination
           ? [derived.destination.city, derived.destination.country].filter(Boolean).join(", ")
           : "";
+        var origin = derived && derived.origin ? String(derived.origin.city || "").trim() : "";
+        var destinationCity = derived && derived.destination ? String(derived.destination.city || "").trim() : "";
+        var routeQuery = [origin, destinationCity].filter(Boolean).join(" to ").trim();
         var query = destination || "travel";
         var encoded = encodeURIComponent(query);
+        var encodedRoute = encodeURIComponent(routeQuery || query);
+        var encodedOrigin = encodeURIComponent(origin || "");
+        var encodedDestination = encodeURIComponent(destinationCity || destination || "");
         return {
-          flights: "https://www.google.com/travel/flights?q=" + encoded,
+          flights: "https://www.google.com/travel/flights?q=" + encodedRoute,
           hotels: "https://www.google.com/travel/hotels/" + encoded,
-          activities: "https://www.getyourguide.com/s/?q=" + encoded
+          activities: "https://www.getyourguide.com/s/?q=" + encoded,
+          trains: "https://www.google.com/search?q=" + encodeURIComponent(("train tickets " + (routeQuery || destinationCity || query)).trim()),
+          buses: "https://www.google.com/search?q=" + encodeURIComponent(("bus tickets " + (routeQuery || destinationCity || query)).trim()),
+          cabs: "https://www.google.com/search?q=" + encodeURIComponent(("intercity cab " + (routeQuery || destinationCity || query)).trim()),
+          driving: "https://www.google.com/maps/dir/?api=1&origin=" + encodedOrigin + "&destination=" + encodedDestination + "&travelmode=driving",
+          transport: "https://www.google.com/search?q=" + encodeURIComponent(("transport " + (routeQuery || destinationCity || query)).trim())
         };
       }
 
@@ -7586,12 +7825,140 @@
         var cls = chip && chip.cls ? String(chip.cls) : "";
         if (!links) return "#";
         if (cls === "hotel") return links.hotels;
-        if (cls === "route" || cls === "route-road") return links.flights;
+        if (cls === "route" || cls === "route-road") {
+          var icon = chip && chip.icon ? String(chip.icon).toLowerCase() : "";
+          var label = chip && chip.label ? String(chip.label).toLowerCase() : "";
+          if (icon.indexOf("plane") !== -1 || label.indexOf("flight") !== -1 || label.indexOf("air") !== -1) return links.flights;
+          if (icon.indexOf("train") !== -1 || label.indexOf("train") !== -1 || label.indexOf("rail") !== -1) return links.trains || links.transport;
+          if (icon.indexOf("bus") !== -1 || label.indexOf("bus") !== -1) return links.buses || links.transport;
+          if (icon.indexOf("car") !== -1 || label.indexOf("cab") !== -1 || label.indexOf("taxi") !== -1) {
+            // For road mode, prefer actual directions. Only use cab searches when the chip explicitly mentions cabs/taxis.
+            if (cls === "route-road") {
+              if (label.indexOf("cab") !== -1 || label.indexOf("taxi") !== -1) return links.cabs || links.transport;
+              return links.driving || links.cabs || links.transport;
+            }
+            return links.cabs || links.transport;
+          }
+          if (cls === "route-road") return links.driving || links.transport;
+          return links.transport || "#";
+        }
         if (cls === "activity") return links.activities;
         return links.activities || "#";
       }
 
-            function ensureBookingDefaults(chips) {
+      function getActivityBookingLinks(activityLabel) {
+        var destinationCity = derived && derived.destination ? String(derived.destination.city || "").trim() : "";
+        var query = [String(activityLabel || "").trim(), destinationCity].filter(Boolean).join(" ").trim();
+        var encoded = encodeURIComponent(query || destinationCity || "activity");
+        return {
+          viator: "https://www.viator.com/searchResults/all?text=" + encoded,
+          getyourguide: "https://www.getyourguide.com/s/?q=" + encoded
+        };
+      }
+
+      function setActivityBookingModalOpen(modal, isOpen, activityLabel, anchorEl) {
+        if (!modal) return;
+        modal.classList.toggle("open", !!isOpen);
+        modal.setAttribute("aria-hidden", isOpen ? "false" : "true");
+
+        if (!isOpen) return;
+
+        var title = modal.querySelector(".activity-booking-title");
+        var viatorLink = modal.querySelector('[data-site="viator"]');
+        var gygLink = modal.querySelector('[data-site="gyg"]');
+        var links = getActivityBookingLinks(activityLabel);
+        var label = String(activityLabel || "this activity").trim();
+        var wrap = modal.closest(".day-card");
+
+        if (title) title.textContent = "Book activity: " + label;
+        if (viatorLink) viatorLink.setAttribute("href", links.viator);
+        if (gygLink) gygLink.setAttribute("href", links.getyourguide);
+
+        if (wrap && anchorEl && typeof anchorEl.getBoundingClientRect === "function") {
+          modal.style.left = "";
+          modal.style.top = "";
+          requestAnimationFrame(function () {
+            if (!modal.classList.contains("open")) return;
+            var wrapRect = wrap.getBoundingClientRect();
+            var anchorRect = anchorEl.getBoundingClientRect();
+            var panelWidth = modal.offsetWidth || modal.getBoundingClientRect().width || 392;
+            var left = anchorRect.left - wrapRect.left + (anchorRect.width / 2) - (panelWidth / 2);
+            var top = anchorRect.bottom - wrapRect.top + 2;
+            var maxLeft = Math.max(12, wrapRect.width - panelWidth - 12);
+            modal.style.left = Math.max(12, Math.min(left, maxLeft)) + "px";
+            modal.style.top = Math.max(10, top) + "px";
+          });
+        }
+      }
+
+      function setupActivityBookingChooser() {
+        document.addEventListener("keydown", function (event) {
+          if (event.key !== "Escape") return;
+          Array.from(document.querySelectorAll(".activity-booking-modal.open")).forEach(function (panel) {
+            setActivityBookingModalOpen(panel, false);
+          });
+        });
+
+        document.addEventListener("click", function (event) {
+          var trigger = event.target && event.target.closest ? event.target.closest("[data-activity-booking-trigger='true']") : null;
+          if (trigger) {
+            event.preventDefault();
+            event.stopPropagation();
+            var panel = trigger.closest(".day-card") && trigger.closest(".day-card").querySelector(".activity-booking-modal");
+            if (panel && panel.classList.contains("open")) {
+              setActivityBookingModalOpen(panel, false);
+              return;
+            }
+            Array.from(document.querySelectorAll(".activity-booking-modal.open")).forEach(function (openPanel) {
+              if (openPanel !== panel) setActivityBookingModalOpen(openPanel, false);
+            });
+            setActivityBookingModalOpen(panel, true, trigger.getAttribute("data-activity-label") || trigger.textContent || "Activity", trigger);
+            return;
+          }
+
+          Array.from(document.querySelectorAll(".activity-booking-modal.open")).forEach(function (panel) {
+            if (panel.contains(event.target)) return;
+            setActivityBookingModalOpen(panel, false);
+          });
+        });
+      }
+
+      function filterBookingConfigForTransport(chips) {
+        var list = Array.isArray(chips) ? chips.slice() : [];
+        var flags = getTransportPreferenceFlags();
+        var hasAnyPref = flags.hasBus || flags.hasRoadOrCar || flags.hasTrain || flags.hasFlight;
+        if (!hasAnyPref) return list;
+
+        var wantsSurface = flags.hasBus || flags.hasRoadOrCar || flags.hasTrain;
+
+        return list.filter(function (chip) {
+          if (!chip) return true;
+          var cls = chip && chip.cls ? String(chip.cls) : "";
+          if (!(cls === "route" || cls === "route-road")) return true;
+
+          var icon = chip && chip.icon ? String(chip.icon).toLowerCase() : "";
+          var label = chip && chip.label ? String(chip.label).toLowerCase() : "";
+
+          var isFlighty = icon.indexOf("plane") !== -1 || label.indexOf("flight") !== -1 || label.indexOf("air") !== -1;
+          var isTrainy = icon.indexOf("train") !== -1 || label.indexOf("train") !== -1 || label.indexOf("rail") !== -1;
+          var isBusy = icon.indexOf("bus") !== -1 || label.indexOf("bus") !== -1;
+          var isRoady = icon.indexOf("car") !== -1 || label.indexOf("road") !== -1 || label.indexOf("drive") !== -1 || label.indexOf("cab") !== -1 || label.indexOf("taxi") !== -1;
+
+          // If any surface mode is selected, never show flight suggestions (even if flights were accidentally selected too).
+          if (wantsSurface && isFlighty) return false;
+
+          // Otherwise, restrict route chips to the selected modes.
+          if (isFlighty) return !!flags.hasFlight;
+          if (isTrainy) return !!flags.hasTrain;
+          if (isBusy) return !!flags.hasBus;
+          if (isRoady) return !!flags.hasRoadOrCar;
+
+          // Unknown/unsure route chip: keep it (ensureBookingDefaults will still inject the main route chip).
+          return true;
+        });
+      }
+
+      function ensureBookingDefaults(chips) {
         var list = Array.isArray(chips) ? chips.slice() : [];
         var destination = derived && derived.destination ? String(derived.destination.city || "") : "";
         var suffix = destination ? " in " + destination : "";
@@ -7599,7 +7966,7 @@
         var hasActivity = list.some(function (chip) { return chip && chip.cls === "activity"; });
         var hasRoute = list.some(function (chip) { return chip && (chip.cls === "route" || chip.cls === "route-road"); });
         if (!hasRoute) {
-          list.unshift({ cls: "route", icon: "plane", label: "Flights to " + (destination || "destination"), trailingIcon: "external-link" });
+          list.unshift(getRouteBookingChip());
         }
         if (!hasHotel) {
           list.unshift({ cls: "hotel", icon: "building-2", label: "Hotels" + suffix });
@@ -7664,7 +8031,9 @@ function buildDayBaseModel(dayNumber) {
             { cls: "activity", icon: "ticket", label: activities[1] || "Local highlight" },
             routeChip
           ];
-                bookingConfig = ensureBookingDefaults(bookingConfig);
+        bookingConfig = filterBookingConfigForTransport(bookingConfig);
+        bookingConfig = ensureBookingDefaults(bookingConfig);
+        bookingConfig = filterBookingConfigForTransport(bookingConfig);
         var dayHeading = aiDay && aiDay.title
           ? aiDay.title
           : (dayNumber === 1
@@ -7764,7 +8133,7 @@ function buildDayBaseModel(dayNumber) {
         if (override.schedule && typeof override.schedule === "object") {
           ["morning", "afternoon", "evening", "night"].forEach(function (slotName) {
             if (typeof override.schedule[slotName] === "string") {
-              merged.schedule[slotName] = override.schedule[slotName].trim();
+              merged.schedule[slotName] = stripItineraryMarkdown(override.schedule[slotName]);
             }
           });
         }
@@ -7833,12 +8202,17 @@ function buildDayBaseModel(dayNumber) {
           var stayItems = model.stayOptions.map(function (item) {
             return '<li><i data-lucide="house"></i><span>' + escapeHtml(item) + "</span></li>";
           }).join("");
-                    var bookingChips = model.quickBookings.map(function (chip) {
+          var bookingChips = model.quickBookings.map(function (chip) {
+            var cls = chip && chip.cls ? String(chip.cls) : "activity";
             var trailing = chip.trailingIcon
               ? '<i class="booking-chip-trailing" data-lucide="' + chip.trailingIcon + '"></i>'
               : "";
+            if (cls === "activity") {
+              return '<button type="button" class="booking-chip booking-chip-trigger activity" data-activity-booking-trigger="true" data-activity-label="' + escapeHtml(chip.label) + '">' +
+                '<i data-lucide="' + chip.icon + '"></i><span>' + escapeHtml(chip.label) + '</span></button>';
+            }
             var link = getBookingLinkForChip(chip, bookingLinks);
-            return '<a class="booking-chip ' + chip.cls + '" href="' + escapeHtml(link) + '" target="_blank" rel="noopener noreferrer">' +
+            return '<a class="booking-chip ' + cls + '" href="' + escapeHtml(link) + '" target="_blank" rel="noopener noreferrer">' +
               '<i data-lucide="' + chip.icon + '"></i><span>' + escapeHtml(chip.label) + "</span>" + trailing + "</a>";
           }).join("");
           var editControlMarkup = isPlanReadOnly()
@@ -7868,6 +8242,21 @@ function buildDayBaseModel(dayNumber) {
             '<div class="booking-row">' + bookingChips + "</div>" +
             '<p class="tip"><i data-lucide="lightbulb"></i><span>Tip: ' + escapeHtml(model.tip) + "</span></p>" +
             '<div class="booking-actions"><button class="travel-guide-btn" type="button" data-guide-url="' + escapeHtml(model.travelGuide) + '"><i data-lucide="external-link"></i><span>Travel Guide</span></button></div>' +
+            "</div></div></div>" +
+            '<div class="activity-booking-modal" aria-hidden="true">' +
+            '<div class="activity-booking-dialog" role="dialog" aria-modal="true" aria-label="Activity booking chooser">' +
+            '<h3 class="activity-booking-title">Book activity</h3>' +
+            '<div class="activity-booking-options">' +
+            '<a class="activity-booking-option" data-site="viator" href="https://www.viator.com/searchResults/all?text=activity" target="_blank" rel="noopener noreferrer">' +
+            '<span class="activity-booking-option-icon"><img src="images/V.jpg" alt="" aria-hidden="true"></span>' +
+            '<span class="activity-booking-option-text">Book on Viator</span>' +
+            '<i class="activity-booking-option-trailing" data-lucide="external-link"></i>' +
+            "</a>" +
+            '<a class="activity-booking-option" data-site="gyg" href="https://www.getyourguide.com/s/?q=activity" target="_blank" rel="noopener noreferrer">' +
+            '<span class="activity-booking-option-icon"><img src="images/G.jpg" alt="" aria-hidden="true"></span>' +
+            '<span class="activity-booking-option-text">Book on GetYourGuide</span>' +
+            '<i class="activity-booking-option-trailing" data-lucide="external-link"></i>' +
+            "</a>" +
             "</div></div></div></article>";
         }
         node.innerHTML = html;
@@ -8525,6 +8914,7 @@ function buildDayBaseModel(dayNumber) {
         setupBudgetEditing();
         setupPackingEditing();
         setupHighlightsWeatherEditing();
+        setupActivityBookingChooser();
         if (isCommunityReadOnly) {
           var headerSearch = document.getElementById("header-plan-search");
           if (headerSearch) headerSearch.style.display = "none";
@@ -8813,12 +9203,14 @@ function buildDayBaseModel(dayNumber) {
 
         flushItineraryRecommendationInputs();
 
-        var headline = headlineInput && headlineInput.value.trim() ? headlineInput.value.trim() : baseModel.title;
+        var headline = headlineInput && headlineInput.value.trim()
+          ? headlineInput.value.trim()
+          : baseModel.title;
         var nextSchedule = {
-          morning: morningInput ? morningInput.value.trim() : baseModel.schedule.morning,
-          afternoon: afternoonInput ? afternoonInput.value.trim() : baseModel.schedule.afternoon,
-          evening: eveningInput ? eveningInput.value.trim() : baseModel.schedule.evening,
-          night: nightInput ? nightInput.value.trim() : baseModel.schedule.night
+          morning: morningInput ? stripItineraryMarkdown(morningInput.value) : baseModel.schedule.morning,
+          afternoon: afternoonInput ? stripItineraryMarkdown(afternoonInput.value) : baseModel.schedule.afternoon,
+          evening: eveningInput ? stripItineraryMarkdown(eveningInput.value) : baseModel.schedule.evening,
+          night: nightInput ? stripItineraryMarkdown(nightInput.value) : baseModel.schedule.night
         };
         var draft = itineraryEditorState.draft || {};
         var nextFood = normalizeTextList(draft.foodRecommendations, 4);
@@ -9360,7 +9752,7 @@ function buildDayBaseModel(dayNumber) {
           if (!node.style.lineHeight) node.style.lineHeight = "1";
         });
       }
-    })();
+  })();
   </script>
   <script src="/js/page-transition.js?v=20260324a"></script>
   <script src="/js/newsletter.js"></script>

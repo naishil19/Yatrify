@@ -11,6 +11,9 @@
     <link rel="preload" as="image" href="/images/Step3.svg" />
     <link rel="preload" as="image" href="/images/Step4.svg" />
     <link rel="stylesheet" href="css/2a2e7898d4f6aad7.css" />
+    <script>
+      document.documentElement.classList.add("yatrify-header-auth-loading");
+    </script>
     <style>
       :root {
         --blue: #3b82f6;
@@ -167,9 +170,9 @@
         align-items: center;
       }
       .logo-wrap img {
-      display: block;
+        display: block;
         width: 100px;
-        height: 47px;
+        height: 50px;
         object-fit: contain;
       }
       .logo-dark {
@@ -2157,7 +2160,7 @@ html.dark .theme-toggle:hover {
           </ul>
         </div>
         <div class="topbar-actions header-action-row" style="position:relative;z-index:10005;">
-          <span class="header-credits">Credits <span id="credits-count">2</span></span>
+          <span class="header-credits">Credits <span id="credits-count">-</span></span>
           <button type="button" class="icon-btn" title="Feedback" aria-label="Feedback">
             <i data-lucide="message-circle" style="width:18px;height:18px;"></i>
           </button>
@@ -2577,6 +2580,11 @@ html.dark .theme-toggle:hover {
       (function () {
         var currentStep = 1;
         var clerkReady = false;
+        var headerAuthResolved = false;
+        var headerProfileReady = false;
+        var headerCreditsReady = false;
+        var headerCreditsRequested = false;
+        var headerReleaseTimer = null;
         var profileBtn = document.getElementById("profile-btn");
         var profileMenu = document.getElementById("profile-menu");
         var manageBtn = document.getElementById("manage-account");
@@ -2618,6 +2626,50 @@ html.dark .theme-toggle:hover {
         };
         var PLAN_LIBRARY_KEY = "Yatrify_generated_plans";
         var PLAN_SELECTION_KEY = "Yatrify_selected_plan_signature";
+
+        function releaseHeaderLoading(force) {
+          if (!force && !(headerAuthResolved && headerProfileReady && headerCreditsReady)) return;
+          if (headerReleaseTimer) {
+            clearTimeout(headerReleaseTimer);
+            headerReleaseTimer = null;
+          }
+          document.documentElement.classList.remove("yatrify-header-auth-loading");
+        }
+
+        function startHeaderReleaseFallback() {
+          if (headerReleaseTimer) return;
+          headerReleaseTimer = window.setTimeout(function () {
+            if (!headerAuthResolved) return;
+            if (window.Clerk && window.Clerk.user && !headerCreditsReady) return;
+            releaseHeaderLoading(true);
+          }, 1800);
+        }
+
+        function hydrateHeaderFromCache() {
+          var cachedProfile = window.YatrifyAuthCache && typeof window.YatrifyAuthCache.getProfile === "function"
+            ? window.YatrifyAuthCache.getProfile({ maxAgeMs: 0 })
+            : null;
+          if (!cachedProfile || !cachedProfile.userId) return false;
+          headerAuthResolved = true;
+          headerProfileReady = true;
+          if (avatar && cachedProfile.imageUrl) {
+            avatar.style.display = "block";
+            avatar.src = cachedProfile.imageUrl;
+          }
+          if (nameEl) {
+            nameEl.textContent = cachedProfile.fullName || cachedProfile.firstName || "Account";
+          }
+          if (emailEl) {
+            emailEl.textContent = cachedProfile.email || "";
+          }
+          if (creditsCountEl && Number.isFinite(Number(cachedProfile.credits))) {
+            creditsCountEl.removeAttribute("data-loading");
+            creditsCountEl.textContent = String(Number(cachedProfile.credits));
+            headerCreditsReady = true;
+          }
+          releaseHeaderLoading();
+          return true;
+        }
 
         function createPlanSignature(plan) {
           if (!plan || typeof plan !== "object") return "";
@@ -4624,7 +4676,17 @@ html.dark .theme-toggle:hover {
         function updateHeaderUI() {
           if (!window.Clerk) return;
           if (window.Clerk.user) {
-            if (avatar) avatar.src = window.Clerk.user.imageUrl || "images/image_3.png";
+            headerAuthResolved = true;
+            if (avatar) {
+              var imageUrl = window.Clerk.user.imageUrl || "images/image_3.png";
+              headerProfileReady = true;
+              avatar.style.display = "block";
+              avatar.onload = null;
+              avatar.onerror = null;
+              avatar.src = imageUrl;
+            } else {
+              headerProfileReady = true;
+            }
             if (nameEl) {
               var name = [window.Clerk.user.firstName, window.Clerk.user.lastName].filter(Boolean).join(" ");
               nameEl.textContent = name || "Account";
@@ -4632,7 +4694,17 @@ html.dark .theme-toggle:hover {
             if (emailEl) {
               emailEl.textContent = window.Clerk.user.primaryEmailAddress ? window.Clerk.user.primaryEmailAddress.emailAddress : "";
             }
+            if (!headerCreditsRequested) {
+              headerCreditsRequested = true;
+              headerCreditsReady = false;
+              loadCredits();
+            }
+            releaseHeaderLoading();
           } else if (clerkReady) {
+            headerAuthResolved = true;
+            headerProfileReady = true;
+            headerCreditsReady = true;
+            releaseHeaderLoading(true);
             window.location.href = "/";
           }
         }
@@ -5123,7 +5195,21 @@ html.dark .theme-toggle:hover {
         }
 
         function setCredits(count) {
-          if (creditsCountEl) creditsCountEl.textContent = String(count);
+          if (!creditsCountEl) return;
+          creditsCountEl.removeAttribute("data-loading");
+          creditsCountEl.textContent = String(count);
+        }
+
+        function setCreditsLoading() {
+          if (!creditsCountEl) return;
+          creditsCountEl.setAttribute("data-loading", "true");
+          creditsCountEl.textContent = "";
+        }
+
+        function setCreditsUnavailable() {
+          if (!creditsCountEl) return;
+          creditsCountEl.removeAttribute("data-loading");
+          creditsCountEl.textContent = "—";
         }
 
         function updateTripLimitCopy() {
@@ -5155,14 +5241,20 @@ html.dark .theme-toggle:hover {
 
         function loadCredits() {
           if (!window.YatrifyPlanService) {
-            setCredits(0);
-            return;
+            setCreditsUnavailable();
+            headerCreditsReady = true;
+            releaseHeaderLoading();
+            return Promise.resolve();
           }
-          window.YatrifyPlanService.getUserMe().then(function (profile) {
+          setCreditsLoading();
+          return window.YatrifyPlanService.getUserMe().then(function (profile) {
             setCredits(profile && typeof profile.credits === "number" ? profile.credits : 0);
             applyPlanTier(profile && profile.planTier ? profile.planTier : "free");
           }).catch(function () {
-            setCredits(0);
+            setCreditsUnavailable();
+          }).finally(function () {
+            headerCreditsReady = true;
+            releaseHeaderLoading();
           });
         }
 
@@ -5379,12 +5471,19 @@ html.dark .theme-toggle:hover {
 
         function bootPageAuth() {
           initTheme();
-          loadCredits();
+          document.documentElement.classList.add("yatrify-header-auth-loading");
+          headerAuthResolved = false;
+          headerProfileReady = false;
+          headerCreditsReady = false;
+          headerCreditsRequested = false;
+          startHeaderReleaseFallback();
+          hydrateHeaderFromCache();
           ensureClerkLoaded().then(function () {
             clerkReady = true;
             updateHeaderUI();
             window.Clerk.addListener(updateHeaderUI);
           }).catch(function () {
+            releaseHeaderLoading(true);
           });
         }
 

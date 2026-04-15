@@ -153,6 +153,8 @@
       scenarioDefaults.messageText,
       DEFAULTS.messageText,
     ]);
+    config.homeHref = firstDefined([config.homeHref, DEFAULTS.homeHref]);
+    config.homeLabel = firstDefined([config.homeLabel, DEFAULTS.homeLabel]);
 
     var resourceText = firstDefined([config.resource, queryMeta.resource]);
     if (resourceText) {
