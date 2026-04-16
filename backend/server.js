@@ -1,5 +1,4 @@
 import express from "express";
-import OpenAI from "openai";
 import { Pool } from "pg";
 import { Webhook } from "svix";
 import dotenv from "dotenv";
@@ -45,18 +44,6 @@ if (process.env.DATABASE_URL) {
   });
 }
 const store = pool ? createStore({ pool }) : null;
-
-let openaiClient = null;
-function getOpenAIClient() {
-  const rawKey = String(process.env.OPENAI_API_KEY || "").trim();
-  if (!rawKey || rawKey === "sk-proj_your_openai_key_here") return null;
-  if (!openaiClient) {
-    openaiClient = new OpenAI({
-      apiKey: rawKey,
-    });
-  }
-  return openaiClient;
-}
 
 let clerkClient = null;
 function getClerkClient() {
@@ -1367,6 +1354,264 @@ function normalizeBudgetRangePercentages(rawBudgetRange, fallbackCurrency) {
   return normalized;
 }
 
+function normalizeBudgetLocationParts(value, fallbackCity, fallbackCountry) {
+  const text = String(value || "").trim();
+  if (!text) {
+    return {
+      city: fallbackCity,
+      country: fallbackCountry,
+      full: fallbackCountry ? `${fallbackCity}, ${fallbackCountry}` : fallbackCity,
+    };
+  }
+  const parts = text
+    .split(",")
+    .map((part) => String(part || "").trim())
+    .filter(Boolean);
+  const city = parts[0] || fallbackCity;
+  const country = parts.length > 1 ? parts[parts.length - 1] : fallbackCountry;
+  return {
+    city,
+    country,
+    full: parts.length > 1 ? parts.join(", ") : (country ? `${city}, ${country}` : city),
+  };
+}
+
+function normalizeBudgetToken(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function parsePassengerCountsFromText(label) {
+  const text = String(label || "").toLowerCase();
+  const counts = { adults: 1, children: 0, infants: 0 };
+  const adults = text.match(/(\d+)\s*adult/);
+  const children = text.match(/(\d+)\s*child/);
+  const infants = text.match(/(\d+)\s*infant/);
+  if (adults) counts.adults = Math.max(1, toNonNegativeInteger(adults[1]));
+  if (children) counts.children = Math.max(0, toNonNegativeInteger(children[1]));
+  if (infants) counts.infants = Math.max(0, toNonNegativeInteger(infants[1]));
+  return counts;
+}
+
+function parseBudgetAmount(value) {
+  const text = String(value || "")
+    .toLowerCase()
+    .replace(/[, ]+/g, "");
+  if (!text) return 0;
+  const match = text.match(/(\d+(?:\.\d+)?)(k|m|l|lac|lakh|cr|crore)?/i);
+  if (!match) return 0;
+  let amount = Number(match[1]);
+  if (!Number.isFinite(amount)) return 0;
+  const suffix = String(match[2] || "").toLowerCase();
+  if (suffix === "k") amount *= 1e3;
+  else if (suffix === "m") amount *= 1e6;
+  else if (suffix === "l" || suffix === "lac" || suffix === "lakh") amount *= 1e5;
+  else if (suffix === "cr" || suffix === "crore") amount *= 1e7;
+  return Math.max(0, Math.round(amount));
+}
+
+function getHotelFactorFromTrip(accommodation) {
+  const text = normalizePayloadArray(accommodation).join(" ").toLowerCase();
+  if (/(luxury|premium|resort|villa|suite|5)/i.test(text)) return 1.48;
+  if (/(boutique|comfort|standard|4|mid)/i.test(text)) return 1.16;
+  if (/(hostel|budget|dorm|guesthouse|homestay|3)/i.test(text)) return 0.9;
+  return 1.02;
+}
+
+function getFoodFactorFromTrip(food) {
+  const text = normalizePayloadArray(food).join(" ").toLowerCase();
+  if (/(fine|dine|premium|upscale|gourmet)/i.test(text)) return 1.28;
+  if (/(local|street|simple|budget|economy)/i.test(text)) return 0.84;
+  if (/(balanced|mixed|family|casual)/i.test(text)) return 0.98;
+  return 1.0;
+}
+
+function getActivityFactorFromTrip(themes, pace, preferences) {
+  const themeCount = normalizePayloadArray(themes).length;
+  const text = `${pace || ""} ${preferences || ""}`.toLowerCase();
+  let factor = 1 + Math.min(0.2, themeCount * 0.04);
+  if (/(slow|relaxed|leisure)/i.test(text)) factor -= 0.04;
+  if (/(fast|packed|busy|adventure|intense)/i.test(text)) factor += 0.07;
+  return Math.min(1.32, Math.max(0.9, factor));
+}
+
+function getTransportModeFromTrip(transport, isInternational) {
+  const transportText = normalizePayloadArray(transport).map((value) => String(value || "").toLowerCase());
+  const hasFlight = transportText.some((value) => value.indexOf("flight") !== -1 || value.indexOf("plane") !== -1 || value.indexOf("air") !== -1);
+  const hasTrain = transportText.some((value) => value.indexOf("train") !== -1 || value.indexOf("rail") !== -1);
+  const hasBus = transportText.some((value) => value.indexOf("bus") !== -1);
+  const hasRoad = transportText.some((value) => value.indexOf("road") !== -1 || value.indexOf("car") !== -1 || value.indexOf("drive") !== -1 || value.indexOf("cab") !== -1 || value.indexOf("taxi") !== -1);
+
+  if (hasFlight) return "flight";
+  if (hasTrain) return "train";
+  if (hasBus) return "bus";
+  if (hasRoad) return "road";
+  return isInternational ? "flight" : "train";
+}
+
+function getVisaEstimateBand(countryText) {
+  const text = normalizeBudgetToken(countryText);
+  if (!text) return { min: 4000, max: 14000 };
+  if (/^(india|bharat)$/.test(text)) return { min: 0, max: 0 };
+  if (/(nepal|bhutan)/.test(text)) return { min: 0, max: 1200 };
+  if (/(maldives|sri lanka|srilanka)/.test(text)) return { min: 1200, max: 4500 };
+  if (/(singapore|malaysia|thailand|vietnam|indonesia|philippines|cambodia|laos|myanmar|brunei)/.test(text)) return { min: 1800, max: 6500 };
+  if (/(uae|united arab emirates|dubai|qatar|saudi arabia|bahrain|kuwait|oman)/.test(text)) return { min: 2500, max: 9000 };
+  if (/(uk|united kingdom|england|scotland|wales|europe|schengen|france|germany|italy|spain|switzerland|netherlands|greece|portugal|austria|belgium|denmark|finland|sweden|norway|iceland|ireland|poland|czech|hungary|croatia)/.test(text)) {
+    return { min: 5000, max: 18000 };
+  }
+  if (/(usa|united states|canada|australia|new zealand|japan|south korea|korea|taiwan|hong kong|macau)/.test(text)) {
+    return { min: 6000, max: 22000 };
+  }
+  if (/(south africa|egypt|kenya|morocco|tanzania|uganda|zambia|zimbabwe|botswana|namibia|mauritius)/.test(text)) {
+    return { min: 4500, max: 16000 };
+  }
+  if (/(brazil|argentina|chile|peru|colombia|mexico|panama|costa rica)/.test(text)) {
+    return { min: 5000, max: 17000 };
+  }
+  return { min: 4000, max: 14000 };
+}
+
+function isInternationalTripFromPayload(trip) {
+  const origin = normalizeBudgetLocationParts(trip.startCity, "Origin City", "Origin Country");
+  const destination = normalizeBudgetLocationParts(trip.destination, "Destination City", "Destination Country");
+  const originCountry = normalizeBudgetToken(origin.country);
+  const destinationCountry = normalizeBudgetToken(destination.country);
+  const placeholderCountry = /^(origin country|destination country|country|not specified|unknown|n\/a)$/i;
+  const originKnown = !!originCountry && !placeholderCountry.test(String(origin.country || ""));
+  const destinationKnown = !!destinationCountry && !placeholderCountry.test(String(destination.country || ""));
+  if (originKnown && destinationKnown) return originCountry !== destinationCountry;
+  return false;
+}
+
+function scaleBudgetModelToTargets(model, targetMinTotal, targetMaxTotal) {
+  const normalized = normalizeBudgetRangeSeed(model, "INR");
+  if (!normalized) return null;
+
+  const items = [];
+  ["essentials", "activities", "transport"].forEach((group) => {
+    (Array.isArray(normalized[group]) ? normalized[group] : []).forEach((item) => {
+      items.push(item);
+    });
+  });
+
+  const rawMinTotal = items.reduce((sum, item) => sum + toNonNegativeInteger(item.min), 0);
+  const rawMaxTotal = items.reduce((sum, item) => sum + toNonNegativeInteger(item.max), 0);
+  if (rawMinTotal > 0 && Number.isFinite(Number(targetMinTotal)) && Number(targetMinTotal) > 0) {
+    const minScale = Number(targetMinTotal) / rawMinTotal;
+    items.forEach((item) => {
+      item.min = Math.max(0, Math.round(toNonNegativeInteger(item.min) * minScale));
+    });
+  }
+  if (rawMaxTotal > 0 && Number.isFinite(Number(targetMaxTotal)) && Number(targetMaxTotal) > 0) {
+    const maxScale = Number(targetMaxTotal) / rawMaxTotal;
+    items.forEach((item) => {
+      item.max = Math.max(item.min, Math.round(toNonNegativeInteger(item.max) * maxScale));
+    });
+  }
+  return normalized;
+}
+
+function buildRealisticBudgetRange(trip, budgetGuidance) {
+  const normalizedTrip = normalizeGeminiTripPayload(trip || {});
+  const passengerCounts = parsePassengerCountsFromText(normalizedTrip.passengers || "1 adult");
+  const travelerCount = Math.max(1, passengerCounts.adults + passengerCounts.children + passengerCounts.infants);
+  const days = Math.max(1, Number(normalizedTrip.totalDays) || 1);
+  const isInternational = isInternationalTripFromPayload(normalizedTrip);
+  const mode = getTransportModeFromTrip(normalizedTrip.transport, isInternational);
+  const hotelFactor = getHotelFactorFromTrip(normalizedTrip.accommodation);
+  const foodFactor = getFoodFactorFromTrip(normalizedTrip.food);
+  const activityFactor = getActivityFactorFromTrip(normalizedTrip.themes, normalizedTrip.pace, normalizedTrip.preferences);
+
+  const accommodationMin = travelerCount * days * (isInternational ? 3600 : 1800) * hotelFactor;
+  const accommodationMax = travelerCount * days * (isInternational ? 7600 : 3800) * hotelFactor;
+  const foodMin = travelerCount * days * (isInternational ? 1200 : 550) * foodFactor;
+  const foodMax = travelerCount * days * (isInternational ? 3000 : 1500) * foodFactor;
+  const insuranceMin = travelerCount * (isInternational ? 1400 : 450);
+  const insuranceMax = travelerCount * (isInternational ? 5200 : 1500);
+  const activitiesIncludedMin = travelerCount * days * (isInternational ? 700 : 280) * activityFactor;
+  const activitiesIncludedMax = travelerCount * days * (isInternational ? 1800 : 900) * activityFactor;
+  const activitiesOptionalMin = travelerCount * days * (isInternational ? 1000 : 420) * activityFactor;
+  const activitiesOptionalMax = travelerCount * days * (isInternational ? 2600 : 1500) * activityFactor;
+
+  const startReturnBase = {
+    flight: isInternational ? [18000, 65000] : [5500, 22000],
+    train: isInternational ? [6000, 18000] : [1200, 9000],
+    bus: isInternational ? [2500, 9000] : [700, 4500],
+    road: isInternational ? [3200, 11000] : [1200, 5500],
+  }[mode] || (isInternational ? [12000, 35000] : [2500, 12000]);
+  const travelStartReturnMin = travelerCount * startReturnBase[0];
+  const travelStartReturnMax = travelerCount * startReturnBase[1];
+
+  const intercityBase = {
+    flight: isInternational ? [700, 2200] : [280, 1200],
+    train: isInternational ? [500, 1600] : [220, 1000],
+    bus: isInternational ? [420, 1400] : [180, 850],
+    road: isInternational ? [450, 1500] : [200, 900],
+  }[mode] || [250, 950];
+  const intercityDays = Math.max(0, days - 1);
+  const intercityTransportMin = travelerCount * intercityDays * intercityBase[0];
+  const intercityTransportMax = travelerCount * Math.max(1, intercityDays || 1) * intercityBase[1];
+
+  const intracityBase = isInternational ? [550, 1600] : [220, 950];
+  const intracityTransportMin = travelerCount * days * intracityBase[0];
+  const intracityTransportMax = travelerCount * days * intracityBase[1];
+
+  const visaBand = isInternational ? getVisaEstimateBand(normalizedTrip.destination) : { min: 0, max: 0 };
+  const visaMin = travelerCount * visaBand.min;
+  const visaMax = travelerCount * visaBand.max;
+
+  const subtotalMin =
+    accommodationMin +
+    foodMin +
+    insuranceMin +
+    activitiesIncludedMin +
+    activitiesOptionalMin +
+    travelStartReturnMin +
+    intercityTransportMin +
+    intracityTransportMin +
+    visaMin;
+  const subtotalMax =
+    accommodationMax +
+    foodMax +
+    insuranceMax +
+    activitiesIncludedMax +
+    activitiesOptionalMax +
+    travelStartReturnMax +
+    intercityTransportMax +
+    intracityTransportMax +
+    visaMax;
+  const contingencyMin = Math.max(travelerCount * days * 350, subtotalMin * 0.08);
+  const contingencyMax = Math.max(travelerCount * days * 900, subtotalMax * 0.15);
+
+  const rawModel = {
+    currency: normalizedTrip.currency || "INR",
+    essentials: [
+      { id: "accommodation", label: "Accommodation", min: accommodationMin, max: accommodationMax },
+      { id: "food", label: "Food", min: foodMin, max: foodMax },
+      { id: "insurance", label: "Insurance", min: insuranceMin, max: insuranceMax },
+      { id: "contingency", label: "Contingency", min: contingencyMin, max: contingencyMax },
+    ],
+    activities: [
+      { id: "activitiesIncluded", label: "Activities Included", min: activitiesIncludedMin, max: activitiesIncludedMax },
+      { id: "activitiesOptional", label: "Activities Optional", min: activitiesOptionalMin, max: activitiesOptionalMax },
+    ],
+    transport: [
+      { id: "travelStartReturn", label: "Travel Start/Return", min: travelStartReturnMin, max: travelStartReturnMax },
+      { id: "intercityTransport", label: "Intercity Transport", min: intercityTransportMin, max: intercityTransportMax },
+      { id: "intracityTransport", label: "Intracity Transport", min: intracityTransportMin, max: intracityTransportMax },
+      { id: "visa", label: "Visa", min: visaMin, max: visaMax },
+    ],
+  };
+
+  const normalizedBudget = normalizeBudgetRangePercentages(rawModel, normalizedTrip.currency || "INR");
+  if (!normalizedBudget) return null;
+  normalizedBudget.currency = normalizedTrip.currency || "INR";
+  return normalizedBudget;
+}
+
 function normalizeGeminiTripPayload(payload) {
   const input = payload && typeof payload === "object" ? payload : {};
   const derivedDays = diffDaysInclusive(input.startDate, input.endDate);
@@ -1474,11 +1719,11 @@ function buildMockTripHighlights(trip) {
         ? themes
         : ["Sightseeing", "Food", "Culture"]
     ).slice(0, 4),
-    summary: `A practical mock itinerary for ${city} with day-by-day planning, budget guidance, and packing details tailored to the trip form.`,
+    summary: `This ${trip.totalDays}-day trip from ${origin} to ${city} is shaped around the route, your pace, and the kind of experiences you picked in the form. It keeps the plan grounded in ${city} with a mix of main sights, practical transfers, and enough breathing room for meals, short breaks, and unhurried local moments. Expect a trip that feels organized but still interesting, with the main landmarks and neighborhood stops doing the heavy lifting instead of generic filler.`,
   };
 }
 
-function buildMockItineraryDay(trip, dayNumber, landmarkHints) {
+function buildMockItineraryDay(trip, dayNumber, totalDays, landmarkHints) {
   const city = trip.destination || "the destination";
   const origin = trip.startCity || "your origin city";
   const theme = landmarkHints[(dayNumber - 1) % Math.max(1, landmarkHints.length)] || `${city} exploration`;
@@ -1489,16 +1734,30 @@ function buildMockItineraryDay(trip, dayNumber, landmarkHints) {
   const hasRoad = transport.some((value) => value.includes("road") || value.includes("car") || value.includes("drive"));
   const wantsSurface = hasTrain || hasBus || hasRoad;
   const routeText = `${origin} to ${city}`;
+  const returnRouteText = `${city} to ${origin}`;
+  const stayStyle = trip.accommodation.length ? String(trip.accommodation[0] || "").trim() : "Preferred Stay";
   const quickBookings = [];
-  if (wantsSurface) {
-    if (hasTrain) quickBookings.push(`Search train tickets ${routeText}`);
-    else if (hasBus) quickBookings.push(`Search bus tickets ${routeText}`);
-    else quickBookings.push(`Open driving directions ${routeText}`);
-  } else if (hasFlight) {
-    quickBookings.push(`Search flights ${routeText}`);
+  if (dayNumber === 1) {
+    if (wantsSurface) {
+      if (hasTrain) quickBookings.push(`Search train tickets ${routeText}`);
+      else if (hasBus) quickBookings.push(`Search bus tickets ${routeText}`);
+      else quickBookings.push(`Book private taxi for ${routeText}`);
+    } else if (hasFlight) {
+      quickBookings.push(`Search flights ${routeText}`);
+    }
+  } else if (totalDays > 1 && dayNumber === totalDays) {
+    if (wantsSurface) {
+      if (hasTrain) quickBookings.push(`Search return train tickets ${returnRouteText}`);
+      else if (hasBus) quickBookings.push(`Search return bus tickets ${returnRouteText}`);
+      else quickBookings.push(`Book return private taxi for ${returnRouteText}`);
+    } else if (hasFlight) {
+      quickBookings.push(`Search return flights ${returnRouteText}`);
+    }
   }
-  quickBookings.push(`Reserve stays in ${city}`);
-  quickBookings.push(`Prebook tickets for a top attraction in ${city}`);
+  if (dayNumber === 1) {
+    quickBookings.push(`Hotels in ${city}`);
+  }
+  quickBookings.push(`${theme}`);
   return {
     dayNumber,
     title: `${theme} - Day ${dayNumber}`,
@@ -1513,16 +1772,28 @@ function buildMockItineraryDay(trip, dayNumber, landmarkHints) {
       `${city} local breakfast`,
       `${city} lunch stop`,
       `Dinner near ${city}`,
+      `${city} local snack stop`,
     ],
-    stayOptions: [
-      `Stay in central ${city}`,
-      `Stay near a transit hub in ${city}`,
-    ],
+    stayOptions: dayNumber === 1
+      ? [
+          `Curated ${stayStyle} stays in ${city}`,
+          `Best-value ${stayStyle} options in ${city}`,
+          `Comfort stays in ${city}`,
+        ]
+      : [
+          `Keep your ${stayStyle} base in ${city}`,
+          `Return to your stay in ${city} after the day`,
+          `Stay close to your current hotel for an easy evening`,
+        ],
     optionalActivities: [
       `Short heritage walk around ${theme}`,
       `Local cafe or market stop in ${city}`,
+      `Easy scenic break near ${city}`,
     ],
-    quickBookings: quickBookings.slice(0, 4),
+    tip: dayNumber === 1
+      ? `Start early so transfers stay easy on the ${routeText} route.`
+      : `Keep the middle of the day flexible and use the quieter evening hours for ${theme}.`,
+    quickBookings: dedupeStrings(quickBookings).slice(0, 4),
   };
 }
 
@@ -1544,13 +1815,15 @@ function buildMockPackingChecklist(trip) {
   ]);
 }
 
-function buildMockGeminiSections(payload) {
+function buildMockGeminiSections(payload, options = {}) {
   const trip = normalizeGeminiTripPayload(payload || {});
   const landmarkHints = getDestinationLandmarkHints(trip.destination);
   const itinerary = [];
   for (let day = 1; day <= trip.totalDays; day += 1) {
-    itinerary.push(buildMockItineraryDay(trip, day, landmarkHints));
+    itinerary.push(buildMockItineraryDay(trip, day, trip.totalDays, landmarkHints));
   }
+
+  const budgetRange = buildRealisticBudgetRange(trip, options && options.budgetGuidance ? options.budgetGuidance : null);
 
   return {
     parsed: {
@@ -1560,25 +1833,8 @@ function buildMockGeminiSections(payload) {
         bestTimeToVisit: trip.weather || "Best time depends on the selected travel window.",
       },
       itinerary,
-      budgetRange: {
-        currency: trip.currency || "INR",
-        essentials: [
-          { id: "accommodation", label: "Accommodation", pct: 33, min: 25000, max: 40000 },
-          { id: "food", label: "Food", pct: 15, min: 9000, max: 18000 },
-          { id: "insurance", label: "Insurance", pct: 1, min: 800, max: 2500 },
-          { id: "contingency", label: "Contingency", pct: 7, min: 4500, max: 10000 },
-        ],
-        activities: [
-          { id: "activitiesIncluded", label: "Activities Included", pct: 7, min: 6000, max: 12000 },
-          { id: "activitiesOptional", label: "Activities Optional", pct: 8, min: 7000, max: 15000 },
-        ],
-        transport: [
-          { id: "travelStartReturn", label: "Travel Start/Return", pct: 22, min: 12000, max: 30000 },
-          { id: "intercityTransport", label: "Intercity Transport", pct: 6, min: 3000, max: 9000 },
-          { id: "intracityTransport", label: "Intracity Transport", pct: 4, min: 2500, max: 7000 },
-          { id: "visa", label: "Visa", pct: 0, min: 0, max: 0 },
-        ],
-      },
+      budgetRange: budgetRange,
+      budgetRangeSource: "auto",
       packingChecklist: buildMockPackingChecklist(trip),
     },
     meta: {
@@ -1803,6 +2059,12 @@ const GENERIC_TRAVEL_PHRASES = [
   "discover hidden gems",
   "travel at your own pace",
   "experience the local vibe",
+  "explore the city",
+  "sightseeing tour",
+  "must see places",
+  "local attractions",
+  "nearby attractions",
+  "discover the area",
 ];
 
 const ITINERARY_SIGNATURE_STOPWORDS = new Set([
@@ -2059,8 +2321,8 @@ function evaluateGeminiSectionsQuality(parsed, payload) {
   const tripSummaryBoldPlaceMentions = countMarkdownBoldPlaceMentions(highlights.summary);
   const weatherExpectedWords = countNormalizedWords(weather.expectedConditions);
   const weatherBestTimeWords = countNormalizedWords(weather.bestTimeToVisit);
-  const minTripSummaryWords = 150;
-  const maxTripSummaryWords = 250;
+  const minTripSummaryWords = 180;
+  const maxTripSummaryWords = 300;
   const minWeatherExpectedWords = Math.min(160, Math.max(80, trip.totalDays * 16));
   const minWeatherBestTimeWords = Math.min(140, Math.max(70, trip.totalDays * 14));
   if (tripSummaryWords < minTripSummaryWords) {
@@ -2072,8 +2334,8 @@ function evaluateGeminiSectionsQuality(parsed, payload) {
   if (tripSummaryParagraphs < 2 || tripSummaryParagraphs > 3) {
     issues.push(`trip_highlights_paragraph_count_invalid:${tripSummaryParagraphs}`);
   }
-  if (tripSummaryBoldPlaceMentions < 3) {
-    issues.push(`trip_highlights_bold_places_low:${tripSummaryBoldPlaceMentions}_of_3`);
+  if (tripSummaryBoldPlaceMentions > 0) {
+    issues.push(`trip_highlights_unwanted_markdown_bold:${tripSummaryBoldPlaceMentions}`);
   }
   if (weatherExpectedWords < minWeatherExpectedWords) {
     issues.push(`weather_expected_too_short:${weatherExpectedWords}_of_${minWeatherExpectedWords}`);
@@ -2085,6 +2347,20 @@ function evaluateGeminiSectionsQuality(parsed, payload) {
   const itinerary = Array.isArray(parsed && parsed.itinerary) ? parsed.itinerary : [];
   if (itinerary.length !== trip.totalDays) {
     issues.push(`itinerary_days_mismatch:${itinerary.length}_of_${trip.totalDays}`);
+  }
+
+  const dayTitles = [];
+  itinerary.forEach((day, index) => {
+    if (!day || typeof day !== "object") return;
+    const title = String(day.title || "").toLowerCase().replace(/\s+/g, " ").trim();
+    if (title) dayTitles.push(title);
+    if (title && /day at leisure|local sightseeing|city tour|explore the city|free time|relax and explore/.test(title)) {
+      issues.push(`generic_day_title:${index + 1}`);
+    }
+  });
+  const uniqueDayTitles = dedupeStrings(dayTitles);
+  if (dayTitles.length >= 2 && uniqueDayTitles.length < dayTitles.length) {
+    issues.push(`repeated_day_titles:${uniqueDayTitles.length}_of_${dayTitles.length}`);
   }
 
   let slotCoverageCount = 0;
@@ -2114,7 +2390,7 @@ function evaluateGeminiSectionsQuality(parsed, payload) {
 
   const flatText = flattenGeminiSectionsText(parsed);
   const genericPhraseHits = GENERIC_TRAVEL_PHRASES.filter((phrase) => flatText.includes(phrase)).length;
-  if (genericPhraseHits >= 2) {
+  if (genericPhraseHits >= 1) {
     issues.push(`generic_phrasing:${genericPhraseHits}`);
   }
 
@@ -2125,6 +2401,27 @@ function evaluateGeminiSectionsQuality(parsed, payload) {
     if (hintMatches < expectedHints) {
       issues.push(`landmark_specificity_low:${hintMatches}_of_${expectedHints}`);
     }
+  }
+
+  const destinationText = String(trip.destination || "").toLowerCase().trim();
+  if (destinationText && !flatText.includes(destinationText)) {
+    issues.push("destination_not_mentioned");
+  }
+
+  const routeContextMatches = [
+    String(trip.startCity || "").toLowerCase(),
+    String(trip.destination || "").toLowerCase(),
+  ].filter(Boolean).reduce((count, term) => {
+    return count + (flatText.includes(term) ? 1 : 0);
+  }, 0);
+  if (routeContextMatches < 2) {
+    issues.push(`route_context_low:${routeContextMatches}_of_2`);
+  }
+
+  const itinerarySpecificHints = landmarkHints.length ? landmarkHints.slice(0, Math.max(3, Math.min(6, trip.totalDays + 1))) : [];
+  const itineraryHintMatches = countDestinationHintMatches(flatText, itinerarySpecificHints);
+  if (itinerarySpecificHints.length && itineraryHintMatches < Math.max(2, Math.min(4, itinerarySpecificHints.length))) {
+    issues.push(`itinerary_hint_coverage_low:${itineraryHintMatches}_of_${Math.max(2, Math.min(4, itinerarySpecificHints.length))}`);
   }
 
   const packing = Array.isArray(parsed && parsed.packingChecklist) ? parsed.packingChecklist : [];
@@ -2202,6 +2499,8 @@ function buildGeminiSectionsPrompt(payload, options = {}) {
     "Return only valid JSON. Do not wrap output in markdown code fences.",
     "You are an expert local travel planner generating real-life, actionable trip content for a travel web app.",
     "Your output must be specific, practical, and destination-grounded.",
+    "Write like a helpful local friend talking to another traveler. Be warm, direct, and practical.",
+    "Avoid brochure-style language, marketing phrases, and overhyped adjectives. Prefer short, clear sentences with real local advice.",
     "",
     "Trip request:",
     `Start city: ${data.startCity || "Not specified"}`,
@@ -2240,6 +2539,13 @@ function buildGeminiSectionsPrompt(payload, options = {}) {
     "  - If Transport does NOT include Flights, do NOT suggest flights/air tickets/airport transfers.",
     "  - If Transport includes Road or Buses, prefer driving directions, intercity cab, or bus ticket searches for the route.",
     "  - If Transport includes Trains, suggest train ticket searches for the route.",
+    "- Make quickBookings trip-specific and chip-like. Use short labels that match the day context, such as Hotels in City, City A -> City B, a landmark name, a trek name, or Check Landmark visiting hours when the route calls for it.",
+    "- Only include hotel/accommodation chips on arrival days or when the overnight base changes. Do not repeat hotel chips on every itinerary day.",
+    "- For trips longer than 1 day, use the outbound route on the arrival day and the reverse return route on the final day when relevant. Do not repeat the same route direction on multiple days.",
+    "- For middle-day transport chips, use a proper nearby landmark, district, or activity location as the destination. When the day involves moving to another spot, include a middle-day transport chip and use full place names, not single-word fragments like 'Gardens', 'Temple', or 'Market' unless they are part of a full real place name.",
+    "- For attraction-focused days, prefer the actual landmark or activity name as the chip label instead of a sentence.",
+    "- For stay/overnight days, include hotel/accommodation search links for the destination city and trip dates.",
+    "- For landmark or adventure days, use tour/activity labels that map to the existing activity booking flow (Viator / GetYourGuide).",
     "- Include 3-5 quickBookings per day. Keep labels short and clear (no markdown).",
     "",
     "Output schema:",
@@ -2271,6 +2577,7 @@ function buildGeminiSectionsPrompt(payload, options = {}) {
     '      "foodRecommendations": ["string"],',
     '      "stayOptions": ["string"],',
     '      "optionalActivities": ["string"],',
+    '      "tip": "string",',
     '      "quickBookings": ["string"]',
     "    }",
     "  ],",
@@ -2299,21 +2606,39 @@ function buildGeminiSectionsPrompt(payload, options = {}) {
     "Rules:",
     `- Itinerary array must have exactly ${data.totalDays} items.`,
     "- Use realistic and concise text per field with useful details.",
+    "- Keep the tone human and easy to read. Sound conversational, not promotional.",
+    "- When a tip or warning matters, say it plainly instead of dressing it up.",
     "- Do not use reusable canned copy. Keep wording specific to this exact destination, date range, and preferences.",
-    "- tripHighlights.summary must be 2-3 paragraphs and around 150-250 words with meaningful narrative details.",
-    "- In tripHighlights.summary, suggest visiting places and format place names in markdown bold as **Place Name**.",
-    "- Include at least 3 bold place suggestions inside tripHighlights.summary.",
-    "- Use markdown bold only for place names (not random adjectives).",
+    "- tripHighlights.summary must be 2-3 paragraphs and around 180-300 words with meaningful narrative details.",
+    "- Make the opening paragraph vivid and route-specific, the middle paragraph focus on named places and the day-by-day rhythm, and the closing paragraph give practical expectations or pacing advice.",
+    "- Give the reader a stronger sense of the destination's personality, not just a summary of the form inputs.",
+    "- Write tripHighlights.summary in plain text only. Do not use markdown bold, italics, bullets, or asterisks.",
+    "- Mention at least 3 named places naturally in tripHighlights.summary, but keep the whole summary easy to read and unformatted.",
+    "- When shaping tripHighlights.summary, naturally focus on these emphasis categories in the wording: proper nouns (cities, towns, landmarks, natural features), action-oriented nouns (treks, trails, markets, points of interest), key logistics (airports, stations, hotels, transport hubs), and categorical keywords that match the user's filters.",
+    "- Do not over-emphasize generic adjectives or filler words. Keep the important nouns clear and specific.",
     "- weatherAnalysis.expectedConditions must be around 90-150 words with practical weather expectations (temperature band, precipitation/wind, and day/night feel).",
     "- weatherAnalysis.bestTimeToVisit must be around 80-130 words with why this trip window works, trade-offs, and practical timing advice.",
+    "- Every itinerary day must have a unique anchor. Do not reuse the same day structure, same landmark cluster, or same wording across days.",
     "- Each itinerary day title and schedule should include real place names for the destination.",
+    "- Every morning, afternoon, evening, and night field must mention at least one named place, district, landmark, or transit node. Do not leave any slot generic.",
     "- Do not use markdown formatting (like **bold**, _italics_, or lists) inside itinerary schedule fields (morning/afternoon/evening/night). Return plain text only in those fields.",
-    "- Every itinerary day must be meaningfully different from every other day. Do not reuse the same sightseeing order or the same morning/afternoon/evening/night plan across multiple days.",
+    "- Each itinerary day must include a short tip field with one practical, trip-specific sentence tied to that day's route or activities. Avoid generic buffer advice unless the route truly needs it.",
+    "- optionalActivities must contain 2-3 practical items for every itinerary day. If only one strong idea exists, add one or two related low-effort options so the section still feels complete.",
+    "- stayOptions must contain 2-4 items for every itinerary day.",
+    "- On arrival or overnight-base change days, suggest real, destination-appropriate stay names when you are confident they exist; otherwise use service-style recommendation labels that still feel helpful.",
+    "- On sightseeing days that keep the same hotel/base, keep the wording tied to the current stay or base instead of inventing a new hotel.",
+    "- Prefer well-known hotel names, resorts, hostels, or homestays that are actually known in the destination when you are confident they exist.",
+    "- Do not invent hotel names or hotel-like names. If you are not confident a specific property exists, use neutral recommendation-style labels such as 'Curated stays in City' or 'Best-value stays in City' instead of telling the user to search.",
+    "- Do not use generic area placeholders such as 'Old Town', 'Station Road', or 'Riverside area' unless they are real, well-known locations in that destination and you are confident they exist there.",
+    "- Keep stayOptions practical and destination-specific. Avoid placeholders such as '5-star hotel', 'central stay', or made-up chain names.",
+    "- foodRecommendations must contain 3-4 practical food suggestions per day. Aim for a mix of breakfast, lunch, dinner, snack, or local specialty ideas that actually fit the destination and day plan.",
+    "- Avoid giving only two food items unless the day is extremely short. The list should feel complete enough for a traveler to use.",
     "- Give each day a distinct theme or anchor so Day 1, Day 2, Day 3, etc. feel like separate parts of the trip, not copies of each other.",
     "- Avoid rephrasing the same day with slightly different words. The route, activities, and places must change from day to day.",
     "- Across the full itinerary include at least 8 unique real place names (if destination supports it).",
     "- Mention practical route context: nearby areas, transfer hints, or timing windows.",
     "- Include realistic local anchors such as neighborhoods, viewpoints, ghats, beaches, markets, districts, temples, forts, museums, or monuments where relevant.",
+    "- The trip summary should explicitly mention the origin and destination city and at least 3 named places from the destination hints when available.",
     "- Budget values must be integers, non-negative, and min <= max.",
     "- Use only allowed budget ids shown in schema.",
     "- Budget percentages must be realistic and trip-specific. Do not reuse a fixed template split across trips.",
@@ -2330,7 +2655,7 @@ function buildGeminiSectionsPrompt(payload, options = {}) {
     landmarkHints.length
       ? `- Use at least ${minimumHintUsage} names from 'Destination landmark hints' in the itinerary schedule/day titles.`
       : "- If no hints are provided, infer well-known landmarks from the destination and avoid generic wording.",
-    isRevision ? "- This is a revision task: improve specificity and remove all generic placeholders." : "",
+    isRevision ? "- This is a revision task: rewrite any itinerary day that repeats another day, uses generic wording, or lacks named places. If a day looks template-like, rebuild it from scratch with a fresh anchor and a different route." : "",
     focusIssues.length ? `- Fix these quality issues explicitly: ${focusIssues.join(", ")}.` : "",
     serializedPrevious ? `Previous weak JSON to improve: ${serializedPrevious}` : "",
   ].join("\n");
@@ -2362,7 +2687,7 @@ async function requestGeminiSectionsOnce({ apiKey, model, promptText, useGoogleS
       },
     ],
     generationConfig: {
-      temperature: 0.35,
+      temperature: 0.2,
       responseMimeType: "application/json",
     },
   };
@@ -2460,42 +2785,6 @@ async function requestGeminiSectionsWithFallback({ apiKey, model, promptText }) 
   };
 }
 
-app.post("/api/plan", express.json(), async (req, res) => {
-  const client = getOpenAIClient();
-  if (!client) {
-    return res.status(500).json({ error: "OPENAI_API_KEY not set" });
-  }
-
-  const { prompt } = req.body || {};
-  if (!prompt || typeof prompt !== "string") {
-    return res.status(400).json({ error: "Missing prompt" });
-  }
-
-  try {
-    const response = await client.responses.create({
-      model: process.env.OPENAI_MODEL || "gpt-4.1-mini",
-      input: [
-        {
-          role: "system",
-          content:
-            "You are a helpful travel planner. Produce a concise itinerary with day-by-day bullets, highlight must-see spots, and include local tips. Keep it under 350 words.",
-        },
-        { role: "user", content: prompt },
-      ],
-    });
-
-    const text = response.output_text || "";
-    return res.json({ text });
-  } catch (error) {
-    return res.status(500).json({
-      error:
-        error && error.message
-          ? `OpenAI request failed: ${error.message}`
-          : "OpenAI request failed",
-    });
-  }
-});
-
 app.post("/api/feasibility", express.json(), async (req, res) => {
   const payload = normalizeGeminiTripPayload(req.body || {});
   if (isMockAiEnabled()) {
@@ -2517,12 +2806,9 @@ app.post("/api/feasibility", express.json(), async (req, res) => {
   }
 
   const startedAt = Date.now();
-  const configuredModel = String(process.env.GEMINI_MODEL || "gemini-2.0-flash").trim();
   const modelCandidates = dedupeStrings([
-    configuredModel,
-    "gemini-2.0-flash",
     "gemini-2.5-flash",
-    "gemini-1.5-flash",
+    "gemini-2.5-flash-lite",
   ]);
 
   try {
@@ -2581,7 +2867,7 @@ async function generateGeminiSections(payload, options = {}) {
         }
       : null;
   if (isMockAiEnabled()) {
-    const mockResult = buildMockGeminiSections(normalized);
+    const mockResult = buildMockGeminiSections(normalized, { budgetGuidance });
     if (seededBudgetRange && mockResult && mockResult.parsed) {
       mockResult.parsed.budgetRange = seededBudgetRange;
     }
@@ -2605,14 +2891,11 @@ async function generateGeminiSections(payload, options = {}) {
     throw new Error("GEMINI_API_KEY not set");
   }
 
-  const configuredModel = String(process.env.GEMINI_MODEL || "gemini-2.0-flash").trim();
   const startedAt = Date.now();
 
   const modelCandidates = dedupeStrings([
-    configuredModel,
-    "gemini-2.0-flash",
     "gemini-2.5-flash",
-    "gemini-1.5-flash",
+    "gemini-2.5-flash-lite",
   ]);
   const attemptLog = [];
   let bestOutput = null;
@@ -2690,6 +2973,12 @@ async function generateGeminiSections(payload, options = {}) {
   if (seededBudgetRange) {
     bestOutput.parsed = Object.assign({}, bestOutput.parsed, {
       budgetRange: seededBudgetRange,
+      budgetRangeSource: "manual",
+    });
+  } else {
+    bestOutput.parsed = Object.assign({}, bestOutput.parsed, {
+      budgetRange: buildRealisticBudgetRange(normalized, budgetGuidance),
+      budgetRangeSource: "auto",
     });
   }
 
@@ -2700,6 +2989,7 @@ async function generateGeminiSections(payload, options = {}) {
   if (normalizedBudget) {
     bestOutput.parsed = Object.assign({}, bestOutput.parsed, {
       budgetRange: normalizedBudget,
+      budgetRangeSource: bestOutput.parsed && bestOutput.parsed.budgetRangeSource ? bestOutput.parsed.budgetRangeSource : "auto",
     });
   }
 

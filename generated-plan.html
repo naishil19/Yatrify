@@ -4929,9 +4929,6 @@
           </div>
         </div>
         <span class="header-credits">Credits <span id="credits-count">-</span></span>
-        <button type="button" class="icon-btn" title="Feedback" aria-label="Feedback">
-          <i data-lucide="message-circle" style="width:18px;height:18px;"></i>
-        </button>
         <button id="theme-toggle-btn" class="theme-toggle" type="button" title="Toggle theme" aria-label="Toggle theme">
           <svg id="sun-icon" class="dark:hidden lucide lucide-sun-icon lucide-sun" xmlns="http://www.w3.org/2000/svg"
             width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -5872,8 +5869,8 @@
         }
         var parts = text.split(",").map(function (part) { return part.trim(); }).filter(Boolean);
         var city = parts[0] || fallbackCity;
-        var country = parts.length > 1 ? parts.slice(1).join(", ") : fallbackCountry;
-        return { city: city, country: country, full: country ? city + ", " + country : city };
+        var country = parts.length > 1 ? parts[parts.length - 1] : fallbackCountry;
+        return { city: city, country: country, full: parts.length > 1 ? parts.join(", ") : (country ? city + ", " + country : city) };
       }
 
       function getApiBaseUrl() {
@@ -6053,6 +6050,7 @@
           },
           itinerary: itinerary,
           budgetRange: normalizeAiBudgetRange(rawPayload.budgetRange),
+          budgetRangeSource: String(rawPayload.budgetRangeSource || "").trim().toLowerCase(),
           packingChecklist: normalizeTextList(rawPayload.packingChecklist, 18)
         };
       }
@@ -6104,8 +6102,13 @@
       }
 
       function applyAiBudgetRangeIfPresent() {
-        if (!aiGeneratedSections || !aiGeneratedSections.budgetRange || budgetEditState.active) return;
-        tabData = cloneBudgetData(aiGeneratedSections.budgetRange);
+        if (budgetEditState.active) return;
+        var source = String(aiGeneratedSections && aiGeneratedSections.budgetRangeSource || "").toLowerCase();
+        if (source === "manual" && aiGeneratedSections && aiGeneratedSections.budgetRange) {
+          tabData = cloneBudgetData(aiGeneratedSections.budgetRange);
+          return;
+        }
+        tabData = buildRealisticBudgetModel();
       }
 
       function hydrateGeminiSections() {
@@ -6658,6 +6661,12 @@
         return groups.filter(Boolean).slice(0, 3);
       }
 
+      function countWordsInNarrative(text) {
+        var cleaned = String(text || "").replace(/\s+/g, " ").trim();
+        if (!cleaned) return 0;
+        return cleaned.split(" ").filter(Boolean).length;
+      }
+
       function emphasizeNarrativeKeywords(text, keywords) {
         var html = escapeHtml(String(text || ""));
         var markdownTokens = [];
@@ -6731,6 +6740,26 @@
         if (seen[key]) return;
         seen[key] = true;
         target.push(normalized);
+      }
+
+      function isLikelyPlaceTerm(value) {
+        var text = String(value || "").replace(/\s+/g, " ").trim();
+        if (!text) return false;
+        var lower = text.toLowerCase();
+        var blacklist = {
+          january: true, february: true, march: true, april: true, may: true, june: true, july: true, august: true, september: true, october: true, november: true, december: true,
+          monday: true, tuesday: true, wednesday: true, thursday: true, friday: true, saturday: true, sunday: true,
+          get: true, ready: true, this: true, that: true, your: true, our: true, their: true, you: true, we: true, they: true, he: true, she: true, it: true,
+          prepare: true, explore: true, keep: true, start: true, enjoy: true, plan: true, take: true, visit: true, cover: true, taste: true, ensure: true,
+          quick: true, fast: true, scenic: true, breathtaking: true, stunning: true, iconic: true, natural: true, local: true, vibrant: true, serene: true,
+          adventure: true, beautiful: true, comfortable: true, memorable: true, perfect: true, ideal: true, cool: true, breezy: true, crisp: true, romantic: true,
+          city: true, cities: true, place: true, places: true, route: true, trip: true, day: true, days: true, stop: true, stops: true, journey: true, escape: true
+        };
+        if (blacklist[lower]) return false;
+        if (/^[a-z]/.test(text)) return false;
+        if (text.length < 3) return false;
+        if (/\b(?:am|pm)\b/i.test(text)) return false;
+        return true;
       }
 
       function extractPlaceTermsFromText(text, limit) {
@@ -6847,6 +6876,45 @@
         return terms.slice(0, 70);
       }
 
+      function collectTripHighlightPlaceTerms(meta, aiHighlights) {
+        var terms = [];
+        var seen = {};
+        var sources = [
+          meta && meta.tripTitle,
+          meta && meta.origin,
+          meta && meta.destination,
+          meta && meta.destinationCity
+        ];
+
+        if (aiGeneratedSections && Array.isArray(aiGeneratedSections.itinerary)) {
+          aiGeneratedSections.itinerary.forEach(function (day) {
+            if (!day || typeof day !== "object") return;
+            sources.push(day.title);
+            if (day.schedule && typeof day.schedule === "object") {
+              sources.push(day.schedule.morning);
+              sources.push(day.schedule.afternoon);
+              sources.push(day.schedule.evening);
+              sources.push(day.schedule.night);
+            }
+            (Array.isArray(day.optionalActivities) ? day.optionalActivities : []).forEach(function (item) {
+              sources.push(item);
+            });
+            (Array.isArray(day.quickBookings) ? day.quickBookings : []).forEach(function (item) {
+              sources.push(item);
+            });
+          });
+        }
+
+        sources.forEach(function (chunk) {
+          extractPlaceTermsFromText(chunk, 18).forEach(function (term) {
+            if (!isLikelyPlaceTerm(term)) return;
+            addEntityTerm(terms, seen, term, { maxWords: 5, maxChars: 44 });
+          });
+        });
+
+        return terms.slice(0, 36);
+      }
+
       function buildHighlightFallbackParagraphs(meta, interests) {
         var selectedInterests = Array.isArray(interests) ? interests.filter(Boolean).slice(0, 4) : [];
         var focusText = selectedInterests.length
@@ -6854,11 +6922,10 @@
           : "local experiences, scenic moments, and flexible exploring";
         return [
           "This " + derived.durationDays + "-day journey from " + meta.origin + " to " + meta.destination +
-            " is planned for " + meta.travelWindow + ", pairing " + meta.hotel + " stays with " + meta.food +
-            " choices to keep the trip comfortable from the moment you arrive.",
-          "The itinerary leans into " + focusText + ", creating a " + (derived.plan.pace || "balanced") +
-            " flow through " + meta.destinationCity + " with time for signature sights as well as slower, local discoveries along the way.",
-          "Designed for " + derived.passengersLabel + ", the overall route keeps each stop practical and connected, so the trip feels cohesive, easy to enjoy, and rich in memorable moments."
+            " is built around a clear route, not just a list of stops. It gives you enough structure to see the headline places in " + meta.destinationCity +
+            " while still leaving room for meals, short walks, and the kind of side moments that make a trip feel personal.",
+          "The itinerary leans into " + focusText + ", so the days move with purpose: named landmarks, practical transfer windows, and a pace that stays comfortable rather than rushed. You get a trip that feels active, but not overloaded, with enough breathing space to actually enjoy each place.",
+          "Designed for " + derived.passengersLabel + ", the overall flow keeps the logistics sensible and the experience varied, so each day feels distinct and memorable instead of repeating the same sightseeing pattern."
         ];
       }
 
@@ -6886,10 +6953,27 @@
         var source = String(summaryText || "").trim();
         if (source) {
           var sourceParagraphs = splitNarrativeIntoParagraphs(source);
-          if (sourceParagraphs.length) return sourceParagraphs.slice(0, 5);
+          if (sourceParagraphs.length) {
+            var paragraphs = sourceParagraphs.slice(0, 3);
+            var sourceWordCount = countWordsInNarrative(source);
+            if ((paragraphs.length < 2 || sourceWordCount < 180) && paragraphs.length < 3) {
+              var fallbackParagraphs = buildHighlightFallbackParagraphs(meta, interests);
+              for (var i = 0; i < fallbackParagraphs.length && paragraphs.length < 3; i += 1) {
+                paragraphs.push(fallbackParagraphs[i]);
+              }
+            }
+            return paragraphs;
+          }
           return [source];
         }
         return buildHighlightFallbackParagraphs(meta, interests);
+      }
+
+      function sanitizeTripHighlightsSummary(summaryText) {
+        return String(summaryText || "")
+          .replace(/\r/g, "")
+          .replace(/(\*\*|__)(?=\S)([\s\S]*?\S)\1/g, "$2")
+          .trim();
       }
 
       function ensureWeatherNarrativeLength(text, fallbackText, minimumWords) {
@@ -7408,9 +7492,9 @@
           hotel: (aiHighlights && aiHighlights.hotelPreference) || derived.hotelStar,
           food: (aiHighlights && aiHighlights.foodPreference) || derived.foodPreference
         };
-        var summaryText = aiHighlights && aiHighlights.summary ? aiHighlights.summary : "";
+        var summaryText = sanitizeTripHighlightsSummary(aiHighlights && aiHighlights.summary ? aiHighlights.summary : "");
         var paragraphs = expandTripHighlightsParagraphs(summaryText, meta, interestChips);
-        var emphasisTerms = collectTripHighlightEmphasisTerms(meta, interestChips, aiHighlights);
+        var emphasisTerms = collectTripHighlightPlaceTerms(meta, aiHighlights);
         var editBtn = document.getElementById("trip-highlights-edit-btn");
         var actionWrap = document.getElementById("trip-highlights-edit-actions");
         var highlightsLocked = isPlanReadOnly();
@@ -7649,9 +7733,8 @@
 
       function dayActivities(dayIndex) {
         var aiDay = getAiItineraryDay(dayIndex);
-        if (aiDay && Array.isArray(aiDay.optionalActivities) && aiDay.optionalActivities.length) {
-          return aiDay.optionalActivities.slice(0, 3);
-        }
+        var city = String(derived.destination.city || "the destination").trim();
+        var dayLabel = "Day " + dayIndex;
         var pools = {
           "Historical Sites and Landmarks": ["heritage district walk", "museum pass", "historic square exploration"],
           Adventure: ["guided trail challenge", "outdoor adrenaline slot", "active day excursion"],
@@ -7663,10 +7746,31 @@
           "Shopping & Relaxation": ["shopping boulevard block", "spa or wellness break", "artisan street browse"]
         };
         var picks = [];
+        if (aiDay && Array.isArray(aiDay.optionalActivities) && aiDay.optionalActivities.length) {
+          picks = aiDay.optionalActivities.slice(0, 3);
+        }
         var interests = derived.interests.length ? derived.interests : ["City Discovery"];
+        var fallbackPool = [];
         for (var i = 0; i < interests.length; i += 1) {
           var list = pools[interests[i]] || [interests[i] + " activity"];
-          picks.push(list[dayIndex % list.length]);
+          Array.prototype.push.apply(fallbackPool, list);
+        }
+        if (!fallbackPool.length) {
+          fallbackPool = [
+            "Short heritage walk in " + city,
+            "Local cafe stop near " + city,
+            "Easy evening stroll in " + city
+          ];
+        }
+        var fallbackIndex = 0;
+        while (picks.length < 3 && fallbackIndex < fallbackPool.length + 3) {
+          var candidate = fallbackPool[(dayIndex + fallbackIndex) % fallbackPool.length];
+          fallbackIndex += 1;
+          if (picks.indexOf(candidate) !== -1) continue;
+          picks.push(candidate);
+        }
+        if (picks.length < 2) {
+          picks.push("Flexible local activity in " + city + " on " + dayLabel);
         }
         return picks.slice(0, 3);
       }
@@ -7749,32 +7853,313 @@
         };
       }
 
-      function getRouteBookingChip() {
-        var transportPrefs = Array.isArray(derived.plan && derived.plan.transport)
-          ? derived.plan.transport.map(function (value) { return String(value || "").toLowerCase(); })
-          : [];
-        var label = derived.origin.city + " -> " + derived.destination.city;
+      function getDefaultRouteDirectionForDay(dayNumber) {
+        var totalDays = getTotalItineraryDays();
+        if (totalDays > 1 && Number(dayNumber) === Number(totalDays)) return "return";
+        return "outbound";
+      }
 
-        var hasBus = transportPrefs.some(function (value) { return value.indexOf("bus") !== -1; });
+      function buildRouteChipLabel(direction, transportPrefs, originCity, destinationCity) {
+        var prefs = Array.isArray(transportPrefs) ? transportPrefs : [];
+        var fromCity = String(originCity || derived.origin.city || "").trim();
+        var toCity = String(destinationCity || derived.destination.city || "").trim();
+        var reverse = String(direction || "outbound").toLowerCase() === "return";
+        var routeOrigin = reverse ? toCity : fromCity;
+        var routeDestination = reverse ? fromCity : toCity;
+        var routeDisplay = routeOrigin + " -> " + routeDestination;
+
+        var hasBus = prefs.some(function (value) { return value.indexOf("bus") !== -1; });
         if (hasBus) {
-          return { cls: "route-road", icon: "bus", label: label, trailingIcon: "external-link" };
+          return { cls: "route-road", icon: "bus", label: routeDisplay, trailingIcon: "external-link", routeDirection: reverse ? "return" : "outbound" };
         }
 
-        var hasRoadOrCar = transportPrefs.some(function (value) {
+        var hasRoadOrCar = prefs.some(function (value) {
           return value.indexOf("road") !== -1 || value.indexOf("car") !== -1;
         });
         if (hasRoadOrCar) {
-          return { cls: "route-road", icon: "car", label: label, trailingIcon: "external-link" };
+          return { cls: "route-road", icon: "car", label: routeOrigin + " -> " + routeDestination, trailingIcon: "external-link", routeDirection: reverse ? "return" : "outbound" };
         }
 
-        var hasFlight = transportPrefs.some(function (value) {
+        var hasFlight = prefs.some(function (value) {
           return value.indexOf("flight") !== -1 || value.indexOf("plane") !== -1;
         });
         if (hasFlight) {
-          return { cls: "route", icon: "plane", label: label, trailingIcon: "external-link" };
+          return { cls: "route", icon: "plane", label: routeDisplay, trailingIcon: "external-link", routeDirection: reverse ? "return" : "outbound" };
         }
 
-        return { cls: "route", icon: "train-front", label: label, trailingIcon: "external-link" };
+        return {
+          cls: "route",
+          icon: "train-front",
+          label: routeDisplay,
+          trailingIcon: "external-link",
+          routeDirection: reverse ? "return" : "outbound"
+        };
+      }
+
+      function cleanActivityChipTitle(text) {
+        var value = String(text || "").replace(/\s+/g, " ").trim();
+        if (!value) return "";
+        var cleaned = value
+          .replace(/^(book|search|find|explore|check|see|visit|discover)\s+/i, "")
+          .replace(/^(guided\s+)?(tour|trips?|activities?|experiences?|tickets?)\s+(of|for|in|at)\s+/i, "")
+          .replace(/^(book|search)\s+(?:on\s+)?(viator|getyourguide)\s+/i, "")
+          .trim();
+        if (!cleaned) cleaned = value;
+        if (cleaned.length > 42) {
+          var words = cleaned.split(" ").filter(Boolean);
+          if (words.length > 4) cleaned = words.slice(0, 4).join(" ") + "…";
+        }
+        return cleaned;
+      }
+
+      function isGenericPlaceFragment(value) {
+        var text = String(value || "").replace(/\s+/g, " ").trim();
+        if (!text) return true;
+        var lower = text.toLowerCase();
+        var genericSingleWords = {
+          gardens: true,
+          garden: true,
+          temple: true,
+          fort: true,
+          lake: true,
+          park: true,
+          market: true,
+          museum: true,
+          palace: true,
+          ghat: true,
+          mall: true,
+          valley: true,
+          river: true,
+          beach: true,
+          hill: true,
+          pass: true,
+          point: true,
+          view: true,
+          viewpoint: true,
+          shrine: true,
+          monastery: true,
+          castle: true,
+          sanctuary: true,
+          waterfall: true,
+          station: true,
+          road: true,
+          lane: true,
+          city: true,
+          town: true,
+          village: true,
+          district: true,
+          area: true,
+          bazaar: true,
+          bazar: true,
+          center: true,
+          centre: true
+        };
+        if (genericSingleWords[lower]) return true;
+        return false;
+      }
+
+      function scoreLocalTransportCandidate(value) {
+        var text = String(value || "").replace(/\s+/g, " ").trim();
+        if (!text) return -100;
+        if (isGenericPlaceFragment(text)) return -50;
+        var lower = text.toLowerCase();
+        var score = text.length / 8;
+        var wordCount = text.split(" ").filter(Boolean).length;
+        if (wordCount >= 2) score += 6;
+        if (wordCount >= 3) score += 4;
+        if (/(palace|fort|temple|lake|garden|gardens|park|museum|market|ghat|valley|pass|point|viewpoint|beach|hill|hills|sanctuary|monastery|castle|waterfall|station|mall|road|lane|bazaar|bazar|square|circle|gate|bridge|devi|stupa|mandir|ghat|jheel)/i.test(text)) {
+          score += 8;
+        }
+        if (/\b(city|old|new|main|central|local|historic|heritage|lakefront|riverfront)\b/i.test(lower)) score += 2;
+        if (/^(visit|explore|check|go to|near|around|towards|see|enjoy)\b/i.test(lower)) score -= 6;
+        if (/\b(day|morning|afternoon|evening|night|transfer|route)\b/i.test(lower)) score -= 4;
+        return score;
+      }
+
+      function hasLocalTransportCue(text) {
+        var value = String(text || "").toLowerCase();
+        return /(\bmove to\b|\bhead to\b|\bgo to\b|\btransfer to\b|\breach\b|\bcontinue to\b|\btravel to\b|\bdrive to\b|\btake (?:a )?(?:cab|taxi|car|bus|train)\b|\bthen\b|\bafter that\b|\bnext\b)/i.test(value);
+      }
+
+      function isConfidentLocalTransportTarget(value) {
+        var text = String(value || "").replace(/\s+/g, " ").trim();
+        if (!text) return false;
+        if (isGenericPlaceFragment(text)) return false;
+        var wordCount = text.split(" ").filter(Boolean).length;
+        if (wordCount < 2) return false;
+        return scoreLocalTransportCandidate(text) >= 6;
+      }
+
+      function getRouteBookingChip(direction) {
+        var transportPrefs = Array.isArray(derived.plan && derived.plan.transport)
+          ? derived.plan.transport.map(function (value) { return String(value || "").toLowerCase(); })
+          : [];
+        return buildRouteChipLabel(direction, transportPrefs, derived.origin.city, derived.destination.city);
+      }
+
+      function buildIntermediateTransportChip(dayNumber, aiDay, slots, activities, optionalSource) {
+        var totalDays = getTotalItineraryDays();
+        if (Number(dayNumber) <= 1 || Number(dayNumber) >= totalDays) return null;
+
+        var transportPrefs = Array.isArray(derived.plan && derived.plan.transport)
+          ? derived.plan.transport.map(function (value) { return String(value || "").toLowerCase(); })
+          : [];
+        var hasBus = transportPrefs.some(function (value) { return value.indexOf("bus") !== -1; });
+        var hasTrain = transportPrefs.some(function (value) { return value.indexOf("train") !== -1 || value.indexOf("rail") !== -1; });
+        var hasRoad = transportPrefs.some(function (value) { return value.indexOf("road") !== -1 || value.indexOf("car") !== -1 || value.indexOf("drive") !== -1; });
+        var icon = hasBus ? "bus" : (hasTrain ? "train-front" : "car");
+        if (!hasRoad && !hasBus && !hasTrain) icon = "car";
+
+        var contextText = [
+          aiDay && aiDay.title ? aiDay.title : "",
+          (Array.isArray(slots) ? slots : []).map(function (slot) { return slot && slot.text ? slot.text : ""; }).join(" "),
+          Array.isArray(optionalSource) ? optionalSource.join(" ") : "",
+          Array.isArray(activities) ? activities.join(" ") : "",
+          derived.destination.full
+        ].join(" ");
+        var moveCue = hasLocalTransportCue(contextText);
+        var localPlaces = extractPlaceTermsFromText(contextText, 8).filter(function (term) {
+          var value = String(term || "").trim();
+          if (!value) return false;
+          var lower = value.toLowerCase();
+          var cityLower = String(derived.destination.city || "").toLowerCase();
+          var originLower = String(derived.origin.city || "").toLowerCase();
+          if (lower === cityLower || lower === originLower) return false;
+          if (lower.indexOf("day") !== -1) return false;
+          if (isGenericPlaceFragment(value)) return false;
+          return true;
+        });
+        var activityCandidates = Array.isArray(activities) ? activities.slice(0, 3) : [];
+        var extraCandidates = Array.isArray(optionalSource) ? optionalSource.slice(0, 3) : [];
+        var targetPool = localPlaces
+          .concat(activityCandidates)
+          .concat(extraCandidates)
+          .filter(Boolean);
+        targetPool.sort(function (a, b) {
+          return scoreLocalTransportCandidate(b) - scoreLocalTransportCandidate(a);
+        });
+        var targetPlace = targetPool[0] || "";
+        if (!isConfidentLocalTransportTarget(targetPlace)) {
+          if (moveCue && localPlaces.length > 1 && isConfidentLocalTransportTarget(localPlaces[1])) {
+            targetPlace = localPlaces[1];
+          } else {
+            targetPlace = "";
+          }
+        }
+        if (targetPlace && scoreLocalTransportCandidate(targetPlace) < 4 && !moveCue) targetPlace = "";
+        if (!targetPlace) return null;
+        if (String(targetPlace).toLowerCase() === String(derived.destination.city || "").toLowerCase()) return null;
+
+        return {
+          cls: icon === "car" ? "route-road" : "route",
+          icon: icon,
+          label: derived.destination.city + " -> " + targetPlace,
+          trailingIcon: "external-link",
+          routeDirection: "local"
+        };
+      }
+
+      function parseRouteEndpointsFromLabel(label) {
+        var text = String(label || "").replace(/\s+/g, " ").trim();
+        if (!text) return null;
+        var cleaned = text
+          .replace(/^(search|book)\s+(?:return\s+)?(?:train tickets|bus tickets|flights?|flight|cab|cabs|taxi|taxi for|private taxi for)\s+/i, "")
+          .replace(/^(return\s+)?(?:train tickets|bus tickets|flights?|flight|cab|cabs|taxi|taxi for|private taxi for)\s+/i, "")
+          .trim();
+        var match = cleaned.match(/^(.+?)\s*(?:->|to)\s*(.+)$/i);
+        if (!match) return null;
+        var origin = String(match[1] || "").trim();
+        var destination = String(match[2] || "").trim();
+        if (!origin || !destination) return null;
+        return { origin: origin, destination: destination };
+      }
+
+      function buildRouteLinks(originCity, destinationCity) {
+        var origin = String(originCity || "").trim();
+        var destination = String(destinationCity || "").trim();
+        var encodedOrigin = encodeURIComponent(origin || "travel");
+        var encodedDestination = encodeURIComponent(destination || "travel");
+        var rome2rioRoute = "https://www.rome2rio.com/s/" + encodedOrigin + "/" + encodedDestination;
+        return {
+          flights: "https://www.google.com/travel/flights?q=" + encodeURIComponent([origin, destination].filter(Boolean).join(" to ") || destination || origin || "travel"),
+          hotels: "https://www.google.com/travel/hotels/" + encodeURIComponent(destination || "travel"),
+          activities: "https://www.getyourguide.com/s/?q=" + encodedDestination,
+          trains: rome2rioRoute,
+          buses: rome2rioRoute,
+          cabs: rome2rioRoute,
+          driving: rome2rioRoute,
+          transport: rome2rioRoute,
+          rome2rio: rome2rioRoute
+        };
+      }
+
+      function buildRealQuickBookingChip(label, context) {
+        var text = String(label || "").trim();
+        var lower = text.toLowerCase();
+        var destinationCity = context && context.destinationCity ? String(context.destinationCity || "").trim() : derived.destination.city;
+        var routeText = context && context.routeText ? String(context.routeText || "").trim() : (derived.origin.city + " to " + derived.destination.city);
+        var routeDirection = context && context.routeDirection ? String(context.routeDirection || "").toLowerCase() : "";
+        if (!routeDirection) routeDirection = /\breturn\b|\bback\b/i.test(lower) ? "return" : "outbound";
+        var routeOrigin = routeDirection === "return" ? destinationCity : derived.origin.city;
+        var routeDestination = routeDirection === "return" ? derived.origin.city : destinationCity;
+        var routeDisplay = routeOrigin + " -> " + routeDestination;
+        var contextText = [
+          text,
+          context && context.title ? context.title : "",
+          context && context.optionalText ? context.optionalText : "",
+          context && context.slotText ? context.slotText : "",
+          derived.destination.full
+        ].join(" ");
+        var placeTerms = extractPlaceTermsFromText(contextText, 4);
+        var placeA = placeTerms[0] || destinationCity;
+        var placeB = placeTerms[1] || placeA;
+
+        if (/hotel|stay|hostel|airbnb|resort|lodge|villa|homestay/i.test(lower)) {
+          return { cls: "hotel", icon: "building-2", label: "Hotels in " + destinationCity };
+        }
+
+        if (/flight|plane|air/i.test(lower)) {
+          return { cls: "route", icon: "plane", label: routeDisplay, trailingIcon: "external-link", routeDirection: routeDirection };
+        }
+
+        if (/train|rail/i.test(lower)) {
+          return { cls: "route", icon: "train-front", label: routeDisplay, trailingIcon: "external-link", routeDirection: routeDirection };
+        }
+
+        if (/bus/i.test(lower)) {
+          return { cls: "route-road", icon: "bus", label: routeDisplay, trailingIcon: "external-link", routeDirection: routeDirection };
+        }
+
+        if (/car|taxi|cab|drive|private/i.test(lower)) {
+          return { cls: "route-road", icon: "car", label: routeDisplay, trailingIcon: "external-link", routeDirection: routeDirection };
+        }
+
+        if (/visiting hours|opening hours|hours/i.test(lower) && placeA) {
+          return { cls: "activity", icon: "map-pin", label: cleanActivityChipTitle(text || ("Check " + placeA + " visiting hours")), searchLabel: text || ("Check " + placeA + " visiting hours") };
+        }
+
+        if (/market|shopping/i.test(lower) && placeA) {
+          return { cls: "activity", icon: "ticket", label: cleanActivityChipTitle(text || ("Explore " + placeA + " shopping guides")), searchLabel: text || ("Explore " + placeA + " shopping guides") };
+        }
+
+        if (/(trek|hike|paragliding|rafting|safari|ski|climb|adventure|cruise|tour|guided)/i.test(lower) && placeA) {
+          if (/trek/i.test(lower) && !/trek|hike/i.test(placeA.toLowerCase())) return { cls: "activity", icon: "backpack", label: cleanActivityChipTitle(text || (placeA + " Trek")), searchLabel: text || (placeA + " Trek") };
+          if (/hike/i.test(lower) && !/trek|hike/i.test(placeA.toLowerCase())) return { cls: "activity", icon: "backpack", label: cleanActivityChipTitle(text || (placeA + " Hike")), searchLabel: text || (placeA + " Hike") };
+          if (placeB && placeB !== placeA && /tour|guided/i.test(lower)) {
+            return { cls: "activity", icon: "ticket", label: cleanActivityChipTitle(text || placeA), searchLabel: text || placeA };
+          }
+          return { cls: "activity", icon: "backpack", label: cleanActivityChipTitle(text || placeA), searchLabel: text || placeA };
+        }
+
+        if (placeA && placeB && /tour|ticket|visit|guide/i.test(lower)) {
+          return { cls: "activity", icon: "ticket", label: cleanActivityChipTitle(text || placeA), searchLabel: text || placeA };
+        }
+
+        if (placeA) {
+          return { cls: "activity", icon: "ticket", label: cleanActivityChipTitle(text || placeA), searchLabel: text || placeA };
+        }
+
+        return { cls: "activity", icon: "map-pin", label: cleanActivityChipTitle(text || ("Activity in " + destinationCity)), searchLabel: text || ("Activity in " + destinationCity) };
       }
 
       function getTransportPreferenceFlags() {
@@ -7828,19 +8213,23 @@
         if (cls === "route" || cls === "route-road") {
           var icon = chip && chip.icon ? String(chip.icon).toLowerCase() : "";
           var label = chip && chip.label ? String(chip.label).toLowerCase() : "";
-          if (icon.indexOf("plane") !== -1 || label.indexOf("flight") !== -1 || label.indexOf("air") !== -1) return links.flights;
-          if (icon.indexOf("train") !== -1 || label.indexOf("train") !== -1 || label.indexOf("rail") !== -1) return links.trains || links.transport;
-          if (icon.indexOf("bus") !== -1 || label.indexOf("bus") !== -1) return links.buses || links.transport;
+          var parsedRoute = parseRouteEndpointsFromLabel(chip && chip.label ? chip.label : "");
+          var routeLinks = parsedRoute
+            ? buildRouteLinks(parsedRoute.origin, parsedRoute.destination)
+            : links;
+          if (icon.indexOf("plane") !== -1 || label.indexOf("flight") !== -1 || label.indexOf("air") !== -1) return routeLinks.rome2rio || routeLinks.flights;
+          if (icon.indexOf("train") !== -1 || label.indexOf("train") !== -1 || label.indexOf("rail") !== -1) return routeLinks.rome2rio || routeLinks.trains || routeLinks.transport;
+          if (icon.indexOf("bus") !== -1 || label.indexOf("bus") !== -1) return routeLinks.rome2rio || routeLinks.buses || routeLinks.transport;
           if (icon.indexOf("car") !== -1 || label.indexOf("cab") !== -1 || label.indexOf("taxi") !== -1) {
             // For road mode, prefer actual directions. Only use cab searches when the chip explicitly mentions cabs/taxis.
             if (cls === "route-road") {
-              if (label.indexOf("cab") !== -1 || label.indexOf("taxi") !== -1) return links.cabs || links.transport;
-              return links.driving || links.cabs || links.transport;
+              if (label.indexOf("cab") !== -1 || label.indexOf("taxi") !== -1) return routeLinks.rome2rio || routeLinks.cabs || routeLinks.transport;
+              return routeLinks.rome2rio || routeLinks.driving || routeLinks.cabs || routeLinks.transport;
             }
-            return links.cabs || links.transport;
+            return routeLinks.rome2rio || routeLinks.cabs || routeLinks.transport;
           }
-          if (cls === "route-road") return links.driving || links.transport;
-          return links.transport || "#";
+          if (cls === "route-road") return routeLinks.rome2rio || routeLinks.driving || routeLinks.transport;
+          return routeLinks.rome2rio || routeLinks.transport || "#";
         }
         if (cls === "activity") return links.activities;
         return links.activities || "#";
@@ -7912,7 +8301,12 @@
             Array.from(document.querySelectorAll(".activity-booking-modal.open")).forEach(function (openPanel) {
               if (openPanel !== panel) setActivityBookingModalOpen(openPanel, false);
             });
-            setActivityBookingModalOpen(panel, true, trigger.getAttribute("data-activity-label") || trigger.textContent || "Activity", trigger);
+            setActivityBookingModalOpen(
+              panel,
+              true,
+              trigger.getAttribute("data-activity-search-label") || trigger.getAttribute("data-activity-label") || trigger.textContent || "Activity",
+              trigger
+            );
             return;
           }
 
@@ -7958,17 +8352,59 @@
         });
       }
 
-      function ensureBookingDefaults(chips) {
+      function shouldShowHotelBookingChip(dayNumber, aiDay, slots) {
+        if (Number(dayNumber) === 1) return true;
+        var searchText = [
+          aiDay && aiDay.title ? aiDay.title : "",
+          aiDay && aiDay.tip ? aiDay.tip : "",
+          Array.isArray(slots) ? slots.map(function (slot) { return slot && slot.text ? slot.text : ""; }).join(" ") : "",
+          aiDay && aiDay.schedule ? [
+            aiDay.schedule.morning,
+            aiDay.schedule.afternoon,
+            aiDay.schedule.evening,
+            aiDay.schedule.night
+          ].join(" ") : ""
+        ].join(" ").toLowerCase();
+        return /check[- ]?in|arrival|arrive|overnight|stay|hotel|accommodation|base/.test(searchText);
+      }
+
+      function getBookingChipKey(chip) {
+        if (!chip) return "";
+        var cls = String(chip.cls || "").trim();
+        var icon = String(chip.icon || "").trim().toLowerCase();
+        var label = String(chip.label || "").replace(/\s+/g, " ").trim().toLowerCase();
+        var routeInfo = (cls === "route" || cls === "route-road") ? parseRouteEndpointsFromLabel(chip.label || "") : null;
+        if (routeInfo) {
+          return cls + "|" + icon + "|" + routeInfo.origin.toLowerCase() + "->" + routeInfo.destination.toLowerCase();
+        }
+        return cls + "|" + icon + "|" + label;
+      }
+
+      function dedupeBookingConfig(chips) {
+        var list = Array.isArray(chips) ? chips.slice() : [];
+        var seen = {};
+        return list.filter(function (chip) {
+          if (!chip) return false;
+          var key = getBookingChipKey(chip);
+          if (seen[key]) return false;
+          seen[key] = true;
+          return true;
+        });
+      }
+
+      function ensureBookingDefaults(chips, defaultRouteChip, allowHotel) {
         var list = Array.isArray(chips) ? chips.slice() : [];
         var destination = derived && derived.destination ? String(derived.destination.city || "") : "";
         var suffix = destination ? " in " + destination : "";
         var hasHotel = list.some(function (chip) { return chip && chip.cls === "hotel"; });
         var hasActivity = list.some(function (chip) { return chip && chip.cls === "activity"; });
-        var hasRoute = list.some(function (chip) { return chip && (chip.cls === "route" || chip.cls === "route-road"); });
-        if (!hasRoute) {
-          list.unshift(getRouteBookingChip());
+        var hasDefaultRoute = defaultRouteChip ? list.some(function (chip) {
+          return getBookingChipKey(chip) === getBookingChipKey(defaultRouteChip);
+        }) : false;
+        if (defaultRouteChip && !hasDefaultRoute) {
+          list.unshift(defaultRouteChip);
         }
-        if (!hasHotel) {
+        if (allowHotel && !hasHotel) {
           list.unshift({ cls: "hotel", icon: "building-2", label: "Hotels" + suffix });
         }
         if (!hasActivity) {
@@ -7976,64 +8412,145 @@
         }
         return list;
       }
-function buildDayBaseModel(dayNumber) {
+
+      function filterBookingConfigForDay(chips, dayNumber, aiDay, slots) {
+        var allowHotel = shouldShowHotelBookingChip(dayNumber, aiDay, slots);
+        return (Array.isArray(chips) ? chips : []).filter(function (chip) {
+          if (!chip) return false;
+          if (String(chip.cls || "") === "hotel") return allowHotel;
+          return true;
+        });
+      }
+
+      function isStayTransitionDay(dayNumber, aiDay, slots) {
+        if (Number(dayNumber) === 1) return true;
+        var text = [
+          aiDay && aiDay.title ? aiDay.title : "",
+          aiDay && aiDay.tip ? aiDay.tip : "",
+          Array.isArray(slots) ? slots.map(function (slot) { return slot && slot.text ? slot.text : ""; }).join(" ") : "",
+          aiDay && aiDay.schedule ? [
+            aiDay.schedule.morning,
+            aiDay.schedule.afternoon,
+            aiDay.schedule.evening,
+            aiDay.schedule.night
+          ].join(" ") : ""
+        ].join(" ").toLowerCase();
+        return /check[- ]?in|arrival|arrive|overnight|stay|hotel|accommodation|move to|switch base|new city/.test(text);
+      }
+
+      function looksLikeGenericStayLabel(item) {
+        var text = String(item || "").replace(/\s+/g, " ").trim().toLowerCase();
+        if (!text) return true;
+        return /^(recommended|best-value|comfort|curated|top-rated)\s+stays\b/.test(text) ||
+          /^(stay|stay options|stay picks)\b/.test(text) ||
+          /^(recommended|best-value|comfort|curated|top-rated)\b/.test(text) && text.indexOf(" in ") !== -1 ||
+          /same base|current hotel|current stay|preferred stay/.test(text);
+      }
+
+      function buildStayOptionsForDay(dayNumber, aiDay, slots) {
+        var city = String(derived && derived.destination && derived.destination.city ? derived.destination.city : "the destination").trim();
+        var stayAnchor = String(derived && derived.hotelStar ? derived.hotelStar : "Preferred Stay").trim();
+        var aiStay = aiDay && Array.isArray(aiDay.stayOptions) ? normalizeTextList(aiDay.stayOptions, 4) : [];
+        var transitionDay = isStayTransitionDay(dayNumber, aiDay, slots);
+
+        if (aiStay.length) {
+          if (transitionDay) return aiStay.slice(0, 3);
+          if (aiStay.some(function (item) { return !looksLikeGenericStayLabel(item); })) {
+            return aiStay.slice(0, 3);
+          }
+        }
+
+        if (transitionDay) {
+          return [
+            "Curated " + stayAnchor + " stays in " + city,
+            "Best-value " + stayAnchor + " options in " + city,
+            "Comfort stays in " + city
+          ];
+        }
+
+        return [
+          "Keep your " + stayAnchor + " base in " + city,
+          "Return to your stay in " + city + " after the day's visits",
+          "Stay close to your current hotel for an easy evening"
+        ];
+      }
+      function buildDayBaseModel(dayNumber) {
         var aiDay = getAiItineraryDay(dayNumber);
         var dateObj = addDays(derived.startDate, dayNumber - 1);
         var dateIso = toIsoDate(dateObj);
         var dateText = aiDay && aiDay.dateLabel ? aiDay.dateLabel : formatDate(dateObj);
         var slots = daySlots(dayNumber);
         var activities = dayActivities(dayNumber);
-        var optionalSource = aiDay && aiDay.optionalActivities && aiDay.optionalActivities.length
+        var optionalSource = aiDay && Array.isArray(aiDay.optionalActivities) && aiDay.optionalActivities.length
           ? aiDay.optionalActivities
-          : activities;
+          : dayActivities(dayNumber);
         var foodSource = aiDay && aiDay.foodRecommendations && aiDay.foodRecommendations.length
           ? aiDay.foodRecommendations
           : [
             "Try " + derived.foodPreference.toLowerCase() + " near " + derived.destination.city + " market district",
-            "Reserve one comfort meal break near your evening route"
+            "Reserve one comfort meal break near your evening route",
+            "Add a local snack stop near " + derived.destination.city
           ];
-        var staySource = aiDay && aiDay.stayOptions && aiDay.stayOptions.length
-          ? aiDay.stayOptions
-          : [
-            "Budget-friendly hotels near transit links in " + derived.destination.city,
-            "Maintain a " + derived.hotelStar + " base for smoother movement"
-          ];
-        var routeChip = getRouteBookingChip();
+        var staySource = buildStayOptionsForDay(dayNumber, aiDay, slots);
+        var routeDirection = getDefaultRouteDirectionForDay(dayNumber);
+        var allowHotel = shouldShowHotelBookingChip(dayNumber, aiDay, slots);
+        var routeChip = (dayNumber === 1 || dayNumber === getTotalItineraryDays())
+          ? getRouteBookingChip(routeDirection)
+          : null;
+        var intermediateChip = buildIntermediateTransportChip(dayNumber, aiDay, slots, activities, optionalSource);
         var aiBookingSource = aiDay && aiDay.quickBookings && aiDay.quickBookings.length
           ? aiDay.quickBookings.slice(0, 4)
           : [];
         var bookingConfig = aiBookingSource.length
           ? aiBookingSource.map(function (label) {
-              var text = String(label || "").toLowerCase();
-              if (text.indexOf("hotel") !== -1 || text.indexOf("stay") !== -1 || text.indexOf("resort") !== -1) {
-                return { cls: "hotel", icon: "building-2", label: label };
-              }
-              if (text.indexOf("flight") !== -1 || text.indexOf("plane") !== -1 || text.indexOf("air") !== -1) {
-                return { cls: "route", icon: "plane", label: label, trailingIcon: "external-link" };
-              }
-              if (text.indexOf("train") !== -1) {
-                return { cls: "route", icon: "train-front", label: label, trailingIcon: "external-link" };
-              }
-              if (text.indexOf("bus") !== -1) {
-                return { cls: "route-road", icon: "bus", label: label, trailingIcon: "external-link" };
-              }
-              if (text.indexOf("car") !== -1 || text.indexOf("taxi") !== -1 || text.indexOf("cab") !== -1) {
-                return { cls: "route-road", icon: "car", label: label, trailingIcon: "external-link" };
-              }
-              if (text.indexOf("ticket") !== -1 || text.indexOf("pass") !== -1 || text.indexOf("tour") !== -1) {
-                return { cls: "activity", icon: "ticket", label: label };
-              }
-              return { cls: "activity", icon: "map-pin", label: label };
+              return buildRealQuickBookingChip(label, {
+                destinationCity: derived.destination.city,
+                originCity: derived.origin.city,
+                routeDirection: routeDirection,
+                routeText: routeDirection === "return"
+                  ? derived.destination.city + " to " + derived.origin.city
+                  : derived.origin.city + " to " + derived.destination.city,
+                title: aiDay && aiDay.title ? aiDay.title : "",
+                optionalText: optionalSource.join(" "),
+                slotText: slots.map(function (slot) { return slot && slot.text ? slot.text : ""; }).join(" ")
+              });
             })
           : [
-            { cls: "hotel", icon: "building-2", label: "Hotel in " + derived.destination.city },
-            { cls: "activity", icon: "ticket", label: activities[0] || "City attraction" },
-            { cls: "activity", icon: "ticket", label: activities[1] || "Local highlight" },
+            { cls: "hotel", icon: "building-2", label: "Hotels in " + derived.destination.city },
+            buildRealQuickBookingChip((activities[0] || "Local highlight"), {
+              destinationCity: derived.destination.city,
+              originCity: derived.origin.city,
+              routeDirection: routeDirection,
+              routeText: routeDirection === "return"
+                ? derived.destination.city + " to " + derived.origin.city
+                : derived.origin.city + " to " + derived.destination.city,
+              title: aiDay && aiDay.title ? aiDay.title : "",
+              optionalText: optionalSource.join(" "),
+              slotText: slots.map(function (slot) { return slot && slot.text ? slot.text : ""; }).join(" ")
+            }),
+            buildRealQuickBookingChip((activities[1] || "Local experience"), {
+              destinationCity: derived.destination.city,
+              originCity: derived.origin.city,
+              routeDirection: routeDirection,
+              routeText: routeDirection === "return"
+                ? derived.destination.city + " to " + derived.origin.city
+                : derived.origin.city + " to " + derived.destination.city,
+              title: aiDay && aiDay.title ? aiDay.title : "",
+              optionalText: optionalSource.join(" "),
+              slotText: slots.map(function (slot) { return slot && slot.text ? slot.text : ""; }).join(" ")
+            }),
+            intermediateChip,
             routeChip
           ];
+        if (intermediateChip && aiBookingSource.length) {
+          bookingConfig.push(intermediateChip);
+        }
         bookingConfig = filterBookingConfigForTransport(bookingConfig);
-        bookingConfig = ensureBookingDefaults(bookingConfig);
+        bookingConfig = filterBookingConfigForDay(bookingConfig, dayNumber, aiDay, slots);
+        bookingConfig = ensureBookingDefaults(bookingConfig, routeChip, allowHotel);
         bookingConfig = filterBookingConfigForTransport(bookingConfig);
+        bookingConfig = filterBookingConfigForDay(bookingConfig, dayNumber, aiDay, slots);
+        bookingConfig = dedupeBookingConfig(bookingConfig);
         var dayHeading = aiDay && aiDay.title
           ? aiDay.title
           : (dayNumber === 1
@@ -8041,7 +8558,7 @@ function buildDayBaseModel(dayNumber) {
             : "Explore " + derived.destination.city + " - Day " + dayNumber);
         var tipText = aiDay && aiDay.tip
           ? String(aiDay.tip).trim()
-          : "Keep a 30-45 minute transition buffer between key stops so the day remains flexible and on track.";
+          : buildDayTipFromPlan(dayNumber, slots, activities, bookingConfig);
         var travelGuide = aiDay && aiDay.travelGuide
           ? String(aiDay.travelGuide).trim()
           : buildFallbackTravelGuideUrl();
@@ -8065,6 +8582,27 @@ function buildDayBaseModel(dayNumber) {
         };
       }
 
+      function buildDayTipFromPlan(dayNumber, slots, activities, bookingConfig) {
+        var morning = slots && slots[0] ? String(slots[0].text || "").trim() : "";
+        var afternoon = slots && slots[1] ? String(slots[1].text || "").trim() : "";
+        var evening = slots && slots[2] ? String(slots[2].text || "").trim() : "";
+        var routeChip = Array.isArray(bookingConfig)
+          ? bookingConfig.find(function (chip) { return chip && (chip.cls === "route" || chip.cls === "route-road"); })
+          : null;
+        var routeText = routeChip && routeChip.label ? String(routeChip.label).trim() : (derived.origin.city + " to " + derived.destination.city);
+        var activityText = Array.isArray(activities) && activities.length ? String(activities[0] || activities[1] || "").trim() : "";
+        if (dayNumber === 1) {
+          return "Start early on the " + routeText + " leg so the rest of the day stays relaxed.";
+        }
+        if (/market|bazaar|street|old city|heritage|fort|temple|museum|viewpoint|lake|beach|valley|river/i.test(evening + " " + afternoon + " " + morning)) {
+          return "Use the quieter evening slot for " + (activityText || "the main highlight") + " and keep the earlier stops moving at an easy pace.";
+        }
+        if (/flight|train|bus|car|cab|taxi|road/i.test(routeText)) {
+          return "Leave a small cushion for the " + routeText + " transfer so the rest of the day does not feel rushed.";
+        }
+        return "Keep the middle of the day flexible so you can spend more time on " + (activityText || "the main sight") + " without rushing the rest of the plan.";
+      }
+
       function buildNewDayDraftModel(dayNumber) {
         var model = cloneDayEditorModel(buildDayBaseModel(dayNumber));
         model.title = "";
@@ -8075,7 +8613,7 @@ function buildDayBaseModel(dayNumber) {
           night: ""
         };
         model.foodRecommendations = [];
-        model.stayOptions = [];
+        model.stayOptions = buildStayOptionsForDay(dayNumber, getAiItineraryDay(dayNumber), daySlots(dayNumber));
         model.optionalActivities = [];
         model.tip = "";
         model.travelGuide = "";
@@ -8202,13 +8740,16 @@ function buildDayBaseModel(dayNumber) {
           var stayItems = model.stayOptions.map(function (item) {
             return '<li><i data-lucide="house"></i><span>' + escapeHtml(item) + "</span></li>";
           }).join("");
+          var stayBox = stayItems
+            ? '<div class="info-box"><h5>Stay Options</h5><ul class="info-list">' + stayItems + "</ul></div>"
+            : "";
           var bookingChips = model.quickBookings.map(function (chip) {
             var cls = chip && chip.cls ? String(chip.cls) : "activity";
             var trailing = chip.trailingIcon
               ? '<i class="booking-chip-trailing" data-lucide="' + chip.trailingIcon + '"></i>'
               : "";
             if (cls === "activity") {
-              return '<button type="button" class="booking-chip booking-chip-trigger activity" data-activity-booking-trigger="true" data-activity-label="' + escapeHtml(chip.label) + '">' +
+              return '<button type="button" class="booking-chip booking-chip-trigger activity" data-activity-booking-trigger="true" data-activity-label="' + escapeHtml(chip.label) + '"' + (chip.searchLabel ? ' data-activity-search-label="' + escapeHtml(chip.searchLabel) + '"' : "") + '>' +
                 '<i data-lucide="' + chip.icon + '"></i><span>' + escapeHtml(chip.label) + '</span></button>';
             }
             var link = getBookingLinkForChip(chip, bookingLinks);
@@ -8233,13 +8774,13 @@ function buildDayBaseModel(dayNumber) {
             '<div class="schedule-col"><h5 class="panel-title">Daily Schedule</h5>' + slotsHtml + "</div>" +
             '<div class="side-col">' +
             '<div class="info-box"><h5>Food Recommendations</h5><ul class="info-list">' + foodItems + "</ul></div>" +
-            '<div class="info-box"><h5>Stay Options</h5><ul class="info-list">' + stayItems + "</ul></div>" +
+            stayBox +
             '<div class="info-box"><h5>Optional Activities</h5><ul class="info-list">' + optional + "</ul></div>" +
             "</div>" +
             "</div>" +
             '<div class="booking-wrap">' +
-            '<p class="booking-heading"><span class="booking-heading-icon"><i data-lucide="tickets"></i></span><span>Quick Bookings</span></p>' +
-            '<div class="booking-row">' + bookingChips + "</div>" +
+            (isCommunityReadOnly ? "" : '<p class="booking-heading"><span class="booking-heading-icon"><i data-lucide="tickets"></i></span><span>Quick Bookings</span></p>' +
+            '<div class="booking-row">' + bookingChips + "</div>") +
             '<p class="tip"><i data-lucide="lightbulb"></i><span>Tip: ' + escapeHtml(model.tip) + "</span></p>" +
             '<div class="booking-actions"><button class="travel-guide-btn" type="button" data-guide-url="' + escapeHtml(model.travelGuide) + '"><i data-lucide="external-link"></i><span>Travel Guide</span></button></div>' +
             "</div></div></div>" +
@@ -8346,53 +8887,233 @@ function buildDayBaseModel(dayNumber) {
         return Math.max(0, Math.round(numeric));
       }
 
-      function computeBudgetModel() {
-        var travelers = derived.travelerCount;
-        var days = derived.durationDays;
+      function parseBudgetAmount(text) {
+        var normalized = String(text || "").toLowerCase().replace(/[, ]+/g, "");
+        if (!normalized) return 0;
+        var match = normalized.match(/(\d+(?:\.\d+)?)(k|m|l|lac|lakh|cr|crore)?/i);
+        if (!match) return 0;
+        var amount = Number(match[1]);
+        if (!Number.isFinite(amount)) return 0;
+        var suffix = String(match[2] || "").toLowerCase();
+        if (suffix === "k") amount *= 1000;
+        else if (suffix === "m") amount *= 1000000;
+        else if (suffix === "l" || suffix === "lac" || suffix === "lakh") amount *= 100000;
+        else if (suffix === "cr" || suffix === "crore") amount *= 10000000;
+        return Math.max(0, Math.round(amount));
+      }
+
+      function isPlaceholderCountry(value) {
+        var text = normalizeBudgetText(value);
+        return !text || /^(origin country|destination country|country|not specified|unknown|n\/a)$/.test(text);
+      }
+
+      function normalizeBudgetText(value) {
+        return String(value || "")
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, " ")
+          .trim();
+      }
+
+      function isInternationalBudgetTrip() {
+        var originCountry = normalizeBudgetText(derived.origin && derived.origin.country ? derived.origin.country : "");
+        var destinationCountry = normalizeBudgetText(derived.destination && derived.destination.country ? derived.destination.country : "");
+        var originKnown = !!originCountry && !isPlaceholderCountry(originCountry);
+        var destinationKnown = !!destinationCountry && !isPlaceholderCountry(destinationCountry);
+        if (originKnown && destinationKnown) return originCountry !== destinationCountry;
+        return false;
+      }
+
+      function getBudgetTransportMode() {
+        var flags = getTransportPreferenceFlags();
+        if (flags.hasFlight) return "flight";
+        if (flags.hasTrain) return "train";
+        if (flags.hasBus) return "bus";
+        if (flags.hasRoadOrCar) return "road";
+        return isInternationalBudgetTrip() ? "flight" : "train";
+      }
+
+      function getVisaEstimateBand(countryText) {
+        var text = normalizeBudgetText(countryText);
+        if (!text) return { min: 4000, max: 14000 };
+        if (/^(india|bharat)$/.test(text)) return { min: 0, max: 0 };
+        if (/(nepal|bhutan)/.test(text)) return { min: 0, max: 1200 };
+        if (/(maldives|sri lanka|srilanka)/.test(text)) return { min: 1200, max: 4500 };
+        if (/(singapore|malaysia|thailand|vietnam|indonesia|philippines|cambodia|laos|myanmar|brunei)/.test(text)) return { min: 1800, max: 6500 };
+        if (/(uae|united arab emirates|dubai|qatar|saudi arabia|bahrain|kuwait|oman)/.test(text)) return { min: 2500, max: 9000 };
+        if (/(uk|united kingdom|england|scotland|wales|europe|schengen|france|germany|italy|spain|switzerland|netherlands|greece|portugal|austria|belgium|denmark|finland|sweden|norway|iceland|ireland|poland|czech|hungary|croatia)/.test(text)) {
+          return { min: 5000, max: 18000 };
+        }
+        if (/(usa|united states|canada|australia|new zealand|japan|south korea|korea|taiwan|hong kong|macau)/.test(text)) {
+          return { min: 6000, max: 22000 };
+        }
+        if (/(south africa|egypt|kenya|morocco|tanzania|uganda|zambia|zimbabwe|botswana|namibia|mauritius)/.test(text)) {
+          return { min: 4500, max: 16000 };
+        }
+        if (/(brazil|argentina|chile|peru|colombia|mexico|panama|costa rica)/.test(text)) {
+          return { min: 5000, max: 17000 };
+        }
+        return { min: 4000, max: 14000 };
+      }
+
+      function normalizeBudgetModelPercentages(model) {
+        var list = [];
+        ["essentials", "activities", "transport"].forEach(function (group) {
+          var items = Array.isArray(model[group]) ? model[group] : [];
+          items.forEach(function (item) {
+            var minValue = Math.max(0, Math.round(Number(item.min) || 0));
+            var maxValue = Math.max(minValue, Math.round(Number(item.max) || 0));
+            list.push({
+              item: item,
+              midpoint: (minValue + maxValue) / 2,
+              fraction: 0,
+              base: 0
+            });
+          });
+        });
+        var totalMidpoint = list.reduce(function (sum, entry) { return sum + entry.midpoint; }, 0);
+        if (totalMidpoint <= 0) {
+          list.forEach(function (entry) {
+            entry.item.pct = 0;
+          });
+          return model;
+        }
+        list.forEach(function (entry) {
+          var exact = (entry.midpoint * 100) / totalMidpoint;
+          entry.base = Math.max(0, Math.floor(exact));
+          entry.fraction = exact - entry.base;
+        });
+        var used = list.reduce(function (sum, entry) { return sum + entry.base; }, 0);
+        var remainder = Math.max(0, 100 - used);
+        list.slice().sort(function (left, right) {
+          if (right.fraction !== left.fraction) return right.fraction - left.fraction;
+          if (right.midpoint !== left.midpoint) return right.midpoint - left.midpoint;
+          return String(left.item && left.item.id || "").localeCompare(String(right.item && right.item.id || ""));
+        }).forEach(function (entry) {
+          if (remainder <= 0) return;
+          entry.base += 1;
+          remainder -= 1;
+        });
+        used = list.reduce(function (sum, entry) { return sum + entry.base; }, 0);
+        if (list.length && used !== 100) {
+          list[0].base = Math.max(0, list[0].base + (100 - used));
+        }
+        list.forEach(function (entry) {
+          entry.item.pct = Math.max(0, Math.round(Number(entry.base) || 0));
+        });
+        return model;
+      }
+
+      function scaleBudgetModelToTargets(model, targetMinTotal, targetMaxTotal) {
+        var items = [];
+        ["essentials", "activities", "transport"].forEach(function (group) {
+          (Array.isArray(model[group]) ? model[group] : []).forEach(function (item) {
+            items.push(item);
+          });
+        });
+        var rawMinTotal = items.reduce(function (sum, item) {
+          return sum + Math.max(0, Math.round(Number(item.min) || 0));
+        }, 0);
+        var rawMaxTotal = items.reduce(function (sum, item) {
+          return sum + Math.max(0, Math.round(Number(item.max) || 0));
+        }, 0);
+        if (rawMinTotal > 0 && Number.isFinite(Number(targetMinTotal)) && Number(targetMinTotal) > 0) {
+          var minScale = Number(targetMinTotal) / rawMinTotal;
+          items.forEach(function (item) {
+            item.min = Math.max(0, Math.round(Math.max(0, Number(item.min) || 0) * minScale));
+          });
+        }
+        if (rawMaxTotal > 0 && Number.isFinite(Number(targetMaxTotal)) && Number(targetMaxTotal) > 0) {
+          var maxScale = Number(targetMaxTotal) / rawMaxTotal;
+          items.forEach(function (item) {
+            item.max = Math.max(item.min, Math.round(Math.max(0, Number(item.max) || 0) * maxScale));
+          });
+        }
+        return model;
+      }
+
+      function buildRealisticBudgetModel() {
+        var travelers = Math.max(1, derived.travelerCount || 1);
+        var days = Math.max(1, derived.durationDays || 1);
+        var international = isInternationalBudgetTrip();
         var hotelFactor = hotelMultiplier(derived.hotelStar);
-        var interestFactor = clamp(1 + (derived.interests.length * 0.08), 1, 1.52);
-        var accommodationMin = travelers * days * 2200 * hotelFactor;
-        var accommodationMax = travelers * days * 4100 * hotelFactor;
-        var foodMin = travelers * days * 700;
-        var foodMax = travelers * days * 1700;
-        var insuranceMin = travelers * 650;
-        var insuranceMax = travelers * 1650;
-        var contingencyMin = travelers * days * 350;
-        var contingencyMax = travelers * days * 900;
-        var activitiesMin = travelers * days * 850 * interestFactor;
-        var activitiesMax = travelers * days * 2000 * interestFactor;
-        var experiencesMin = travelers * days * 650 * interestFactor;
-        var experiencesMax = travelers * days * 1700 * interestFactor;
-        var shoppingMin = travelers * days * 420 * interestFactor;
-        var shoppingMax = travelers * days * 1500 * interestFactor;
-        var activitiesIncludedMin = activitiesMin * 0.35;
-        var activitiesIncludedMax = activitiesMax * 0.35;
-        var activitiesOptionalMin = experiencesMin + (shoppingMin * 0.45);
-        var activitiesOptionalMax = experiencesMax + (shoppingMax * 0.45);
-        var flightMin = travelers * 5200;
-        var flightMax = travelers * 16500;
-        var intercityMin = days * 650;
-        var intercityMax = days * 1800;
-        var localMin = travelers * days * 400;
-        var localMax = travelers * days * 1000;
+        var foodText = String(derived.foodPreference || "").toLowerCase();
+        var paceText = String((derived.plan && derived.plan.pace) || "").toLowerCase();
+        var prefText = String((derived.plan && derived.plan.preferences) || "").toLowerCase();
+        var foodFactor = /fine|dine|premium|upscale|gourmet/.test(foodText)
+          ? 1.28
+          : /local|street|simple|budget|economy/.test(foodText)
+            ? 0.84
+            : /balanced|mixed|family|casual/.test(foodText)
+              ? 0.98
+              : 1.0;
+        var themeFactor = clamp(1 + Math.min(0.2, (derived.interests.length || 0) * 0.04), 0.9, 1.32);
+        if (/slow|relaxed|leisure/.test(paceText + " " + prefText)) themeFactor = clamp(themeFactor - 0.04, 0.9, 1.32);
+        if (/fast|packed|busy|adventure|intense/.test(paceText + " " + prefText)) themeFactor = clamp(themeFactor + 0.07, 0.9, 1.32);
+        var mode = getBudgetTransportMode();
+        var accommodationMin = travelers * days * (international ? 3600 : 1800) * hotelFactor;
+        var accommodationMax = travelers * days * (international ? 7600 : 3800) * hotelFactor;
+        var foodMin = travelers * days * (international ? 1200 : 550) * foodFactor;
+        var foodMax = travelers * days * (international ? 3000 : 1500) * foodFactor;
+        var insuranceMin = travelers * (international ? 1400 : 450);
+        var insuranceMax = travelers * (international ? 5200 : 1500);
+        var activitiesIncludedMin = travelers * days * (international ? 700 : 280) * themeFactor;
+        var activitiesIncludedMax = travelers * days * (international ? 1800 : 900) * themeFactor;
+        var activitiesOptionalMin = travelers * days * (international ? 1000 : 420) * themeFactor;
+        var activitiesOptionalMax = travelers * days * (international ? 2600 : 1500) * themeFactor;
+        var startReturnBase = {
+          flight: international ? [18000, 65000] : [5500, 22000],
+          train: international ? [6000, 18000] : [1200, 9000],
+          bus: international ? [2500, 9000] : [700, 4500],
+          road: international ? [3200, 11000] : [1200, 5500]
+        }[mode] || (international ? [12000, 35000] : [2500, 12000]);
+        var travelStartReturnMin = travelers * startReturnBase[0];
+        var travelStartReturnMax = travelers * startReturnBase[1];
+        var intercityBase = {
+          flight: international ? [700, 2200] : [280, 1200],
+          train: international ? [500, 1600] : [220, 1000],
+          bus: international ? [420, 1400] : [180, 850],
+          road: international ? [450, 1500] : [200, 900]
+        }[mode] || [250, 950];
+        var intercityDays = Math.max(0, days - 1);
+        var intercityMin = travelers * intercityDays * intercityBase[0];
+        var intercityMax = travelers * Math.max(1, intercityDays || 1) * intercityBase[1];
+        var intracityBase = international ? [550, 1600] : [220, 950];
+        var intracityMin = travelers * days * intracityBase[0];
+        var intracityMax = travelers * days * intracityBase[1];
+        var visaBand = international ? getVisaEstimateBand(derived.destination.country || derived.destination.full || derived.destination.city) : { min: 0, max: 0 };
+        var visaMin = travelers * visaBand.min;
+        var visaMax = travelers * visaBand.max;
+        var subtotalMin = accommodationMin + foodMin + insuranceMin + activitiesIncludedMin + activitiesOptionalMin + travelStartReturnMin + intercityMin + intracityMin + visaMin;
+        var subtotalMax = accommodationMax + foodMax + insuranceMax + activitiesIncludedMax + activitiesOptionalMax + travelStartReturnMax + intercityMax + intracityMax + visaMax;
+        var contingencyMin = Math.max(travelers * days * 350, subtotalMin * 0.08);
+        var contingencyMax = Math.max(travelers * days * 900, subtotalMax * 0.15);
 
-        tabData.essentials = [
-          { id: "accommodation", label: "Accommodation", pct: 33, min: accommodationMin, max: accommodationMax },
-          { id: "food", label: "Food", pct: 13, min: foodMin, max: foodMax },
-          { id: "insurance", label: "Insurance", pct: 1, min: insuranceMin, max: insuranceMax },
-          { id: "contingency", label: "Contingency", pct: 7, min: contingencyMin, max: contingencyMax }
-        ];
-        tabData.activities = [
-          { id: "activitiesIncluded", label: "Activities Included", pct: 6, min: activitiesIncludedMin, max: activitiesIncludedMax },
-          { id: "activitiesOptional", label: "Activities Optional", pct: 8, min: activitiesOptionalMin, max: activitiesOptionalMax }
-        ];
-        tabData.transport = [
-          { id: "travelStartReturn", label: "Travel Start/Return", pct: 22, min: flightMin, max: flightMax },
-          { id: "intercityTransport", label: "Intercity Transport", pct: 6, min: intercityMin, max: intercityMax },
-          { id: "intracityTransport", label: "Intracity Transport", pct: 4, min: localMin, max: localMax },
-          { id: "visa", label: "Visa", pct: 0, min: 0, max: 0 }
-        ];
+        var model = {
+          currency: String(derived.plan && derived.plan.currency ? derived.plan.currency : "INR").trim().toUpperCase() || "INR",
+          essentials: [
+            { id: "accommodation", label: "Accommodation", min: accommodationMin, max: accommodationMax },
+            { id: "food", label: "Food", min: foodMin, max: foodMax },
+            { id: "insurance", label: "Insurance", min: insuranceMin, max: insuranceMax },
+            { id: "contingency", label: "Contingency", min: contingencyMin, max: contingencyMax }
+          ],
+          activities: [
+            { id: "activitiesIncluded", label: "Activities Included", min: activitiesIncludedMin, max: activitiesIncludedMax },
+            { id: "activitiesOptional", label: "Activities Optional", min: activitiesOptionalMin, max: activitiesOptionalMax }
+          ],
+          transport: [
+            { id: "travelStartReturn", label: "Travel Start/Return", min: travelStartReturnMin, max: travelStartReturnMax },
+            { id: "intercityTransport", label: "Intercity Transport", min: intercityMin, max: intercityMax },
+            { id: "intracityTransport", label: "Intracity Transport", min: intracityMin, max: intracityMax },
+            { id: "visa", label: "Visa", min: visaMin, max: visaMax }
+          ]
+        };
 
+        normalizeBudgetModelPercentages(model);
+        return model;
+      }
+
+      function computeBudgetModel() {
+        tabData = buildRealisticBudgetModel();
         var totalMin = 0;
         var totalMax = 0;
         Object.keys(tabData).forEach(function (key) {
@@ -8409,7 +9130,12 @@ function buildDayBaseModel(dayNumber) {
           return Array.isArray(tabData[key]) && tabData[key].length > 0;
         });
         if (hasItems) return;
-        computeBudgetModel();
+        applyAiBudgetRangeIfPresent();
+        if (!Object.keys(tabData).some(function (key) {
+          return Array.isArray(tabData[key]) && tabData[key].length > 0;
+        })) {
+          computeBudgetModel();
+        }
       }
 
       function renderBudgetItems() {
@@ -9412,8 +10138,9 @@ function buildDayBaseModel(dayNumber) {
           if (!isPlanReadOnly()) {
             aiGeneratedSections = aiGeneratedSections || {};
             aiGeneratedSections.budgetRange = cloneBudgetData(tabData);
+            aiGeneratedSections.budgetRangeSource = "manual";
             try {
-              await persistPlanSections({ budgetRange: aiGeneratedSections.budgetRange });
+              await persistPlanSections({ budgetRange: aiGeneratedSections.budgetRange, budgetRangeSource: "manual" });
               showPublishToast("Budget range saved to this plan.", { title: "Budget range updated" });
             } catch (error) {
               showPublishToast("Couldn't save budget changes.", { title: "Budget not saved" });
@@ -9711,7 +10438,6 @@ function buildDayBaseModel(dayNumber) {
           navigation: "?",
           "indian-rupee": "\u20B9",
           briefcase: "?",
-          "message-circle": "?",
           eye: "?",
           coffee: "?",
           "utensils-crossed": "??",

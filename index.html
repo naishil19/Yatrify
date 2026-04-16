@@ -1350,23 +1350,6 @@
       class="fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]">
     </ol>
   </div>
-  <div id="plan-modal"
-    style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55);z-index:9998;padding:16px;opacity:0;transition:opacity .2s ease;">
-    <div
-      style="max-width:640px;width:100%;background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.25);padding:20px 22px;position:relative;">
-      <button id="plan-close"
-        style="position:absolute;top:10px;right:10px;border:0;background:#f3f4f6;border-radius:10px;padding:6px 10px;cursor:pointer;">Close</button>
-      <h2 style="font-size:18px;font-weight:700;margin-bottom:10px;">Generate Your Trip Plan</h2>
-      <textarea id="plan-input" rows="4"
-        placeholder="Example: 4 days in Paris, budget-friendly, love art museums and cafes"
-        style="width:100%;border:1px solid #e5e7eb;border-radius:10px;padding:10px;font-size:14px;resize:vertical;"></textarea>
-      <button id="plan-generate"
-        style="margin-top:10px;width:100%;background:#2563eb;color:#fff;border:0;border-radius:10px;padding:10px;font-weight:600;cursor:pointer;">Generate
-        Plan</button>
-      <pre id="plan-output"
-        style="margin-top:12px;white-space:pre-wrap;font-size:13px;line-height:1.4;background:#f9fafb;border:1px solid #f3f4f6;border-radius:10px;padding:10px;min-height:120px;"></pre>
-    </div>
-  </div>
   <div id="signin-modal"
     style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(17,24,39,.62);z-index:9999;padding:20px;opacity:0;transition:opacity .25s ease;overflow-y:auto;font-family:inherit;">
     <div
@@ -1554,11 +1537,6 @@
       var signUpMounted = false;
       var authMode = 'sign-in';
 
-      var planModal = document.getElementById('plan-modal');
-      var planClose = document.getElementById('plan-close');
-      var planInput = document.getElementById('plan-input');
-      var planGenerate = document.getElementById('plan-generate');
-      var planOutput = document.getElementById('plan-output');
       function getApiBaseUrl() {
         return (window.__YATRIFY_API_BASE_URL && String(window.__YATRIFY_API_BASE_URL).trim()) || 'http://localhost:4000';
       }
@@ -1608,20 +1586,6 @@
       function closeModal() {
         modal.style.opacity = '0';
         setTimeout(function () { modal.style.display = 'none'; }, 200);
-        document.body.style.overflow = '';
-      }
-
-      function openPlanModal() {
-        if (!planModal) return;
-        planModal.style.display = 'flex';
-        requestAnimationFrame(function () { planModal.style.opacity = '1'; });
-        document.body.style.overflow = 'hidden';
-      }
-
-      function closePlanModal() {
-        if (!planModal) return;
-        planModal.style.opacity = '0';
-        setTimeout(function () { planModal.style.display = 'none'; }, 200);
         document.body.style.overflow = '';
       }
 
@@ -1725,27 +1689,6 @@
         openModal('sign-in');
       }
 
-      async function generatePlan() {
-        var prompt = (planInput && planInput.value || '').trim();
-        if (!prompt) {
-          if (planOutput) planOutput.textContent = 'Please enter your trip details.';
-          return;
-        }
-        if (planOutput) planOutput.textContent = 'Generating plan...';
-        try {
-          var res = await fetch(getApiBaseUrl() + '/api/plan', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt: prompt })
-          });
-          var data = await res.json();
-          if (!res.ok) throw new Error(data.error || 'Failed');
-          if (planOutput) planOutput.textContent = data.text || 'No response.';
-        } catch (err) {
-          if (planOutput) planOutput.textContent = 'Failed to generate plan.';
-        }
-      }
-
       function updateUI() {
         if (!window.Clerk || !window.Clerk.user) {
           if (signInBtn) signInBtn.style.display = 'inline-flex';
@@ -1803,15 +1746,6 @@
           if (e.target === modal) closeModal();
         });
       }
-
-      if (planClose) planClose.addEventListener('click', closePlanModal);
-      if (planModal) {
-        planModal.addEventListener('click', function (e) {
-          if (e.target === planModal) closePlanModal();
-        });
-      }
-
-      if (planGenerate) planGenerate.addEventListener('click', generatePlan);
 
       if (profileBtn) {
         profileBtn.addEventListener('click', function (e) {

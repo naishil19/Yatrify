@@ -1312,10 +1312,6 @@
         gap: 8px !important;
       }
 
-      #community-feedback-btn {
-        display: none !important;
-      }
-
       .community-title {
         gap: 8px;
         margin-top: 2px;
@@ -1400,9 +1396,6 @@
         </div>
         <div class="flex gap-5 justify-end items-center flex-1 header-action-row" style="position:relative;z-index:10005;">
           <span id="community-credits-wrap" class="header-credits" style="display:none;">Credits <span id="credits-count">-</span></span>
-          <button id="community-feedback-btn" type="button" class="icon-btn" title="Feedback" aria-label="Feedback" style="display:none;">
-            <i data-lucide="message-circle" style="width:18px;height:18px;"></i>
-          </button>
           <button id="theme-toggle-btn" class="theme-toggle" title="Toggle theme">
             <svg id="sun-icon" class="dark:hidden lucide lucide-sun-icon lucide-sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg><svg id="moon-icon" class="hidden dark:block lucide lucide-moon-icon lucide-moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
           </button>
@@ -1724,7 +1717,6 @@
       var avatar = document.getElementById('user-avatar');
       var creditsCount = document.getElementById('credits-count');
       var creditsWrap = document.getElementById('community-credits-wrap');
-      var feedbackBtn = document.getElementById('community-feedback-btn');
       var signInLink = document.getElementById('community-signin-link');
       var desktopDashboardNav = document.getElementById('community-dashboard-nav');
       var mobileDashboardNav = document.getElementById('community-mobile-dashboard-nav');
@@ -1861,7 +1853,6 @@
         if (mobileDashboardNav) mobileDashboardNav.style.display = isAuthenticated ? '' : 'none';
         if (mobileSignInNav) mobileSignInNav.style.display = isAuthenticated ? 'none' : '';
         if (creditsWrap) creditsWrap.style.display = isAuthenticated ? 'inline-block' : 'none';
-        if (feedbackBtn) feedbackBtn.style.display = isAuthenticated ? 'inline-flex' : 'none';
         if (signInLink) signInLink.style.display = isAuthenticated ? 'none' : 'inline-flex';
         if (profileWrap) profileWrap.style.display = isAuthenticated ? 'inline-flex' : 'none';
       }

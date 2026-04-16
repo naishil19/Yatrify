@@ -217,6 +217,121 @@ html.dark .header-credits:hover {
   transform: translate(-50%, -50%) rotate(12deg);
 }
 
+/* Global scrollbar treatment for the whole site */
+:root {
+  --yatrify-scrollbar-track: transparent;
+  --yatrify-scrollbar-thumb: rgba(143, 171, 212, 0.52);
+  --yatrify-scrollbar-thumb-hover: rgba(143, 171, 212, 0.68);
+  --yatrify-scrollbar-thumb-active: rgba(118, 149, 196, 0.76);
+  --yatrify-scrollbar-thumb-border: rgba(255, 255, 255, 0.08);
+  --yatrify-scrollbar-thumb-shadow: rgba(15, 23, 42, 0.12);
+}
+
+html,
+body {
+  scrollbar-gutter: stable;
+}
+
+html,
+body,
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--yatrify-scrollbar-thumb) var(--yatrify-scrollbar-track);
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  width: 15px;
+  height: 15px;
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track,
+*::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 999px;
+  margin: 0;
+}
+
+html::-webkit-scrollbar-button:single-button,
+body::-webkit-scrollbar-button:single-button,
+*::-webkit-scrollbar-button:single-button,
+html::-webkit-scrollbar-button:vertical:decrement,
+body::-webkit-scrollbar-button:vertical:decrement,
+*::-webkit-scrollbar-button:vertical:decrement,
+html::-webkit-scrollbar-button:vertical:increment,
+body::-webkit-scrollbar-button:vertical:increment,
+*::-webkit-scrollbar-button:vertical:increment,
+html::-webkit-scrollbar-button,
+body::-webkit-scrollbar-button,
+*::-webkit-scrollbar-button {
+  width: 0;
+  height: 0;
+  display: none;
+  background: transparent;
+  border: 0;
+  -webkit-appearance: none;
+  background-image: none;
+  margin: 0;
+  padding: 0;
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb,
+*::-webkit-scrollbar-thumb {
+  background-color: rgba(143, 171, 212, 0.52);
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.42) 0%, rgba(143, 171, 212, 0.38) 56%, rgba(118, 149, 196, 0.52) 100%);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  border: 3px solid rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  min-height: 52px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    inset 0 -1px 0 rgba(15, 23, 42, 0.12),
+    0 8px 14px rgba(15, 23, 42, 0.1);
+}
+
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover,
+*::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(143, 171, 212, 0.68);
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(143, 171, 212, 0.5) 56%, rgba(118, 149, 196, 0.62) 100%);
+}
+
+html::-webkit-scrollbar-thumb:active,
+body::-webkit-scrollbar-thumb:active,
+*::-webkit-scrollbar-thumb:active {
+  background-color: rgba(118, 149, 196, 0.76);
+  background-image: linear-gradient(180deg, rgba(245, 248, 252, 0.44) 0%, rgba(143, 171, 212, 0.48) 55%, rgba(118, 149, 196, 0.78) 100%);
+}
+
+html.dark,
+html.dark body,
+html.dark * {
+  --yatrify-scrollbar-track: transparent;
+  --yatrify-scrollbar-thumb: rgba(143, 171, 212, 0.58);
+  --yatrify-scrollbar-thumb-hover: rgba(168, 192, 226, 0.7);
+  --yatrify-scrollbar-thumb-active: rgba(190, 210, 235, 0.78);
+  --yatrify-scrollbar-thumb-border: rgba(15, 23, 42, 0.08);
+  --yatrify-scrollbar-thumb-shadow: rgba(0, 0, 0, 0.18);
+}
+
+html.dark::-webkit-scrollbar-thumb,
+html.dark body::-webkit-scrollbar-thumb,
+html.dark *::-webkit-scrollbar-thumb {
+  background-color: rgba(143, 171, 212, 0.58);
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, rgba(143, 171, 212, 0.34) 56%, rgba(118, 149, 196, 0.46) 100%);
+}
+
+html.dark::-webkit-scrollbar-thumb:hover,
+html.dark body::-webkit-scrollbar-thumb:hover,
+html.dark *::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(168, 192, 226, 0.7);
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.36) 0%, rgba(168, 192, 226, 0.4) 56%, rgba(143, 171, 212, 0.54) 100%);
+}
+
 @media (max-width: 1024px) {
   html,
   body {
