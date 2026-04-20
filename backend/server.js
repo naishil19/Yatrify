@@ -22,6 +22,32 @@ const port = process.env.PORT || 4000;
 const MOCK_AI = String(process.env.MOCK_AI || "").trim().toLowerCase() === "true";
 const RAZORPAY_API_BASE_URL = "https://api.razorpay.com/v1";
 
+// Vercel serverless functions can surface the request path without the "/api" prefix.
+// Normalize only in Vercel-like runtimes so the same Express routes work locally and in production.
+const isVercelRuntime = Boolean(
+  String(
+    process.env.VERCEL ||
+      process.env.VERCEL_URL ||
+      process.env.VERCEL_ENV ||
+      process.env.VERCEL_REGION ||
+      ""
+  ).trim()
+);
+
+if (isVercelRuntime) {
+  app.use((req, _res, next) => {
+    const originalUrl = String(req.originalUrl || "");
+    const currentUrl = String(req.url || "");
+    const url = originalUrl.startsWith("/api/") ? originalUrl : currentUrl;
+    if (url && url !== "/" && !url.startsWith("/api/")) {
+      req.url = `/api${url.startsWith("/") ? url : `/${url}`}`;
+    } else if (originalUrl.startsWith("/api/") && currentUrl !== originalUrl) {
+      req.url = originalUrl;
+    }
+    next();
+  });
+}
+
 const allowedOrigins = String(
   process.env.CORS_ORIGINS ||
     "http://localhost:4000,http://127.0.0.1:4000"
