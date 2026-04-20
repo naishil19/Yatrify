@@ -1318,9 +1318,14 @@
         if (headerReleaseTimer) return;
         headerReleaseTimer = window.setTimeout(function () {
           if (!headerAuthResolved) return;
-          if (window.Clerk && window.Clerk.user && !headerCreditsReady) return;
+          if (!headerCreditsReady && creditsCount) {
+            if (!String(creditsCount.textContent || "").trim()) {
+              creditsCount.textContent = "—";
+            }
+            headerCreditsReady = true;
+          }
           releaseHeaderLoading(true);
-        }, 1800);
+        }, 3200);
       }
 
       function hydrateHeaderFromCache() {

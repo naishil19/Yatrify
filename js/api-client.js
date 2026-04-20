@@ -1,5 +1,7 @@
 (function () {
   var authTokenCacheTtlMs = 15000;
+  var authLoadTimeoutMs = 8000;
+  var apiRequestTimeoutMs = 12000;
 
   function normalizeApiBase(base) {
     var value = String(base || "").trim().replace(/\/+$/, "");
@@ -21,6 +23,31 @@
   function getAuthCache() {
     if (!window.YatrifyAuthCache || typeof window.YatrifyAuthCache !== "object") return null;
     return window.YatrifyAuthCache;
+  }
+
+  function withTimeout(promise, timeoutMs, label) {
+    var ms = Number(timeoutMs);
+    if (!Number.isFinite(ms) || ms <= 0) return Promise.resolve(promise);
+    return new Promise(function (resolve, reject) {
+      var done = false;
+      var timer = window.setTimeout(function () {
+        if (done) return;
+        done = true;
+        reject(new Error(label || "Request timed out"));
+      }, ms);
+
+      Promise.resolve(promise).then(function (value) {
+        if (done) return;
+        done = true;
+        clearTimeout(timer);
+        resolve(value);
+      }, function (error) {
+        if (done) return;
+        done = true;
+        clearTimeout(timer);
+        reject(error);
+      });
+    });
   }
 
   function getCachedUserProfile(options) {
@@ -87,11 +114,11 @@
         return Promise.resolve(cachedTokenRecord.token);
       }
     }
-    return ensureClerkLoaded(true).then(function (clerk) {
+    return withTimeout(ensureClerkLoaded(true), authLoadTimeoutMs, "Clerk auth load timed out").then(function (clerk) {
       if (!clerk || !clerk.session || typeof clerk.session.getToken !== "function") {
         throw new Error("User session not available");
       }
-      return clerk.session.getToken().then(function (token) {
+      return withTimeout(clerk.session.getToken(), authLoadTimeoutMs, "Clerk token request timed out").then(function (token) {
         if (!token) return token;
         window.__YATRIFY_AUTH_TOKEN_CACHE = {
           token: token,
@@ -140,7 +167,19 @@
         headers.set("Content-Type", "application/json");
       }
       opts.headers = headers;
-      return fetch(getApiBase() + path, opts).then(function (res) {
+      var requestUrl = getApiBase() + path;
+      var controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+      if (controller) {
+        opts.signal = controller.signal;
+      }
+      var timeoutId = null;
+      if (controller) {
+        timeoutId = window.setTimeout(function () {
+          controller.abort();
+        }, apiRequestTimeoutMs);
+      }
+      return fetch(requestUrl, opts).then(function (res) {
+        if (timeoutId) clearTimeout(timeoutId);
         if (!res.ok) {
           if (res.status === 404) {
             redirectNotFound({
@@ -155,6 +194,15 @@
           throw err;
         }
         return res;
+      }).catch(function (error) {
+        if (timeoutId) clearTimeout(timeoutId);
+        if (error && error.name === "AbortError") {
+          var timeoutError = new Error("Request timed out");
+          timeoutError.status = 408;
+          timeoutError.path = normalizedPath;
+          throw timeoutError;
+        }
+        throw error;
       });
     });
   }
@@ -167,7 +215,19 @@
       headers.set("Content-Type", "application/json");
     }
     opts.headers = headers;
-    return fetch(getApiBase() + path, opts).then(function (res) {
+    var requestUrl = getApiBase() + path;
+    var controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+    if (controller) {
+      opts.signal = controller.signal;
+    }
+    var timeoutId = null;
+    if (controller) {
+      timeoutId = window.setTimeout(function () {
+        controller.abort();
+      }, apiRequestTimeoutMs);
+    }
+    return fetch(requestUrl, opts).then(function (res) {
+      if (timeoutId) clearTimeout(timeoutId);
       if (!res.ok) {
         if (res.status === 404) {
           redirectNotFound({
@@ -182,6 +242,15 @@
         throw err;
       }
       return res;
+    }).catch(function (error) {
+      if (timeoutId) clearTimeout(timeoutId);
+      if (error && error.name === "AbortError") {
+        var timeoutError = new Error("Request timed out");
+        timeoutError.status = 408;
+        timeoutError.path = normalizedPath;
+        throw timeoutError;
+      }
+      throw error;
     });
   }
 
