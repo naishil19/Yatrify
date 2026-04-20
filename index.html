@@ -1538,7 +1538,8 @@
       var authMode = 'sign-in';
 
       function getApiBaseUrl() {
-        return (window.__YATRIFY_API_BASE_URL && String(window.__YATRIFY_API_BASE_URL).trim()) || '';
+        var value = (window.__YATRIFY_API_BASE_URL && String(window.__YATRIFY_API_BASE_URL).trim()) || '';
+        return value.replace(/\/+$/, "").replace(/\/api$/, "");
       }
 
       function renderAuthMode(mode) {

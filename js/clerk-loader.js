@@ -11,6 +11,7 @@
   function normalizeApiBase(base) {
     var value = String(base || "").trim().replace(/\/+$/, "");
     if (!value) return "";
+    value = value.replace(/\/api$/, "");
     if (/^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])(?::\d+)?$/i.test(value)) {
       return "";
     }
