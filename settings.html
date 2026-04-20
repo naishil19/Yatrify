@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" class="light" style="color-scheme: light;">
 
 <head>
@@ -851,7 +851,7 @@ body > footer {
       }
     }
 
-    /* ── Currency Picker (same as plans-newplan.html) ── */
+    /* â”€â”€ Currency Picker (same as plans-newplan.html) â”€â”€ */
     .currency-picker { position: relative; }
     .currency-picker-trigger { width: 100%; min-height: 44px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: #fff; color: var(--text); font-size: 14px; font-weight: 500; display: flex; align-items: center; justify-content: space-between; gap: 10px; cursor: pointer; text-align: left; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
     .currency-picker-trigger:hover { border-color: #bfdbfe; }
@@ -889,7 +889,7 @@ body > footer {
 
     #currency-picker { width: 300px; }
 
-    /* ── Settings Page ── */
+    /* â”€â”€ Settings Page â”€â”€ */
     .settings-card {
       background: var(--panel);
       border: 1px solid var(--line);
@@ -1496,6 +1496,12 @@ body > footer {
   await setupTopbarData();
   await setupHeaderPlanSearch();
   await setupClerkHeaderProfile();
+  if (!window.__yatrifySettingsTopbarListenerBound) {
+    window.__yatrifySettingsTopbarListenerBound = true;
+    window.addEventListener("yatrify:user-profile-updated", function () {
+      setupTopbarData().catch(function () {});
+    });
+  }
   setupContentSpacing();
   if (window.lucide && typeof window.lucide.createIcons === "function") window.lucide.createIcons();
   try {
@@ -1693,22 +1699,66 @@ body > footer {
     });
   }
 
+  function getCachedTopbarProfile() {
+    if (!window.YatrifyApiClient || typeof window.YatrifyApiClient.getCachedUserProfile !== "function") {
+      return null;
+    }
+    return window.YatrifyApiClient.getCachedUserProfile({ maxAgeMs: 15 * 60 * 1000 });
+  }
+
+  async function refreshTopbarCredits(options) {
+    var opts = options && typeof options === "object" ? options : {};
+    var cached = getCachedTopbarProfile();
+    var cachedCredits = cached ? Number(cached.credits) : NaN;
+    var creditsCount = document.getElementById("credits-count");
+    if (opts.useCache !== false && Number.isFinite(cachedCredits)) {
+      if (creditsCount) {
+        creditsCount.removeAttribute("data-loading");
+        creditsCount.textContent = String(Math.max(0, cachedCredits));
+      }
+      return true;
+    }
+    if (!window.YatrifyPlanService || typeof window.YatrifyPlanService.getUserMe !== "function") {
+      return false;
+    }
+    try {
+      var payload = await window.YatrifyPlanService.getUserMe({ forceRefresh: opts.forceRefresh === true });
+      var credits = Number(payload && payload.credits);
+      if (creditsCount) {
+        creditsCount.removeAttribute("data-loading");
+        creditsCount.textContent = Number.isFinite(credits)
+          ? String(Math.max(0, credits))
+          : (Number.isFinite(cachedCredits) ? String(Math.max(0, cachedCredits)) : "â€”");
+      }
+      if (payload && payload.email) window.YatrifyCurrentUserEmail = payload.email;
+      return Number.isFinite(credits);
+    } catch (_) {
+      if (creditsCount) {
+        creditsCount.removeAttribute("data-loading");
+        creditsCount.textContent = Number.isFinite(cachedCredits)
+          ? String(Math.max(0, cachedCredits))
+          : "â€”";
+      }
+      return Number.isFinite(cachedCredits);
+    }
+  }
+
   async function setupTopbarData() {
     var creditsCount = document.getElementById("credits-count");
-    if (creditsCount) {
+    var cached = getCachedTopbarProfile();
+    var cachedCredits = cached ? Number(cached.credits) : NaN;
+    if (creditsCount && Number.isFinite(cachedCredits)) {
+      creditsCount.removeAttribute("data-loading");
+      creditsCount.textContent = String(Math.max(0, cachedCredits));
+    } else if (creditsCount) {
       creditsCount.setAttribute("data-loading", "true");
       creditsCount.textContent = "";
     }
     if (window.YatrifyPlanService) {
       try {
-        var payload = await window.YatrifyPlanService.getUserMe();
-        var credits = Number(payload && payload.credits);
-        if (creditsCount) {
-          creditsCount.removeAttribute("data-loading");
-          creditsCount.textContent = Number.isFinite(credits) ? String(credits) : "—";
-        }
+        await refreshTopbarCredits({ forceRefresh: true });
       } catch (_) {
-        if (creditsCount) {
+        if (creditsCount && !Number.isFinite(cachedCredits)) {
           creditsCount.removeAttribute("data-loading");
           creditsCount.textContent = "—";
         }
@@ -2031,7 +2081,7 @@ body > footer {
       return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
     }
 
-    // ── Currency picker (same logic as plans-newplan.html) ──
+    // â”€â”€ Currency picker (same logic as plans-newplan.html) â”€â”€
     var cpPicker = document.getElementById("currency-picker");
     var cpInput = document.getElementById("currency");
     var cpTrigger = document.getElementById("currency-trigger");
@@ -2246,6 +2296,7 @@ body > footer {
 </body>
 
 </html>
+
 
 
 

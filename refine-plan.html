@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" class="light" style="color-scheme: light;">
 
 <head>
@@ -859,7 +859,7 @@ body > footer {
       }
     }
 
-    /* ── Inline-style replacements ─────────────── */
+    /* â”€â”€ Inline-style replacements â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     .rf-input-with-clear { position: relative; }
     .rf-dest-input-wrap { position: relative; }
 
@@ -884,7 +884,7 @@ body > footer {
       color: #64748b;
     }
 
-    /* ── Refine Form styles ─────────────────────── */
+    /* â”€â”€ Refine Form styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     .refine-wrapper {
       padding: 0 0 0px;
     }
@@ -2086,10 +2086,10 @@ body > footer {
                 <div class="refine-loading-step refine-loading-step-one">
                   <div class="refine-loading-title"><span class="refine-loading-spinner"></span>Analyzing Feasibility...</div>
                   <p class="refine-loading-sub">We're evaluating your trip details to make sure everything fits your preferences and budget.</p>
-                  <span class="refine-loading-pill"><i data-lucide="info" style="width:14px;height:14px;"></i> A quick 30–40 seconds is all it takes to assess feasibility.</span>
+                  <span class="refine-loading-pill"><i data-lucide="info" style="width:14px;height:14px;"></i> A quick 30â€“40 seconds is all it takes to assess feasibility.</span>
                 </div>
                 <div class="refine-loading-step refine-loading-step-two">
-                  <div class="refine-loading-title"><span class="refine-loading-spinner"></span>Fasten your seatbelt—your refined plan is taking off!</div>
+                  <div class="refine-loading-title"><span class="refine-loading-spinner"></span>Fasten your seatbeltâ€”your refined plan is taking off!</div>
                   <p class="refine-loading-sub">We're refining your plan...</p>
                   <div class="refine-loading-grid">
                     <span class="refine-loading-chip"><i data-lucide="info" style="width:14px;height:14px;"></i>Trip Highlights</span>
@@ -2326,7 +2326,7 @@ body > footer {
                     <div class="rf-pass-row">
                       <div>
                         <div class="rf-pass-title">Children</div>
-                        <div class="rf-pass-age">Age 2–11</div>
+                        <div class="rf-pass-age">Age 2â€“11</div>
                       </div>
                       <div class="rf-pass-controls">
                         <button type="button" class="rf-pass-btn" data-type="children" data-action="decrease" disabled aria-label="Decrease children">
@@ -2525,6 +2525,12 @@ body > footer {
     console.warn("Header plan search setup failed.", err);
   }
   await setupClerkHeaderProfile();
+  if (!window.__yatrifyRefineTopbarListenerBound) {
+    window.__yatrifyRefineTopbarListenerBound = true;
+    window.addEventListener("yatrify:user-profile-updated", function () {
+      setupTopbarData().catch(function () {});
+    });
+  }
   setupContentSpacing();
   if (window.lucide && typeof window.lucide.createIcons === "function") window.lucide.createIcons();
   try {
@@ -2728,22 +2734,65 @@ body > footer {
     });
   }
 
+  function getCachedTopbarProfile() {
+    if (!window.YatrifyApiClient || typeof window.YatrifyApiClient.getCachedUserProfile !== "function") {
+      return null;
+    }
+    return window.YatrifyApiClient.getCachedUserProfile({ maxAgeMs: 15 * 60 * 1000 });
+  }
+
+  async function refreshTopbarCredits(options) {
+    var opts = options && typeof options === "object" ? options : {};
+    var cached = getCachedTopbarProfile();
+    var cachedCredits = cached ? Number(cached.credits) : NaN;
+    var creditsCount = document.getElementById("credits-count");
+    if (opts.useCache !== false && Number.isFinite(cachedCredits)) {
+      if (creditsCount) {
+        creditsCount.removeAttribute("data-loading");
+        creditsCount.textContent = String(Math.max(0, cachedCredits));
+      }
+      return true;
+    }
+    if (!window.YatrifyPlanService || typeof window.YatrifyPlanService.getUserMe !== "function") {
+      return false;
+    }
+    try {
+      var payload = await window.YatrifyPlanService.getUserMe({ forceRefresh: opts.forceRefresh === true });
+      var credits = Number(payload && payload.credits);
+      if (creditsCount) {
+        creditsCount.removeAttribute("data-loading");
+        creditsCount.textContent = Number.isFinite(credits)
+          ? String(Math.max(0, credits))
+          : (Number.isFinite(cachedCredits) ? String(Math.max(0, cachedCredits)) : "—");
+      }
+      if (payload && payload.email) window.YatrifyCurrentUserEmail = payload.email;
+      return Number.isFinite(credits);
+    } catch (_) {
+      if (creditsCount) {
+        creditsCount.removeAttribute("data-loading");
+        creditsCount.textContent = Number.isFinite(cachedCredits)
+          ? String(Math.max(0, cachedCredits))
+          : "—";
+      }
+      return Number.isFinite(cachedCredits);
+    }
+  }
   async function setupTopbarData() {
     var creditsCount = document.getElementById("credits-count");
-    if (creditsCount) {
+    var cached = getCachedTopbarProfile();
+    var cachedCredits = cached ? Number(cached.credits) : NaN;
+    if (creditsCount && Number.isFinite(cachedCredits)) {
+      creditsCount.removeAttribute("data-loading");
+      creditsCount.textContent = String(Math.max(0, cachedCredits));
+    } else if (creditsCount) {
       creditsCount.setAttribute("data-loading", "true");
       creditsCount.textContent = "";
     }
     if (window.YatrifyPlanService) {
       try {
-        var payload = await window.YatrifyPlanService.getUserMe();
-        var credits = Number(payload && payload.credits);
-        if (creditsCount) {
-          creditsCount.removeAttribute("data-loading");
-          creditsCount.textContent = Number.isFinite(credits) ? String(credits) : "—";
-        }
+        await refreshTopbarCredits({ forceRefresh: true });
       } catch (_) {
-        if (creditsCount) {
+        if (creditsCount && !Number.isFinite(cachedCredits)) {
           creditsCount.removeAttribute("data-loading");
           creditsCount.textContent = "—";
         }
@@ -3018,7 +3067,7 @@ body > footer {
 
 <script>
 (async function () {
-  /* ── Banner close ─────────────────────────────── */
+  /* â”€â”€ Banner close â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   var banner = document.getElementById('refine-banner');
   var bannerClose = document.getElementById('refine-banner-close');
   var activePlanContext = { planData: {} };
@@ -3050,7 +3099,7 @@ body > footer {
   /* Read current plan from API */
   var rfPlanData = getActivePlanSnapshot();
 
-  /* ── Start city clear button ──────────────────── */
+  /* â”€â”€ Start city clear button â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   var startInput = document.getElementById('rf-start-city');
   var startClear = document.getElementById('rf-start-city-clear');
   if (startClear && startInput) {
@@ -3071,7 +3120,7 @@ body > footer {
     if (rfPlanStartCity) startInput.value = rfPlanStartCity;
   }
 
-  /* ── Chip toggle ──────────────────────────────── */
+  /* â”€â”€ Chip toggle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   document.querySelectorAll('.chips').forEach(function (group) {
     var multi = group.dataset.multi === 'true';
     group.addEventListener('click', function (e) {
@@ -3110,7 +3159,7 @@ body > footer {
     rfPreferences.value = String(rfPlanData.preferences || '');
   }
 
-  /* ── Add theme ────────────────────────────────── */
+  /* â”€â”€ Add theme â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   var addThemeBtn = document.getElementById('rf-add-theme-btn');
   var addThemeRow = document.getElementById('rf-add-theme-row');
   var saveThemeBtn = document.getElementById('rf-save-theme-btn');
@@ -3144,7 +3193,7 @@ body > footer {
     });
   }
 
-  /* ── Destination chips ────────────────────────── */
+  /* â”€â”€ Destination chips â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   var destInput    = document.getElementById('rf-destination');
   var destChipsWrap = document.getElementById('rf-dest-chips');
   var destSuggest  = document.getElementById('rf-dest-suggestions');
@@ -3161,7 +3210,7 @@ body > footer {
     return dest ? [dest] : [];
   })();
 
-  /* ── Destination chips render ─────────────────── */
+  /* â”€â”€ Destination chips render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   function renderDestChips() {
     if (!destChipsWrap) return;
     destChipsWrap.innerHTML = '';
@@ -3185,7 +3234,7 @@ body > footer {
 
   renderDestChips();
 
-  /* ── World city autocomplete ── */
+  /* â”€â”€ World city autocomplete â”€â”€ */
   var RF_API_BASE = (typeof window !== 'undefined' && (window.__YATRIFY_API_BASE_URL || window.YATRIFY_API_BASE_URL))
     ? String(window.__YATRIFY_API_BASE_URL || window.YATRIFY_API_BASE_URL).replace(/\/+$/, '')
     : '';
@@ -3213,7 +3262,7 @@ body > footer {
     destination: { items:[], activeIndex:-1, renderedCount:0 }
   };
 
-  /* ── Static fallback cities (shown immediately, no server needed) ── */
+  /* â”€â”€ Static fallback cities (shown immediately, no server needed) â”€â”€ */
   var RF_STATIC_CITIES = [
     // India
     "Mumbai, Maharashtra, India","Delhi, National Capital Territory of Delhi, India","Bengaluru, Karnataka, India",
@@ -3328,7 +3377,7 @@ body > footer {
     worldCityLoaderState.completed = true;
   })();
 
-  /* ── CSC API functions (exact copy from plans-newplan) ── */
+  /* â”€â”€ CSC API functions (exact copy from plans-newplan) â”€â”€ */
   async function fetchCSCJson(path) {
     var response = await fetch(RF_CSC_BASE + path, { method: 'GET' });
     if (!response.ok) throw new Error('CSC API request failed: ' + response.status);
@@ -3631,13 +3680,13 @@ body > footer {
     });
   }
 
-  /* Start world city build in background — adds API cities on top of static ones */
+  /* Start world city build in background â€” adds API cities on top of static ones */
   startWorldCityIndexBuild();
 
   setupLocationAutocomplete('startCity');
   setupLocationAutocomplete('destination');
 
-  /* ── Calendar / date range picker ───────────────── */
+  /* â”€â”€ Calendar / date range picker â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   var rfDateBtn = document.getElementById('rf-date-btn');
   var rfCalPop = document.getElementById('rf-cal-popover');
   var rfDateLabel = document.getElementById('rf-date-label');
@@ -3813,7 +3862,7 @@ body > footer {
 
   updateDateLabel();
 
-  /* ── Currency catalog (full list, same as plans-newplan) ─── */
+  /* â”€â”€ Currency catalog (full list, same as plans-newplan) â”€â”€â”€ */
   var CURRENCY_BACKUP_CODES = [
     "AED","AFN","ALL","AMD","ANG","AOA","ARS","AUD","AWG","AZN",
     "BAM","BBD","BDT","BGN","BHD","BIF","BMD","BND","BOB","BOV",
@@ -3891,7 +3940,7 @@ body > footer {
     });
   }
 
-  /* ── Currency picker (full plans-newplan parity) ─ */
+  /* â”€â”€ Currency picker (full plans-newplan parity) â”€ */
   var CURRENCIES = buildRfCurrencyCatalog();
 
   var rfCurPicker  = document.getElementById('rf-currency-picker');
@@ -4085,7 +4134,7 @@ body > footer {
     });
   }
 
-  /* ── Budget slider sync ───────────────────────── */
+  /* â”€â”€ Budget slider sync â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   var rfSlider = document.getElementById('rf-budget-slider');
   var rfBudgetInput = document.getElementById('rf-budget');
 
@@ -4119,7 +4168,7 @@ body > footer {
 
   updateSliderFill();
 
-  /* ── Passenger picker ─────────────────────────── */
+  /* â”€â”€ Passenger picker â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   var rfPassPicker = document.getElementById('rf-passenger-picker');
   var rfPassTrigger = document.getElementById('rf-passenger-trigger');
   var rfPassMenu = document.getElementById('rf-passenger-menu');
@@ -4549,12 +4598,12 @@ body > footer {
     });
   }
 
-  /* ── Utility ──────────────────────────────────── */
+  /* â”€â”€ Utility â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   function escHtml(s) {
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  /* ── Re-run lucide for new icons ──────────────── */
+  /* â”€â”€ Re-run lucide for new icons â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   if (window.lucide && typeof window.lucide.createIcons === 'function') {
     window.lucide.createIcons();
   }
@@ -4565,6 +4614,7 @@ body > footer {
 </body>
 
 </html>
+
 
 
 

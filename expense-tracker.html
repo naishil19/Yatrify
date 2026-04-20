@@ -4004,7 +4004,7 @@
         if (!window.YatrifyApiClient || typeof window.YatrifyApiClient.getCachedUserProfile !== "function") {
           return null;
         }
-        return window.YatrifyApiClient.getCachedUserProfile({ maxAgeMs: 0 });
+        return window.YatrifyApiClient.getCachedUserProfile({ maxAgeMs: 15 * 60 * 1000 });
       }
 
       async function refreshTopbarCredits(options) {
@@ -4188,6 +4188,13 @@
             }
           }
           refreshTopbarCredits({ useCache: true, forceRefresh: true }).catch(function () {});
+        }
+
+        if (!window.__yatrifyExpenseTopbarListenerBound) {
+          window.__yatrifyExpenseTopbarListenerBound = true;
+          window.addEventListener("yatrify:user-profile-updated", function () {
+            refreshTopbarCredits({ useCache: true, forceRefresh: true }).catch(function () {});
+          });
         }
 
         if (!profileBtn || profileBtn.dataset.bound === "true") return Promise.resolve();

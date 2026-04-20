@@ -5194,7 +5194,8 @@ html.dark .theme-toggle:hover {
         function setCredits(count) {
           if (!creditsCountEl) return;
           creditsCountEl.removeAttribute("data-loading");
-          creditsCountEl.textContent = String(count);
+          var credits = Number(count);
+          creditsCountEl.textContent = Number.isFinite(credits) ? String(Math.max(0, credits)) : "0";
         }
 
         function setCreditsLoading() {
@@ -5243,12 +5244,29 @@ html.dark .theme-toggle:hover {
             releaseHeaderLoading();
             return Promise.resolve();
           }
-          setCreditsLoading();
-          return window.YatrifyPlanService.getUserMe().then(function (profile) {
-            setCredits(profile && typeof profile.credits === "number" ? profile.credits : 0);
+          var cachedProfile = window.YatrifyAuthCache && typeof window.YatrifyAuthCache.getProfile === "function"
+            ? window.YatrifyAuthCache.getProfile({ maxAgeMs: 15 * 60 * 1000 })
+            : null;
+          var cachedCredits = cachedProfile ? Number(cachedProfile.credits) : NaN;
+          var hasCachedCredits = Number.isFinite(cachedCredits);
+
+          if (hasCachedCredits) {
+            setCredits(cachedCredits);
+            applyPlanTier(cachedProfile && cachedProfile.planTier ? cachedProfile.planTier : "free");
+            headerCreditsReady = true;
+            releaseHeaderLoading();
+          } else {
+            setCreditsLoading();
+          }
+
+          return window.YatrifyPlanService.getUserMe({ forceRefresh: true }).then(function (profile) {
+            var credits = Number(profile && profile.credits);
+            setCredits(Number.isFinite(credits) ? credits : (hasCachedCredits ? cachedCredits : 0));
             applyPlanTier(profile && profile.planTier ? profile.planTier : "free");
           }).catch(function () {
-            setCreditsUnavailable();
+            if (!hasCachedCredits) {
+              setCreditsUnavailable();
+            }
           }).finally(function () {
             headerCreditsReady = true;
             releaseHeaderLoading();
@@ -5475,6 +5493,11 @@ html.dark .theme-toggle:hover {
           headerCreditsRequested = false;
           startHeaderReleaseFallback();
           hydrateHeaderFromCache();
+          window.addEventListener("yatrify:user-profile-updated", function () {
+            if (creditsCountEl) {
+              loadCredits();
+            }
+          });
           ensureClerkLoaded().then(function () {
             clerkReady = true;
             updateHeaderUI();

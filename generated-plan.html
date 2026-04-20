@@ -5733,6 +5733,12 @@
         renderFooter();
         setupEvents();
         await setupClerkHeaderProfile();
+        if (!window.__yatrifyGeneratedPlanProfileListenerBound) {
+          window.__yatrifyGeneratedPlanProfileListenerBound = true;
+          window.addEventListener("yatrify:user-profile-updated", function () {
+            renderTopbar().catch(function () {});
+          });
+        }
         runRevealAnimation();
         ensureLucideLoaded(function () {
           renderIcons();
@@ -7084,16 +7090,26 @@
         };
       }
 
-      async function loadUserCredits() {
+      async function loadUserCredits(options) {
         if (!window.YatrifyPlanService) return null;
+        var opts = options && typeof options === "object" ? options : {};
+        var cached = window.YatrifyAuthCache && typeof window.YatrifyAuthCache.getProfile === "function"
+          ? window.YatrifyAuthCache.getProfile({ maxAgeMs: 15 * 60 * 1000 })
+          : null;
+        if (opts.forceRefresh !== true && cached && Number.isFinite(Number(cached.credits))) {
+          userCredits = Number(cached.credits);
+          return userCredits;
+        }
         try {
-          var payload = await window.YatrifyPlanService.getUserMe();
+          var payload = await window.YatrifyPlanService.getUserMe({ forceRefresh: true });
           var credits = Number(payload && payload.credits);
-          userCredits = Number.isFinite(credits) ? credits : null;
+          userCredits = Number.isFinite(credits)
+            ? credits
+            : (cached && Number.isFinite(Number(cached.credits)) ? Number(cached.credits) : null);
           return userCredits;
         } catch (_) {
-          userCredits = null;
-          return null;
+          userCredits = cached && Number.isFinite(Number(cached.credits)) ? Number(cached.credits) : null;
+          return userCredits;
         }
       }
 
@@ -7101,16 +7117,27 @@
         var creditsCount = document.getElementById("credits-count");
         var selectedLabel = document.getElementById("destination-selected-label");
 
+        var cached = window.YatrifyAuthCache && typeof window.YatrifyAuthCache.getProfile === "function"
+          ? window.YatrifyAuthCache.getProfile({ maxAgeMs: 15 * 60 * 1000 })
+          : null;
+        var cachedCredits = cached ? Number(cached.credits) : NaN;
+        var hasCachedCredits = Number.isFinite(cachedCredits);
+
         if (creditsCount) {
-          creditsCount.setAttribute("data-loading", "true");
-          creditsCount.textContent = "";
+          if (hasCachedCredits) {
+            creditsCount.removeAttribute("data-loading");
+            creditsCount.textContent = formatCreditValue(cachedCredits);
+          } else {
+            creditsCount.setAttribute("data-loading", "true");
+            creditsCount.textContent = "";
+          }
         }
-        await loadUserCredits();
+        await loadUserCredits({ forceRefresh: true });
 
         if (isCommunityReadOnly) {
           if (creditsCount) {
             creditsCount.removeAttribute("data-loading");
-            creditsCount.textContent = userCredits !== null ? formatCreditValue(userCredits) : "";
+            creditsCount.textContent = userCredits !== null ? formatCreditValue(userCredits) : (hasCachedCredits ? formatCreditValue(cachedCredits) : "");
           }
           if (selectedLabel) selectedLabel.textContent = derived.destination.full || "Community Plan";
           return;
@@ -7118,7 +7145,7 @@
 
         if (creditsCount) {
           creditsCount.removeAttribute("data-loading");
-          creditsCount.textContent = userCredits !== null ? formatCreditValue(userCredits) : "—";
+          creditsCount.textContent = userCredits !== null ? formatCreditValue(userCredits) : (hasCachedCredits ? formatCreditValue(cachedCredits) : "—");
         }
 
         await ensurePlanListLoaded();
