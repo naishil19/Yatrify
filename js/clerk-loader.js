@@ -356,9 +356,11 @@
       }
       return originalLoad(opts).then(function (result) {
         attachClerkSyncListener(window.Clerk || result);
-        return syncCurrentUser(window.Clerk || result).then(function () {
-          return result;
+        // Keep auth responsive: do not block Clerk load on the profile sync request.
+        syncCurrentUser(window.Clerk || result).catch(function (error) {
+          console.error("Yatrify user sync failed", error);
         });
+        return result;
       });
     };
     window.Clerk.__yatrifyLoadPatched = true;
