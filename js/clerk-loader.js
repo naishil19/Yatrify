@@ -288,6 +288,10 @@
     if (!clerk || !clerk.user || !clerk.session || typeof clerk.session.getToken !== "function") {
       window.__YATRIFY_LAST_SYNCED_USER_ID = "";
       clearCachedUserProfile();
+      try {
+        window.dispatchEvent(new CustomEvent("yatrify:user-profile-updated", { detail: null }));
+      } catch (_e) {
+      }
       return Promise.resolve(null);
     }
 
@@ -316,6 +320,10 @@
         window.__YATRIFY_LAST_SYNCED_USER_ID = userId;
         var cachedProfile = updateCachedUserProfile(payload, clerk.user);
         applyCachedProfileToDom();
+        try {
+          window.dispatchEvent(new CustomEvent("yatrify:user-profile-updated", { detail: cachedProfile || null }));
+        } catch (_e) {
+        }
         return cachedProfile;
       }).catch(function (error) {
         console.error("Yatrify user sync failed", error);

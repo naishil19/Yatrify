@@ -1512,15 +1512,35 @@
           releaseHeaderLoading();
           return Promise.resolve();
         }
-        creditsCount.setAttribute("data-loading", "true");
-        creditsCount.textContent = "";
-        return window.YatrifyPlanService.getUserMe().then(function (payload) {
+        var cachedProfile = window.YatrifyAuthCache && typeof window.YatrifyAuthCache.getProfile === "function"
+          ? window.YatrifyAuthCache.getProfile({ maxAgeMs: 15 * 60 * 1000 })
+          : null;
+        var cachedCredits = cachedProfile ? Number(cachedProfile.credits) : NaN;
+        var hasCachedCredits = Number.isFinite(cachedCredits);
+
+        if (hasCachedCredits) {
+          creditsCount.removeAttribute("data-loading");
+          creditsCount.textContent = String(Math.max(0, cachedCredits));
+          headerCreditsReady = true;
+          releaseHeaderLoading();
+        } else {
+          creditsCount.setAttribute("data-loading", "true");
+          creditsCount.textContent = "";
+        }
+
+        return window.YatrifyPlanService.getUserMe({ forceRefresh: true }).then(function (payload) {
           var credits = Number(payload && payload.credits);
           creditsCount.removeAttribute("data-loading");
-          creditsCount.textContent = Number.isFinite(credits) ? String(credits) : "—";
+          if (Number.isFinite(credits)) {
+            creditsCount.textContent = String(Math.max(0, credits));
+          } else if (!hasCachedCredits) {
+            creditsCount.textContent = "—";
+          }
         }).catch(function () {
           creditsCount.removeAttribute("data-loading");
-          creditsCount.textContent = "—";
+          if (!hasCachedCredits) {
+            creditsCount.textContent = "—";
+          }
         });
       }
 
@@ -1916,6 +1936,11 @@
         startHeaderReleaseFallback();
         hydrateHeaderFromCache();
         renderLucideIcons();
+        window.addEventListener("yatrify:user-profile-updated", function () {
+          if (creditsCount) {
+            loadCredits();
+          }
+        });
         ensureClerkLoaded().then(function (clerk) {
           bindClerk(clerk);
           return loadPlans();
