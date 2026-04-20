@@ -21,6 +21,10 @@ const app = express();
 const port = process.env.PORT || 4000;
 const MOCK_AI = String(process.env.MOCK_AI || "").trim().toLowerCase() === "true";
 const RAZORPAY_API_BASE_URL = "https://api.razorpay.com/v1";
+const DB_CONNECTION_TIMEOUT_MS = Number(process.env.DB_CONNECTION_TIMEOUT_MS || 15000);
+const DB_IDLE_TIMEOUT_MS = Number(process.env.DB_IDLE_TIMEOUT_MS || 10000);
+const DB_QUERY_TIMEOUT_MS = Number(process.env.DB_QUERY_TIMEOUT_MS || 12000);
+const CLERK_PROFILE_TIMEOUT_MS = Number(process.env.CLERK_PROFILE_TIMEOUT_MS || 8000);
 
 // Vercel serverless functions can surface the request path without the "/api" prefix.
 // Normalize only in Vercel-like runtimes so the same Express routes work locally and in production.
@@ -64,12 +68,61 @@ if (process.env.DATABASE_URL) {
     /sslmode=require/i.test(connectionString) ||
     String(process.env.PGSSLMODE || "").toLowerCase() === "require" ||
     String(process.env.DATABASE_SSL || "").toLowerCase() === "true";
-  pool = new Pool({
+  const poolOptions = {
     connectionString,
     ssl: needsSsl ? { rejectUnauthorized: false } : undefined,
+    connectionTimeoutMillis: Number.isFinite(DB_CONNECTION_TIMEOUT_MS) && DB_CONNECTION_TIMEOUT_MS > 0
+      ? DB_CONNECTION_TIMEOUT_MS
+      : 15000,
+    idleTimeoutMillis: Number.isFinite(DB_IDLE_TIMEOUT_MS) && DB_IDLE_TIMEOUT_MS > 0
+      ? DB_IDLE_TIMEOUT_MS
+      : 10000,
+    max: Number.isFinite(Number(process.env.DB_POOL_MAX))
+      ? Math.max(1, Number(process.env.DB_POOL_MAX))
+      : 2,
+    allowExitOnIdle: true,
+  };
+  const statementTimeoutMs = Number.isFinite(DB_QUERY_TIMEOUT_MS) && DB_QUERY_TIMEOUT_MS > 0
+    ? DB_QUERY_TIMEOUT_MS
+    : 12000;
+  if (statementTimeoutMs > 0) {
+    poolOptions.options = `-c statement_timeout=${statementTimeoutMs}`;
+  }
+  pool = new Pool({
+    ...poolOptions,
   });
 }
 const store = pool ? createStore({ pool }) : null;
+
+function withTimeout(promise, timeoutMs, label) {
+  const ms = Number(timeoutMs);
+  if (!Number.isFinite(ms) || ms <= 0) return Promise.resolve(promise);
+  return new Promise((resolve, reject) => {
+    let finished = false;
+    const timer = setTimeout(() => {
+      if (finished) return;
+      finished = true;
+      const error = new Error(label || "Operation timed out");
+      error.status = 504;
+      reject(error);
+    }, ms);
+
+    Promise.resolve(promise).then(
+      (value) => {
+        if (finished) return;
+        finished = true;
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (error) => {
+        if (finished) return;
+        finished = true;
+        clearTimeout(timer);
+        reject(error);
+      }
+    );
+  });
+}
 
 let clerkClient = null;
 function getClerkClient() {
@@ -985,7 +1038,11 @@ async function fetchClerkUserProfile(clerkUserId) {
   const client = getClerkClient();
   if (!client) return null;
   try {
-    const clerkUser = await client.users.getUser(clerkUserId);
+    const clerkUser = await withTimeout(
+      client.users.getUser(clerkUserId),
+      CLERK_PROFILE_TIMEOUT_MS,
+      "Clerk profile request timed out"
+    );
     return {
       email: getPrimaryEmailFromClerkUser(clerkUser),
       firstName: normalizeOptionalText(clerkUser.firstName),
