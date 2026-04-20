@@ -1910,11 +1910,12 @@
         headerCreditsReady = false;
         startHeaderReleaseFallback();
         hydrateHeaderFromCache();
-        loadPlans();
         renderLucideIcons();
         ensureClerkLoaded().then(function (clerk) {
           bindClerk(clerk);
+          return loadPlans();
         }).catch(function () {
+          loadPlans();
           releaseHeaderLoading(true);
         });
       }
