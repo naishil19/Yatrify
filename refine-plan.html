@@ -3188,7 +3188,7 @@ body > footer {
   /* ── World city autocomplete ── */
   var RF_API_BASE = (typeof window !== 'undefined' && (window.__YATRIFY_API_BASE_URL || window.YATRIFY_API_BASE_URL))
     ? String(window.__YATRIFY_API_BASE_URL || window.YATRIFY_API_BASE_URL).replace(/\/+$/, '')
-    : 'http://localhost:4000';
+    : '';
   var RF_CSC_BASE = RF_API_BASE + '/api/csc';
 
   var AUTOCOMPLETE_MIN_CHARS   = 1;

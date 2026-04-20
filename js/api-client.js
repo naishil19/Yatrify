@@ -1,11 +1,20 @@
 (function () {
   var authTokenCacheTtlMs = 15000;
 
+  function normalizeApiBase(base) {
+    var value = String(base || "").trim().replace(/\/+$/, "");
+    if (!value) return "";
+    if (/^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])(?::\d+)?$/i.test(value)) {
+      return "";
+    }
+    return value;
+  }
+
   function getApiBase() {
     var base =
       (typeof window !== "undefined" && (window.__YATRIFY_API_BASE_URL || window.YATRIFY_API_BASE_URL)) ||
-      "http://localhost:4000";
-    return String(base || "").replace(/\/+$/, "");
+      "";
+    return normalizeApiBase(base);
   }
 
   function getAuthCache() {

@@ -716,7 +716,7 @@ app.get("/api/public-config", (_req, res) => {
   const razorpayCredentials = getRazorpayCredentials();
   return res.json({
     clerkPublishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || "",
-    apiBaseUrl: process.env.API_BASE_URL || `http://localhost:${port}`,
+    apiBaseUrl: process.env.API_BASE_URL || "",
     razorpayKeyId: razorpayCredentials ? razorpayCredentials.keyId : "",
     creditPack: getCreditPackConfig(),
   });

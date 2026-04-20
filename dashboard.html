@@ -1632,7 +1632,7 @@
         if (window.YatrifyApiClient && typeof window.YatrifyApiClient.getApiBase === "function") {
           return window.YatrifyApiClient.getApiBase();
         }
-        return String(window.__YATRIFY_API_BASE_URL || window.YATRIFY_API_BASE_URL || "http://localhost:4000").replace(/\/+$/, "");
+        return String(window.__YATRIFY_API_BASE_URL || window.YATRIFY_API_BASE_URL || "").replace(/\/+$/, "");
       }
 
       function normalizeThemeQueryList(themes) {
