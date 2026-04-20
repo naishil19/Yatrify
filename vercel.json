@@ -1,8 +1,4 @@
 {
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/index.js"
-    }
-  ]
+  "cleanUrls": true,
+  "trailingSlash": false
 }
