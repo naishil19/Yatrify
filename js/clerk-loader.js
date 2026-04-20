@@ -344,9 +344,7 @@
     if (!window.Clerk || typeof window.Clerk.load !== "function" || !publishableKey) return;
     if (window.Clerk.__yatrifyLoadPatched === true) {
       attachClerkSyncListener(window.Clerk);
-      syncCurrentUser(window.Clerk).catch(function (error) {
-        console.error("Yatrify user sync failed", error);
-      });
+      syncCurrentUser(window.Clerk);
       return;
     }
 
@@ -358,17 +356,14 @@
       }
       return originalLoad(opts).then(function (result) {
         attachClerkSyncListener(window.Clerk || result);
-        syncCurrentUser(window.Clerk || result).catch(function (error) {
-          console.error("Yatrify user sync failed", error);
+        return syncCurrentUser(window.Clerk || result).then(function () {
+          return result;
         });
-        return result;
       });
     };
     window.Clerk.__yatrifyLoadPatched = true;
     attachClerkSyncListener(window.Clerk);
-    syncCurrentUser(window.Clerk).catch(function (error) {
-      console.error("Yatrify user sync failed", error);
-    });
+    syncCurrentUser(window.Clerk);
   }
 
   function initClerkFromEnv() {

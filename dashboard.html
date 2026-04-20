@@ -1458,9 +1458,11 @@
           if (emailEl) {
             emailEl.textContent = window.Clerk.user.primaryEmailAddress ? window.Clerk.user.primaryEmailAddress.emailAddress : '';
           }
-          headerCreditsReady = true;
-          releaseHeaderLoading();
-          loadCredits();
+          headerCreditsReady = false;
+          loadCredits().finally(function () {
+            headerCreditsReady = true;
+            releaseHeaderLoading();
+          });
           releaseHeaderLoading();
         } else if (clerkReady) {
           headerAuthResolved = true;
