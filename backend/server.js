@@ -1881,8 +1881,22 @@ function buildMockItineraryDay(trip, dayNumber, totalDays, landmarkHints) {
 }
 
 function buildMockPackingChecklist(trip) {
-  const city = trip.destination || "the destination";
-  return dedupeStrings([
+  return buildDestinationPackingChecklist(trip);
+}
+
+function buildDestinationPackingChecklist(trip) {
+  const normalizedTrip = normalizeGeminiTripPayload(trip || {});
+  const location = normalizeBudgetLocationParts(normalizedTrip.destination, "the destination", "");
+  const destinationLabel = String(normalizedTrip.destination || location.full || location.city || "the destination").trim();
+  const countryText = normalizeBudgetToken(location.country || "");
+  const destinationText = normalizeLookupText(destinationLabel);
+  const weatherText = normalizeLookupText(normalizedTrip.weather || "");
+  const interestsText = normalizeLookupText(normalizePayloadArray(normalizedTrip.themes).join(" "));
+  const foodText = normalizeLookupText(normalizePayloadArray(normalizedTrip.food).join(" "));
+  const passengersText = normalizeLookupText(normalizedTrip.passengers || "");
+  const landmarkHints = getDestinationLandmarkHints(normalizedTrip.destination);
+  const contextText = [destinationText, countryText, weatherText, interestsText, normalizeLookupText(landmarkHints.join(" "))].filter(Boolean).join(" ");
+  const items = [
     "Passport or ID",
     "Travel tickets and hotel confirmations",
     "Wallet, cards, and some cash",
@@ -1890,12 +1904,122 @@ function buildMockPackingChecklist(trip) {
     "Power bank",
     "Basic medicines and prescriptions",
     "Toiletries kit",
-    "Weather-appropriate clothing",
-    "Comfortable walking shoes",
-    "Light jacket or layering piece",
-    `Any destination-specific adapter for ${city}`,
-    `Sunglasses, sunscreen, and water bottle for ${city}`,
-  ]);
+    "Universal travel adapter",
+  ];
+
+  const add = (...values) => {
+    values.forEach((value) => {
+      const text = String(value || "").trim();
+      if (text) items.push(text);
+    });
+  };
+
+  if (/(rain|monsoon|wet|storm|drizzle|waterfall|coast|coastal|island|beach|sea|ocean|tropical)/i.test(contextText)) {
+    add(
+      "Compact umbrella or rain jacket",
+      "Waterproof phone pouch",
+      `Quick-dry socks for ${destinationLabel}`,
+      `Water-resistant shoes for ${destinationLabel}`
+    );
+  }
+
+  if (/(cold|snow|winter|therm|frost|mountain|hill|hills|valley|trek|hike|highland|alps|canada|europe|uk|scandinavia|japan|korea|switzerland|ladakh|manali|shimla|darjeeling|ooty|kashmir|sikkim|leh|banff)/i.test(contextText)) {
+    add(
+      `Thermal layers for ${destinationLabel}`,
+      `Warm gloves and beanie for ${destinationLabel}`,
+      "Light fleece or sweater",
+      "Lip balm and hand cream"
+    );
+  }
+
+  if (/(hot|summer|sun|desert|safari|arid|dry|beach|coast|coastal|island|tropical|dubai|uae|rajasthan|jaipur|jaisalmer|goa|maldives|sri lanka)/i.test(contextText)) {
+    add(
+      `Sunscreen and a sun hat for ${destinationLabel}`,
+      "Sunglasses with UV protection",
+      "Breathable daytime clothing",
+      "Electrolyte sachets or a reusable water bottle"
+    );
+  }
+
+  if (/(beach|coast|coastal|island|ocean|sea|lagoon|resort|watersport)/i.test(contextText)) {
+    add(
+      `Swimwear for ${destinationLabel}`,
+      "Quick-dry towel",
+      "Flip-flops or sandals",
+      "Dry bag for beach days"
+    );
+  }
+
+  if (/(temple|heritage|mosque|church|sacred|religious|palace|fort|museum|old town|old city|historic|cultural)/i.test(contextText)) {
+    add(
+      `Modest outfit or shawl for ${destinationLabel}`,
+      "Slip-on shoes for places with footwear checks",
+      "Light scarf for indoor visits",
+      "Small cash for donations or entry fees"
+    );
+  }
+
+  if (/(market|shopping|city|urban|nightlife|food|street|bazaar|bazar)/i.test(contextText)) {
+    add(
+      `Comfortable walking shoes for ${destinationLabel}`,
+      "Cross-body day bag",
+      "Foldable tote for shopping",
+      "Portable charger for long city days"
+    );
+  }
+
+  if (/(forest|nature|wildlife|jungle|safari|trail|trek|hike|viewpoint|valley|waterfall|mountain|hill)/i.test(contextText)) {
+    add(
+      `Trail shoes or sturdy sneakers for ${destinationLabel}`,
+      "Daypack with water bottle sleeve",
+      "Quick-dry activewear",
+      "Insect repellent"
+    );
+  }
+
+  if (/(camera|photo|gram|instagram|content|drone)/i.test(contextText)) {
+    add(
+      "Camera batteries or extra memory card",
+      "Phone tripod or selfie stick",
+      "Lens cloth"
+    );
+  }
+
+  if (landmarkHints.some((hint) => /temple|mosque|church|sacred|religious|heritage|palace|fort/i.test(hint))) {
+    add("Socks for places with shoe removal rules");
+  }
+
+  if (landmarkHints.some((hint) => /beach|coast|waterfall|lake|river|valley|pass|hill|mountain/i.test(hint))) {
+    add("Waterproof outer layer or light rain shell");
+  }
+
+  if (/vegetarian|vegan|jain|halal|kosher/i.test(foodText)) {
+    add("Snack backups that match your food preference");
+  }
+
+  if (normalizedTrip.totalDays >= 7) {
+    add(
+      "Travel laundry bag for used clothes",
+      "Extra footwear rotation for longer trips"
+    );
+  }
+
+  if (/child/.test(passengersText)) {
+    add("Child travel essentials and small snacks");
+  }
+  if (/infant/.test(passengersText)) {
+    add("Infant care kit and compact wipes");
+  }
+
+  if (items.length < 12) {
+    add(
+      `Light layer for evenings in ${destinationLabel}`,
+      `Small day bag for ${destinationLabel}`,
+      `Local SIM/eSIM support for ${destinationLabel}`
+    );
+  }
+
+  return dedupeStrings(items).slice(0, 18);
 }
 
 function buildMockGeminiSections(payload, options = {}) {
@@ -2531,6 +2655,14 @@ function evaluateGeminiSectionsQuality(parsed, payload) {
   if (genericPackingHits >= 4) {
     issues.push(`packing_too_generic:${genericPackingHits}`);
   }
+  const destinationPackingSignals = uniquePacking.filter((item) => {
+    const normalizedItem = String(item || "").toLowerCase().replace(/\s+/g, " ").trim();
+    if (!normalizedItem) return false;
+    return /(rain|umbrella|waterproof|thermal|layer|fleece|warm|cold|snow|beach|swim|sunscreen|trek|hike|trail|shawl|scarf|modest|desert|safari|gloves|beanie|daypack|dry bag|repellent|sandals|boots|camera|e-sim|esim|portable charger|city day bag|cross-body)/.test(normalizedItem);
+  }).length;
+  if (destinationPackingSignals < 4) {
+    issues.push(`packing_not_destination_specific:${destinationPackingSignals}`);
+  }
 
   return {
     ok: issues.length === 0,
@@ -2552,6 +2684,7 @@ function evaluateGeminiSectionsQuality(parsed, payload) {
 
 function buildGeminiSectionsPrompt(payload, options = {}) {
   const data = normalizeGeminiTripPayload(payload);
+  const exactDestinationLabel = data.destination || "Not specified";
   const landmarkHints = getDestinationLandmarkHints(data.destination);
   const focusIssues = Array.isArray(options.focusIssues)
     ? options.focusIssues.map((item) => String(item || "").trim()).filter(Boolean)
@@ -2584,10 +2717,13 @@ function buildGeminiSectionsPrompt(payload, options = {}) {
     "Your output must be specific, practical, and destination-grounded.",
     "Write like a helpful local friend talking to another traveler. Be warm, direct, and practical.",
     "Avoid brochure-style language, marketing phrases, and overhyped adjectives. Prefer short, clear sentences with real local advice.",
+    "Use the exact destination label verbatim throughout the response. Do not normalize it to a different city, country, or famous place with the same name.",
+    "If the destination contains a comma or region qualifier, keep that full text intact and do not shorten it to the city name.",
+    "If you are uncertain about named landmarks for this exact destination, stay anchored to the exact destination label rather than borrowing landmarks from a different place.",
     "",
     "Trip request:",
     `Start city: ${data.startCity || "Not specified"}`,
-    `Destination: ${data.destination || "Not specified"}`,
+    `Exact destination label: ${exactDestinationLabel}`,
     `Start date: ${data.startDate || "Not specified"}`,
     `End date: ${data.endDate || "Not specified"}`,
     `Date range label: ${data.dateRangeText || "Not specified"}`,
@@ -2608,7 +2744,7 @@ function buildGeminiSectionsPrompt(payload, options = {}) {
     `Passengers: ${data.passengers || "Not specified"}`,
     `Extra preferences: ${data.preferences || "None"}`,
     `Destination landmark hints: ${
-      landmarkHints.length ? landmarkHints.join(", ") : "Not available; use best-known places for this destination."
+      landmarkHints.length ? landmarkHints.join(", ") : "Not available; keep the response tied to the exact destination label without substituting another place."
     }`,
     "",
     "Generate these sections: Trip Highlights, Weather Analysis, Itinerary, Budget Range, Packing Checklist.",
@@ -2734,6 +2870,8 @@ function buildGeminiSectionsPrompt(payload, options = {}) {
       : "",
     "- packingChecklist should contain 12-18 actionable items.",
     "- Packing checklist items must be specific and practical, not just category labels. Include must-have items such as documents, wallet/cards, medicines, chargers, power bank, weather protection, footwear, toiletries, clothing layers, and destination-specific gear.",
+    "- Make the checklist destination-aware. Mix universal essentials with items tied to the destination's climate, terrain, activities, and local norms. Do not reuse the same generic packing list for every trip.",
+    "- At least 4 packing items should be clearly destination-specific, such as beach gear, rain protection, warm layers, trekking gear, temple-friendly clothing, desert sun protection, or city-day essentials depending on the trip.",
     "- Avoid generic one-word checklist items unless they are truly essential, and do not repeat the same packing item in different words.",
     "- If uncertain about a specific place, prefer widely known landmarks and districts.",
     landmarkHints.length
@@ -3074,6 +3212,21 @@ async function generateGeminiSections(payload, options = {}) {
     bestOutput.parsed = Object.assign({}, bestOutput.parsed, {
       budgetRange: normalizedBudget,
       budgetRangeSource: bestOutput.parsed && bestOutput.parsed.budgetRangeSource ? bestOutput.parsed.budgetRangeSource : "auto",
+    });
+  }
+
+  const generatedPacking = dedupeStrings(
+    Array.isArray(bestOutput.parsed && bestOutput.parsed.packingChecklist)
+      ? bestOutput.parsed.packingChecklist.map((item) => String(item || "").trim())
+      : []
+  );
+  const packingIssues = Array.isArray(bestOutput.quality && bestOutput.quality.issues)
+    ? bestOutput.quality.issues.filter((issue) => String(issue || "").indexOf("packing_") === 0)
+    : [];
+  if (!generatedPacking.length || packingIssues.length) {
+    bestOutput.parsed = Object.assign({}, bestOutput.parsed, {
+      packingChecklist: buildDestinationPackingChecklist(normalized),
+      packingChecklistSource: "auto",
     });
   }
 
