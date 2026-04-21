@@ -1319,13 +1319,8 @@
         if (headerReleaseTimer) return;
         headerReleaseTimer = window.setTimeout(function () {
           if (!headerAuthResolved) return;
-          if (!headerCreditsReady && creditsCount) {
-            if (!String(creditsCount.textContent || "").trim()) {
-              creditsCount.textContent = "—";
-            }
-            headerCreditsReady = true;
-          }
-          releaseHeaderLoading(true);
+          if (!headerCreditsReady) return;
+          releaseHeaderLoading();
         }, 3200);
       }
 
@@ -1349,9 +1344,7 @@
         if (creditsCount && Number.isFinite(Number(cachedProfile.credits))) {
           creditsCount.removeAttribute("data-loading");
           creditsCount.textContent = String(Number(cachedProfile.credits));
-          headerCreditsReady = true;
         }
-        releaseHeaderLoading();
         return true;
       }
 
@@ -1469,7 +1462,6 @@
             headerCreditsReady = true;
             releaseHeaderLoading();
           });
-          releaseHeaderLoading();
         } else if (clerkReady) {
           headerAuthResolved = true;
           headerProfileReady = true;
@@ -1522,8 +1514,6 @@
         if (hasCachedCredits) {
           creditsCount.removeAttribute("data-loading");
           creditsCount.textContent = String(Math.max(0, cachedCredits));
-          headerCreditsReady = true;
-          releaseHeaderLoading();
         } else {
           creditsCount.setAttribute("data-loading", "true");
           creditsCount.textContent = "";

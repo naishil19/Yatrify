@@ -8147,19 +8147,55 @@
         }
 
         if (/flight|plane|air/i.test(lower)) {
-          return { cls: "route", icon: "plane", label: routeDisplay, trailingIcon: "external-link", routeDirection: routeDirection };
+          return {
+            cls: "route",
+            icon: "plane",
+            label: routeDisplay,
+            trailingIcon: "external-link",
+            routeDirection: routeDirection,
+            routeOrigin: routeOrigin,
+            routeDestination: routeDestination,
+            routeText: routeText
+          };
         }
 
         if (/train|rail/i.test(lower)) {
-          return { cls: "route", icon: "train-front", label: routeDisplay, trailingIcon: "external-link", routeDirection: routeDirection };
+          return {
+            cls: "route",
+            icon: "train-front",
+            label: routeDisplay,
+            trailingIcon: "external-link",
+            routeDirection: routeDirection,
+            routeOrigin: routeOrigin,
+            routeDestination: routeDestination,
+            routeText: routeText
+          };
         }
 
         if (/bus/i.test(lower)) {
-          return { cls: "route-road", icon: "bus", label: routeDisplay, trailingIcon: "external-link", routeDirection: routeDirection };
+          return {
+            cls: "route-road",
+            icon: "bus",
+            label: routeDisplay,
+            trailingIcon: "external-link",
+            routeDirection: routeDirection,
+            routeOrigin: routeOrigin,
+            routeDestination: routeDestination,
+            routeText: routeText
+          };
         }
 
         if (/car|taxi|cab|drive|private/i.test(lower)) {
-          return { cls: "route-road", icon: "car", label: routeDisplay, trailingIcon: "external-link", routeDirection: routeDirection };
+          return {
+            cls: "route-road",
+            icon: "car",
+            label: routeDisplay,
+            trailingIcon: "external-link",
+            routeDirection: routeDirection,
+            routeOrigin: routeOrigin,
+            routeDestination: routeDestination,
+            routeText: routeText
+          };
         }
 
         if (/visiting hours|opening hours|hours/i.test(lower) && placeA) {
@@ -8241,11 +8277,17 @@
         if (cls === "route" || cls === "route-road") {
           var icon = chip && chip.icon ? String(chip.icon).toLowerCase() : "";
           var label = chip && chip.label ? String(chip.label).toLowerCase() : "";
-          var parsedRoute = parseRouteEndpointsFromLabel(chip && chip.label ? chip.label : "");
-          var routeLinks = parsedRoute
-            ? buildRouteLinks(parsedRoute.origin, parsedRoute.destination)
-            : links;
-          if (icon.indexOf("plane") !== -1 || label.indexOf("flight") !== -1 || label.indexOf("air") !== -1) return routeLinks.rome2rio || routeLinks.flights;
+          var routeOrigin = chip && chip.routeOrigin ? String(chip.routeOrigin).trim() : "";
+          var routeDestination = chip && chip.routeDestination ? String(chip.routeDestination).trim() : "";
+          var parsedRoute = (!routeOrigin || !routeDestination)
+            ? parseRouteEndpointsFromLabel(chip && chip.label ? chip.label : "")
+            : null;
+          var routeLinks = routeOrigin && routeDestination
+            ? buildRouteLinks(routeOrigin, routeDestination)
+            : (parsedRoute
+              ? buildRouteLinks(parsedRoute.origin, parsedRoute.destination)
+              : links);
+          if (icon.indexOf("plane") !== -1 || label.indexOf("flight") !== -1 || label.indexOf("air") !== -1) return routeLinks.flights || links.flights || "#";
           if (icon.indexOf("train") !== -1 || label.indexOf("train") !== -1 || label.indexOf("rail") !== -1) return routeLinks.rome2rio || routeLinks.trains || routeLinks.transport;
           if (icon.indexOf("bus") !== -1 || label.indexOf("bus") !== -1) return routeLinks.rome2rio || routeLinks.buses || routeLinks.transport;
           if (icon.indexOf("car") !== -1 || label.indexOf("cab") !== -1 || label.indexOf("taxi") !== -1) {
@@ -8401,7 +8443,16 @@
         var cls = String(chip.cls || "").trim();
         var icon = String(chip.icon || "").trim().toLowerCase();
         var label = String(chip.label || "").replace(/\s+/g, " ").trim().toLowerCase();
-        var routeInfo = (cls === "route" || cls === "route-road") ? parseRouteEndpointsFromLabel(chip.label || "") : null;
+        var routeOrigin = String(chip.routeOrigin || "").trim();
+        var routeDestination = String(chip.routeDestination || "").trim();
+        var routeInfo = null;
+        if (cls === "route" || cls === "route-road") {
+          if (routeOrigin && routeDestination) {
+            routeInfo = { origin: routeOrigin, destination: routeDestination };
+          } else {
+            routeInfo = parseRouteEndpointsFromLabel(chip.label || "");
+          }
+        }
         if (routeInfo) {
           return cls + "|" + icon + "|" + routeInfo.origin.toLowerCase() + "->" + routeInfo.destination.toLowerCase();
         }
@@ -8416,6 +8467,51 @@
           var key = getBookingChipKey(chip);
           if (seen[key]) return false;
           seen[key] = true;
+          return true;
+        });
+      }
+
+      function preferFlightBookingChipForSameRoute(chips) {
+        var list = Array.isArray(chips) ? chips.slice() : [];
+        var flightRoutes = {};
+
+        list.forEach(function (chip) {
+          if (!chip) return;
+          var cls = String(chip.cls || "").trim();
+          if (!(cls === "route" || cls === "route-road")) return;
+          var icon = String(chip.icon || "").toLowerCase();
+          var label = String(chip.label || "").toLowerCase();
+          var routeOrigin = String(chip.routeOrigin || "").trim();
+          var routeDestination = String(chip.routeDestination || "").trim();
+          var parsedRoute = (!routeOrigin || !routeDestination)
+            ? parseRouteEndpointsFromLabel(chip.label || "")
+            : null;
+          var origin = routeOrigin || (parsedRoute ? parsedRoute.origin : "");
+          var destination = routeDestination || (parsedRoute ? parsedRoute.destination : "");
+          if (!origin || !destination) return;
+          if (icon.indexOf("plane") === -1 && label.indexOf("flight") === -1 && label.indexOf("air") === -1) return;
+          flightRoutes[origin.toLowerCase() + "->" + destination.toLowerCase()] = true;
+        });
+
+        if (!Object.keys(flightRoutes).length) return list;
+
+        return list.filter(function (chip) {
+          if (!chip) return false;
+          var cls = String(chip.cls || "").trim();
+          if (!(cls === "route" || cls === "route-road")) return true;
+          var icon = String(chip.icon || "").toLowerCase();
+          var label = String(chip.label || "").toLowerCase();
+          var routeOrigin = String(chip.routeOrigin || "").trim();
+          var routeDestination = String(chip.routeDestination || "").trim();
+          var parsedRoute = (!routeOrigin || !routeDestination)
+            ? parseRouteEndpointsFromLabel(chip.label || "")
+            : null;
+          var origin = routeOrigin || (parsedRoute ? parsedRoute.origin : "");
+          var destination = routeDestination || (parsedRoute ? parsedRoute.destination : "");
+          if (!origin || !destination) return true;
+          var routeKey = origin.toLowerCase() + "->" + destination.toLowerCase();
+          var isFlighty = icon.indexOf("plane") !== -1 || label.indexOf("flight") !== -1 || label.indexOf("air") !== -1;
+          if (flightRoutes[routeKey] && !isFlighty) return false;
           return true;
         });
       }
@@ -8579,6 +8675,7 @@
         bookingConfig = filterBookingConfigForTransport(bookingConfig);
         bookingConfig = filterBookingConfigForDay(bookingConfig, dayNumber, aiDay, slots);
         bookingConfig = dedupeBookingConfig(bookingConfig);
+        bookingConfig = preferFlightBookingChipForSameRoute(bookingConfig);
         var dayHeading = aiDay && aiDay.title
           ? aiDay.title
           : (dayNumber === 1

@@ -1743,8 +1743,8 @@
         if (headerReleaseTimer) return;
         headerReleaseTimer = window.setTimeout(function () {
           if (!headerAuthResolved) return;
-          if (window.Clerk && window.Clerk.user && !headerCreditsReady) return;
-          releaseHeaderLoading(true);
+          if (!headerCreditsReady) return;
+          releaseHeaderLoading();
         }, 1800);
       }
 
@@ -1769,9 +1769,7 @@
         if (creditsCount && Number.isFinite(Number(cachedProfile.credits))) {
           creditsCount.removeAttribute("data-loading");
           creditsCount.textContent = String(Number(cachedProfile.credits));
-          headerCreditsReady = true;
         }
-        releaseHeaderLoading();
         return true;
       }
 
@@ -1898,7 +1896,6 @@
             headerCreditsReady = true;
             releaseHeaderLoading();
           });
-          releaseHeaderLoading();
         } else if (clerkReady) {
           setHeaderAuthState(false);
           if (avatar) avatar.src = buildInitialsAvatar("U");
@@ -1955,8 +1952,6 @@
         if (hasCachedCredits) {
           creditsCount.removeAttribute("data-loading");
           creditsCount.textContent = String(Math.max(0, cachedCredits));
-          headerCreditsReady = true;
-          releaseHeaderLoading();
         } else {
           creditsCount.setAttribute("data-loading", "true");
           creditsCount.textContent = "";

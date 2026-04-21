@@ -2638,8 +2638,8 @@ html.dark .theme-toggle:hover {
           if (headerReleaseTimer) return;
           headerReleaseTimer = window.setTimeout(function () {
             if (!headerAuthResolved) return;
-            if (window.Clerk && window.Clerk.user && !headerCreditsReady) return;
-            releaseHeaderLoading(true);
+            if (!headerCreditsReady) return;
+            releaseHeaderLoading();
           }, 1800);
         }
 
@@ -2663,9 +2663,7 @@ html.dark .theme-toggle:hover {
           if (creditsCountEl && Number.isFinite(Number(cachedProfile.credits))) {
             creditsCountEl.removeAttribute("data-loading");
             creditsCountEl.textContent = String(Number(cachedProfile.credits));
-            headerCreditsReady = true;
           }
-          releaseHeaderLoading();
           return true;
         }
 
@@ -4697,7 +4695,6 @@ html.dark .theme-toggle:hover {
               headerCreditsReady = false;
               loadCredits();
             }
-            releaseHeaderLoading();
           } else if (clerkReady) {
             headerAuthResolved = true;
             headerProfileReady = true;
@@ -5254,8 +5251,6 @@ html.dark .theme-toggle:hover {
           if (hasCachedCredits) {
             setCredits(cachedCredits);
             applyPlanTier(cachedProfile && cachedProfile.planTier ? cachedProfile.planTier : "free");
-            headerCreditsReady = true;
-            releaseHeaderLoading();
           } else {
             setCreditsLoading();
           }
@@ -5454,28 +5449,42 @@ html.dark .theme-toggle:hover {
             return;
           }
           planGenerationState.running = true;
-          setStep4LoadingState(true, "generation");
-          setStep4ButtonBusy(true, "generation");
-          generatePlan().catch(function (err) {
-            planGenerationState.running = false;
-            planGenerationState.navigating = false;
-            var fallbackMsg = "Unable to generate plan. Please check your credits or trip length.";
-            if (err && err.response && typeof err.response.json === "function") {
-              err.response.json().then(function (body) {
-                var msg = body && body.error ? String(body.error) : fallbackMsg;
-                if (body && body.limit) {
-                  msg = msg + " Max " + body.limit + " days.";
-                }
-                alert(msg);
-              }).catch(function () {
-                alert(fallbackMsg);
-              });
-              return;
-            }
-            alert(fallbackMsg);
-          }).finally(function () {
-            if (planGenerationState.navigating) return;
-            planGenerationState.running = false;
+            setStep4LoadingState(true, "generation");
+            setStep4ButtonBusy(true, "generation");
+            generatePlan().catch(function (err) {
+              planGenerationState.running = false;
+              planGenerationState.navigating = false;
+              var fallbackMsg = "Unable to generate plan.";
+              if (err && err.response && typeof err.response.text === "function") {
+                err.response.text().then(function (text) {
+                  var msg = fallbackMsg;
+                  if (text) {
+                    try {
+                      var body = JSON.parse(text);
+                      if (body && body.error) {
+                        msg = String(body.error);
+                        if (body.limit) {
+                          msg = msg + " Max " + body.limit + " days.";
+                        }
+                      } else {
+                        msg = fallbackMsg + " " + text.trim();
+                      }
+                    } catch (_parseErr) {
+                      msg = fallbackMsg + " " + text.trim();
+                    }
+                  } else if (err && err.status) {
+                    msg = fallbackMsg + " HTTP " + err.status;
+                  }
+                  alert(msg);
+                }).catch(function () {
+                  alert(fallbackMsg + (err && err.message ? " " + err.message : ""));
+                });
+                return;
+              }
+              alert(fallbackMsg + (err && err.message ? " " + err.message : " Please check your credits or trip length."));
+            }).finally(function () {
+              if (planGenerationState.navigating) return;
+              planGenerationState.running = false;
             setStep4LoadingState(false, "feasibility");
             setStep4ButtonBusy(false, "generation");
           });
