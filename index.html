@@ -1501,7 +1501,8 @@
       }
     </style>
   </div>
-  <script src="/js/clerk-loader.js"></script>
+<script src="/js/runtime-config.js"></script>
+<script src="/js/clerk-loader.js"></script>
   <script src="/js/error-page.js"></script>
   <script>
     if (window.YatrifyErrorPage) {
@@ -1538,7 +1539,8 @@
       var authMode = 'sign-in';
 
       function getApiBaseUrl() {
-        return (window.__YATRIFY_API_BASE_URL && String(window.__YATRIFY_API_BASE_URL).trim()) || 'http://localhost:4000';
+        var value = (window.__YATRIFY_API_BASE_URL && String(window.__YATRIFY_API_BASE_URL).trim()) || '';
+        return value.replace(/\/+$/, "").replace(/\/api$/, "");
       }
 
       function renderAuthMode(mode) {
@@ -1604,9 +1606,23 @@
         window.location.href = 'dashboard.html';
       }
 
+      function getCachedUserCredits() {
+        if (!window.YatrifyAuthCache || typeof window.YatrifyAuthCache.getProfile !== 'function') {
+          return null;
+        }
+        var cached = window.YatrifyAuthCache.getProfile({ maxAgeMs: 15 * 60 * 1000 });
+        if (!cached || !cached.userId) return null;
+        var credits = Number(cached.credits);
+        return Number.isFinite(credits) ? Math.max(0, credits) : null;
+      }
+
       function fetchSignedInUserCredits() {
         if (!window.YatrifyApiClient) {
           return Promise.resolve(null);
+        }
+        var cachedCredits = getCachedUserCredits();
+        if (typeof cachedCredits === 'number') {
+          return Promise.resolve(cachedCredits);
         }
         var loadProfile = typeof window.YatrifyApiClient.fetchUserProfile === 'function'
           ? window.YatrifyApiClient.fetchUserProfile
@@ -1837,6 +1853,7 @@
           document.documentElement.classList.remove('auth-loading');
           updateUI();
           window.Clerk.addListener(updateUI);
+          window.addEventListener('yatrify:user-profile-updated', updateUI);
         }).catch(function () {
           document.documentElement.classList.remove('auth-loading');
           if (signInBtn) signInBtn.style.display = 'inline-flex';

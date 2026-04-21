@@ -3,7 +3,13 @@
     if (window.YatrifyApiClient && typeof window.YatrifyApiClient.getApiBase === "function") {
       return window.YatrifyApiClient.getApiBase();
     }
-    return String(window.__YATRIFY_API_BASE_URL || window.YATRIFY_API_BASE_URL || "http://localhost:4000").replace(/\/+$/, "");
+    var value = String(window.__YATRIFY_API_BASE_URL || window.YATRIFY_API_BASE_URL || "")
+      .replace(/\/+$/, "")
+      .replace(/\/api$/, "");
+    if (/^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])(?::\d+)?$/i.test(value)) {
+      return "";
+    }
+    return value;
   }
 
   function isNewsletterForm(form) {

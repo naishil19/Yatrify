@@ -1260,7 +1260,8 @@
       </div>
     </div>
   </footer>
-  <script src="/js/clerk-loader.js"></script>
+<script src="/js/runtime-config.js"></script>
+<script src="/js/clerk-loader.js"></script>
   <script src="/js/error-page.js"></script>
   <script>
     if (window.YatrifyErrorPage) {
@@ -1318,9 +1319,9 @@
         if (headerReleaseTimer) return;
         headerReleaseTimer = window.setTimeout(function () {
           if (!headerAuthResolved) return;
-          if (window.Clerk && window.Clerk.user && !headerCreditsReady) return;
-          releaseHeaderLoading(true);
-        }, 1800);
+          if (!headerCreditsReady) return;
+          releaseHeaderLoading();
+        }, 3200);
       }
 
       function hydrateHeaderFromCache() {
@@ -1343,9 +1344,7 @@
         if (creditsCount && Number.isFinite(Number(cachedProfile.credits))) {
           creditsCount.removeAttribute("data-loading");
           creditsCount.textContent = String(Number(cachedProfile.credits));
-          headerCreditsReady = true;
         }
-        releaseHeaderLoading();
         return true;
       }
 
@@ -1463,7 +1462,6 @@
             headerCreditsReady = true;
             releaseHeaderLoading();
           });
-          releaseHeaderLoading();
         } else if (clerkReady) {
           headerAuthResolved = true;
           headerProfileReady = true;
@@ -1507,15 +1505,33 @@
           releaseHeaderLoading();
           return Promise.resolve();
         }
-        creditsCount.setAttribute("data-loading", "true");
-        creditsCount.textContent = "";
-        return window.YatrifyPlanService.getUserMe().then(function (payload) {
+        var cachedProfile = window.YatrifyAuthCache && typeof window.YatrifyAuthCache.getProfile === "function"
+          ? window.YatrifyAuthCache.getProfile({ maxAgeMs: 15 * 60 * 1000 })
+          : null;
+        var cachedCredits = cachedProfile ? Number(cachedProfile.credits) : NaN;
+        var hasCachedCredits = Number.isFinite(cachedCredits);
+
+        if (hasCachedCredits) {
+          creditsCount.removeAttribute("data-loading");
+          creditsCount.textContent = String(Math.max(0, cachedCredits));
+        } else {
+          creditsCount.setAttribute("data-loading", "true");
+          creditsCount.textContent = "";
+        }
+
+        return window.YatrifyPlanService.getUserMe({ forceRefresh: true }).then(function (payload) {
           var credits = Number(payload && payload.credits);
           creditsCount.removeAttribute("data-loading");
-          creditsCount.textContent = Number.isFinite(credits) ? String(credits) : "—";
+          if (Number.isFinite(credits)) {
+            creditsCount.textContent = String(Math.max(0, credits));
+          } else if (!hasCachedCredits) {
+            creditsCount.textContent = "—";
+          }
         }).catch(function () {
           creditsCount.removeAttribute("data-loading");
-          creditsCount.textContent = "—";
+          if (!hasCachedCredits) {
+            creditsCount.textContent = "—";
+          }
         });
       }
 
@@ -1632,7 +1648,9 @@
         if (window.YatrifyApiClient && typeof window.YatrifyApiClient.getApiBase === "function") {
           return window.YatrifyApiClient.getApiBase();
         }
-        return String(window.__YATRIFY_API_BASE_URL || window.YATRIFY_API_BASE_URL || "http://localhost:4000").replace(/\/+$/, "");
+        return String(window.__YATRIFY_API_BASE_URL || window.YATRIFY_API_BASE_URL || "")
+          .replace(/\/+$/, "")
+          .replace(/\/api$/, "");
       }
 
       function normalizeThemeQueryList(themes) {
@@ -1908,11 +1926,17 @@
         headerCreditsReady = false;
         startHeaderReleaseFallback();
         hydrateHeaderFromCache();
-        loadPlans();
         renderLucideIcons();
+        window.addEventListener("yatrify:user-profile-updated", function () {
+          if (creditsCount) {
+            loadCredits();
+          }
+        });
         ensureClerkLoaded().then(function (clerk) {
           bindClerk(clerk);
+          return loadPlans();
         }).catch(function () {
+          loadPlans();
           releaseHeaderLoading(true);
         });
       }

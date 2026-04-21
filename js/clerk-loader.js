@@ -1,14 +1,25 @@
 (function () {
   var configuredBase = window.__YATRIFY_API_BASE_URL;
-  var defaultBase = "http://localhost:4000";
+  var defaultBase = "";
   var clerkCdnUrl = "https://cdn.jsdelivr.net/npm/@clerk/clerk-js@5/dist/clerk.browser.js";
   var cachedKeyStorageName = "YATRIFY_CLERK_PUBLISHABLE_KEY";
   var cachedApiBaseStorageName = "YATRIFY_API_BASE_URL";
   var cachedProfileStorageName = "YATRIFY_USER_PROFILE_CACHE";
   var userProfileCacheMaxAgeMs = 15 * 60 * 1000;
-  var apiBase = (typeof configuredBase === "string" && configuredBase.trim())
-    ? configuredBase.trim()
-    : (readCachedApiBase() || defaultBase);
+  var apiBase = normalizeApiBase(configuredBase) || readCachedApiBase() || defaultBase;
+
+  function normalizeApiBase(base) {
+    var value = String(base || "").trim().replace(/\/+$/, "");
+    if (!value) return "";
+    value = value.replace(/\/api$/, "");
+    if (/^[a-z0-9.-]+\.[a-z]{2,}(?::\d+)?$/i.test(value)) {
+      value = "https://" + value;
+    }
+    if (/^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])(?::\d+)?$/i.test(value)) {
+      return "";
+    }
+    return value;
+  }
 
   function normalizeConfig(raw) {
     if (!raw || typeof raw !== "object") return {};
@@ -28,9 +39,9 @@
       .then(normalizeConfig)
       .then(function (config) {
         if (config.apiBaseUrl) {
-          apiBase = config.apiBaseUrl;
-          window.__YATRIFY_API_BASE_URL = config.apiBaseUrl;
-          cacheApiBase(config.apiBaseUrl);
+          apiBase = normalizeApiBase(config.apiBaseUrl);
+          window.__YATRIFY_API_BASE_URL = apiBase;
+          cacheApiBase(apiBase);
         }
         if (config.clerkPublishableKey) {
           cachePublishableKey(config.clerkPublishableKey);
@@ -45,14 +56,14 @@
 
   function readCachedApiBase() {
     try {
-      return String(localStorage.getItem(cachedApiBaseStorageName) || "").trim();
+      return normalizeApiBase(localStorage.getItem(cachedApiBaseStorageName) || "");
     } catch (_e) {
       return "";
     }
   }
 
   function cacheApiBase(base) {
-    var value = String(base || "").trim().replace(/\/+$/, "");
+    var value = normalizeApiBase(base);
     if (!value) return;
     try {
       localStorage.setItem(cachedApiBaseStorageName, value);
@@ -280,6 +291,10 @@
     if (!clerk || !clerk.user || !clerk.session || typeof clerk.session.getToken !== "function") {
       window.__YATRIFY_LAST_SYNCED_USER_ID = "";
       clearCachedUserProfile();
+      try {
+        window.dispatchEvent(new CustomEvent("yatrify:user-profile-updated", { detail: null }));
+      } catch (_e) {
+      }
       return Promise.resolve(null);
     }
 
@@ -308,6 +323,10 @@
         window.__YATRIFY_LAST_SYNCED_USER_ID = userId;
         var cachedProfile = updateCachedUserProfile(payload, clerk.user);
         applyCachedProfileToDom();
+        try {
+          window.dispatchEvent(new CustomEvent("yatrify:user-profile-updated", { detail: cachedProfile || null }));
+        } catch (_e) {
+        }
         return cachedProfile;
       }).catch(function (error) {
         console.error("Yatrify user sync failed", error);
@@ -348,9 +367,11 @@
       }
       return originalLoad(opts).then(function (result) {
         attachClerkSyncListener(window.Clerk || result);
-        return syncCurrentUser(window.Clerk || result).then(function () {
-          return result;
+        // Keep auth responsive: do not block Clerk load on the profile sync request.
+        syncCurrentUser(window.Clerk || result).catch(function (error) {
+          console.error("Yatrify user sync failed", error);
         });
+        return result;
       });
     };
     window.Clerk.__yatrifyLoadPatched = true;

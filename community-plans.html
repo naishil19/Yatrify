@@ -1702,7 +1702,8 @@
       </div>
     </div>
   </footer>
-  <script src="/js/clerk-loader.js"></script>
+<script src="/js/runtime-config.js"></script>
+<script src="/js/clerk-loader.js"></script>
   <script src="/js/api-client.js"></script>
   <script src="/js/plan-service.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
@@ -1742,8 +1743,8 @@
         if (headerReleaseTimer) return;
         headerReleaseTimer = window.setTimeout(function () {
           if (!headerAuthResolved) return;
-          if (window.Clerk && window.Clerk.user && !headerCreditsReady) return;
-          releaseHeaderLoading(true);
+          if (!headerCreditsReady) return;
+          releaseHeaderLoading();
         }, 1800);
       }
 
@@ -1768,9 +1769,7 @@
         if (creditsCount && Number.isFinite(Number(cachedProfile.credits))) {
           creditsCount.removeAttribute("data-loading");
           creditsCount.textContent = String(Number(cachedProfile.credits));
-          headerCreditsReady = true;
         }
-        releaseHeaderLoading();
         return true;
       }
 
@@ -1897,7 +1896,6 @@
             headerCreditsReady = true;
             releaseHeaderLoading();
           });
-          releaseHeaderLoading();
         } else if (clerkReady) {
           setHeaderAuthState(false);
           if (avatar) avatar.src = buildInitialsAvatar("U");
@@ -1945,15 +1943,36 @@
           releaseHeaderLoading();
           return Promise.resolve();
         }
-        creditsCount.setAttribute("data-loading", "true");
-        creditsCount.textContent = "";
-        return window.YatrifyPlanService.getUserMe().then(function (payload) {
+        var cachedProfile = window.YatrifyAuthCache && typeof window.YatrifyAuthCache.getProfile === "function"
+          ? window.YatrifyAuthCache.getProfile({ maxAgeMs: 15 * 60 * 1000 })
+          : null;
+        var cachedCredits = cachedProfile ? Number(cachedProfile.credits) : NaN;
+        var hasCachedCredits = Number.isFinite(cachedCredits);
+
+        if (hasCachedCredits) {
+          creditsCount.removeAttribute("data-loading");
+          creditsCount.textContent = String(Math.max(0, cachedCredits));
+        } else {
+          creditsCount.setAttribute("data-loading", "true");
+          creditsCount.textContent = "";
+        }
+
+        return window.YatrifyPlanService.getUserMe({ forceRefresh: true }).then(function (payload) {
           var credits = Number(payload && payload.credits);
           creditsCount.removeAttribute("data-loading");
-          creditsCount.textContent = Number.isFinite(credits) ? String(credits) : "—";
+          if (Number.isFinite(credits)) {
+            creditsCount.textContent = String(Math.max(0, credits));
+          } else if (!hasCachedCredits) {
+            creditsCount.textContent = "—";
+          }
         }).catch(function () {
           creditsCount.removeAttribute("data-loading");
-          creditsCount.textContent = "—";
+          if (!hasCachedCredits) {
+            creditsCount.textContent = "—";
+          }
+        }).finally(function () {
+          headerCreditsReady = true;
+          releaseHeaderLoading();
         });
       }
 
@@ -2013,6 +2032,11 @@
         startHeaderReleaseFallback();
         hydrateHeaderFromCache();
         renderLucideIcons();
+        window.addEventListener("yatrify:user-profile-updated", function () {
+          if (creditsCount) {
+            loadCredits();
+          }
+        });
         ensureClerkLoaded().then(function (clerk) {
           bindClerk(clerk);
         }).catch(function () {

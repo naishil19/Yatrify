@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" class="light" style="color-scheme: light;">
 
 <head>
@@ -1606,6 +1606,7 @@ body > footer {
         </div>
       </footer>
 
+<script src="/js/runtime-config.js"></script>
 <script src="/js/clerk-loader.js"></script>
   <script src="/js/api-client.js"></script>
   <script src="/js/plan-service.js"></script>
@@ -1649,6 +1650,12 @@ body > footer {
   await setupTopbarData();
   await setupHeaderPlanSearch();
   await setupClerkHeaderProfile();
+  if (!window.__yatrifyCollaborateTopbarListenerBound) {
+    window.__yatrifyCollaborateTopbarListenerBound = true;
+    window.addEventListener("yatrify:user-profile-updated", function () {
+      setupTopbarData().catch(function () {});
+    });
+  }
   setupContentSpacing();
   if (window.lucide && typeof window.lucide.createIcons === "function") window.lucide.createIcons();
   try {
@@ -1845,23 +1852,65 @@ body > footer {
     });
   }
 
+  function getCachedTopbarProfile() {
+    if (!window.YatrifyApiClient || typeof window.YatrifyApiClient.getCachedUserProfile !== "function") {
+      return null;
+    }
+    return window.YatrifyApiClient.getCachedUserProfile({ maxAgeMs: 15 * 60 * 1000 });
+  }
+
+  async function refreshTopbarCredits(options) {
+    var opts = options && typeof options === "object" ? options : {};
+    var cached = getCachedTopbarProfile();
+    var cachedCredits = cached ? Number(cached.credits) : NaN;
+    var creditsCount = document.getElementById("credits-count");
+    if (opts.useCache !== false && Number.isFinite(cachedCredits)) {
+      if (creditsCount) {
+        creditsCount.removeAttribute("data-loading");
+        creditsCount.textContent = String(Math.max(0, cachedCredits));
+      }
+      return true;
+    }
+    if (!window.YatrifyPlanService || typeof window.YatrifyPlanService.getUserMe !== "function") {
+      return false;
+    }
+    try {
+      var payload = await window.YatrifyPlanService.getUserMe({ forceRefresh: opts.forceRefresh === true });
+      var credits = Number(payload && payload.credits);
+      if (creditsCount) {
+        creditsCount.removeAttribute("data-loading");
+        creditsCount.textContent = Number.isFinite(credits)
+          ? String(Math.max(0, credits))
+          : (Number.isFinite(cachedCredits) ? String(Math.max(0, cachedCredits)) : "—");
+      }
+      if (payload && payload.email) window.YatrifyCurrentUserEmail = payload.email;
+      return Number.isFinite(credits);
+    } catch (_) {
+      if (creditsCount) {
+        creditsCount.removeAttribute("data-loading");
+        creditsCount.textContent = Number.isFinite(cachedCredits)
+          ? String(Math.max(0, cachedCredits))
+          : "—";
+      }
+      return Number.isFinite(cachedCredits);
+    }
+  }
   async function setupTopbarData() {
     var creditsCount = document.getElementById("credits-count");
-    if (creditsCount) {
+    var cached = getCachedTopbarProfile();
+    var cachedCredits = cached ? Number(cached.credits) : NaN;
+    if (creditsCount && Number.isFinite(cachedCredits)) {
+      creditsCount.removeAttribute("data-loading");
+      creditsCount.textContent = String(Math.max(0, cachedCredits));
+    } else if (creditsCount) {
       creditsCount.setAttribute("data-loading", "true");
       creditsCount.textContent = "";
     }
     if (window.YatrifyPlanService) {
       try {
-        var payload = await window.YatrifyPlanService.getUserMe();
-        var credits = Number(payload && payload.credits);
-        if (creditsCount) {
-          creditsCount.removeAttribute("data-loading");
-          creditsCount.textContent = Number.isFinite(credits) ? String(credits) : "—";
-        }
-        if (payload && payload.email) window.YatrifyCurrentUserEmail = payload.email;
+        await refreshTopbarCredits({ forceRefresh: true });
       } catch (_) {
-        if (creditsCount) {
+        if (creditsCount && !Number.isFinite(cachedCredits)) {
           creditsCount.removeAttribute("data-loading");
           creditsCount.textContent = "—";
         }
@@ -2717,6 +2766,7 @@ body > footer {
 </body>
 
 </html>
+
 
 
 
