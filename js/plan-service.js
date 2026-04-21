@@ -20,6 +20,7 @@
     return api.authFetch("/api/plans/generate", {
       method: "POST",
       body: JSON.stringify(payload || {}),
+      timeoutMs: 120000,
     }).then(json);
   }
 

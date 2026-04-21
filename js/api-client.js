@@ -163,6 +163,9 @@
   function authFetch(path, options) {
     var opts = options && typeof options === "object" ? Object.assign({}, options) : {};
     var normalizedPath = String(path || "");
+    var requestTimeoutMs = Number.isFinite(Number(opts.timeoutMs)) && Number(opts.timeoutMs) > 0
+      ? Number(opts.timeoutMs)
+      : apiRequestTimeoutMs;
     return getAuthToken().then(function (token) {
       var headers = new Headers(opts.headers || {});
       headers.set("Authorization", "Bearer " + token);
@@ -179,7 +182,7 @@
       if (controller) {
         timeoutId = window.setTimeout(function () {
           controller.abort();
-        }, apiRequestTimeoutMs);
+        }, requestTimeoutMs);
       }
       return fetch(requestUrl, opts).then(function (res) {
         if (timeoutId) clearTimeout(timeoutId);
@@ -213,6 +216,9 @@
   function apiFetch(path, options) {
     var opts = options && typeof options === "object" ? Object.assign({}, options) : {};
     var normalizedPath = String(path || "");
+    var requestTimeoutMs = Number.isFinite(Number(opts.timeoutMs)) && Number(opts.timeoutMs) > 0
+      ? Number(opts.timeoutMs)
+      : apiRequestTimeoutMs;
     var headers = new Headers(opts.headers || {});
     if (!headers.has("Content-Type") && !(opts.body instanceof FormData)) {
       headers.set("Content-Type", "application/json");
@@ -227,7 +233,7 @@
     if (controller) {
       timeoutId = window.setTimeout(function () {
         controller.abort();
-      }, apiRequestTimeoutMs);
+      }, requestTimeoutMs);
     }
     return fetch(requestUrl, opts).then(function (res) {
       if (timeoutId) clearTimeout(timeoutId);
