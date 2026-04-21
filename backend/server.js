@@ -1743,7 +1743,7 @@ function buildMockItineraryDay(trip, dayNumber, totalDays, landmarkHints) {
       else if (hasBus) quickBookings.push(`Search bus tickets ${routeText}`);
       else quickBookings.push(`Book private taxi for ${routeText}`);
     } else if (hasFlight) {
-      quickBookings.push(`Search flights ${routeText}`);
+      quickBookings.push(routeText);
     }
   } else if (totalDays > 1 && dayNumber === totalDays) {
     if (wantsSurface) {
@@ -1751,7 +1751,7 @@ function buildMockItineraryDay(trip, dayNumber, totalDays, landmarkHints) {
       else if (hasBus) quickBookings.push(`Search return bus tickets ${returnRouteText}`);
       else quickBookings.push(`Book return private taxi for ${returnRouteText}`);
     } else if (hasFlight) {
-      quickBookings.push(`Search return flights ${returnRouteText}`);
+      quickBookings.push(returnRouteText);
     }
   }
   if (dayNumber === 1) {
@@ -2539,6 +2539,7 @@ function buildGeminiSectionsPrompt(payload, options = {}) {
     "  - If Transport does NOT include Flights, do NOT suggest flights/air tickets/airport transfers.",
     "  - If Transport includes Road or Buses, prefer driving directions, intercity cab, or bus ticket searches for the route.",
     "  - If Transport includes Trains, suggest train ticket searches for the route.",
+    "  - If Transport includes Flights, use one clear flight chip per route direction and keep the label in a simple form like City A -> City B or City B -> City A. Do not add a second flight-provider style chip for the same leg.",
     "- Make quickBookings trip-specific and chip-like. Use short labels that match the day context, such as Hotels in City, City A -> City B, a landmark name, a trek name, or Check Landmark visiting hours when the route calls for it.",
     "- Only include hotel/accommodation chips on arrival days or when the overnight base changes. Do not repeat hotel chips on every itinerary day.",
     "- For trips longer than 1 day, use the outbound route on the arrival day and the reverse return route on the final day when relevant. Do not repeat the same route direction on multiple days.",

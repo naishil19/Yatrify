@@ -8063,8 +8063,8 @@
         var text = String(label || "").replace(/\s+/g, " ").trim();
         if (!text) return null;
         var cleaned = text
-          .replace(/^(search|book)\s+(?:return\s+)?(?:train tickets|bus tickets|flights?|flight|cab|cabs|taxi|taxi for|private taxi for)\s+/i, "")
-          .replace(/^(return\s+)?(?:train tickets|bus tickets|flights?|flight|cab|cabs|taxi|taxi for|private taxi for)\s+/i, "")
+          .replace(/^(search|book)\s+(?:return\s+)?(?:train tickets|bus tickets|flights?|flight|cab|cabs|taxi|taxi for|private taxi for)\s+(?:from\s+)?/i, "")
+          .replace(/^(return\s+)?(?:train tickets|bus tickets|flights?|flight|cab|cabs|taxi|taxi for|private taxi for)\s+(?:from\s+)?/i, "")
           .trim();
         var match = cleaned.match(/^(.+?)\s*(?:->|to)\s*(.+)$/i);
         if (!match) return null;
@@ -8217,7 +8217,7 @@
           var routeLinks = parsedRoute
             ? buildRouteLinks(parsedRoute.origin, parsedRoute.destination)
             : links;
-          if (icon.indexOf("plane") !== -1 || label.indexOf("flight") !== -1 || label.indexOf("air") !== -1) return routeLinks.rome2rio || routeLinks.flights;
+          if (icon.indexOf("plane") !== -1 || label.indexOf("flight") !== -1 || label.indexOf("air") !== -1) return routeLinks.flights || routeLinks.rome2rio;
           if (icon.indexOf("train") !== -1 || label.indexOf("train") !== -1 || label.indexOf("rail") !== -1) return routeLinks.rome2rio || routeLinks.trains || routeLinks.transport;
           if (icon.indexOf("bus") !== -1 || label.indexOf("bus") !== -1) return routeLinks.rome2rio || routeLinks.buses || routeLinks.transport;
           if (icon.indexOf("car") !== -1 || label.indexOf("cab") !== -1 || label.indexOf("taxi") !== -1) {
