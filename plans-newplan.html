@@ -4563,14 +4563,14 @@ html.dark .theme-toggle:hover {
             }
 
             if (!worldCityLoaderState.completed) {
-              hideSuggestionList(inputId);
+              renderSuggestionList(inputId, [], getWorldCityLoadingMessage() || "Searching locations...");
               autocompletePollTimers[inputId] = setTimeout(function () {
                 var inputEl = getInputElement(inputId);
                 if (!inputEl) return;
                 var latestValue = String(inputEl.value || "").trim();
                 if (latestValue !== normalizedQuery) return;
                 runAutocompleteSearch(inputId, latestValue);
-              }, 220);
+              }, 120);
               return;
             }
 
@@ -4612,7 +4612,7 @@ html.dark .theme-toggle:hover {
             }
             autocompleteTimers[inputId] = setTimeout(function () {
               runAutocompleteSearch(inputId, value);
-            }, 260);
+            }, 120);
           });
 
           inputEl.addEventListener("focus", function () {
@@ -5031,19 +5031,106 @@ html.dark .theme-toggle:hover {
           renderStep4List(altListEl, data.alternativeDestinations);
         }
 
-        function buildStep4LocalPlaceholder(payload) {
+        function buildStep4LocalFallback(payload, reasonText) {
           var currency = String((payload && payload.currency) || "INR").toUpperCase();
           var enteredBudget = Number(payload && payload.budget);
           if (!Number.isFinite(enteredBudget) || enteredBudget < 0) {
             enteredBudget = 0;
           }
+
+          var startIso = String(payload && payload.startDate || "").trim();
+          var endIso = String(payload && payload.endDate || "").trim();
+          var days = getDayDiffInclusive(startIso, endIso);
+          if (!Number.isFinite(days) || days < 1) days = 1;
+
+          var passengerCounts = parsePassengerText((payload && payload.passengers) || "1 adult");
+          var travelerCount = Math.max(1, passengerCounts.adults + passengerCounts.children + passengerCounts.infants);
+          var destination = String((payload && payload.destination) || "your destination").trim() || "your destination";
+          var accommodationText = Array.isArray(payload && payload.accommodation)
+            ? payload.accommodation.join(" ").toLowerCase()
+            : String((payload && payload.accommodation) || "").toLowerCase();
+          var foodText = Array.isArray(payload && payload.food)
+            ? payload.food.join(" ").toLowerCase()
+            : String((payload && payload.food) || "").toLowerCase();
+          var transportText = Array.isArray(payload && payload.transport)
+            ? payload.transport.join(" ").toLowerCase()
+            : String((payload && payload.transport) || "").toLowerCase();
+          var weatherText = String((payload && payload.weather) || "").toLowerCase();
+          var paceText = String((payload && payload.pace) || "").toLowerCase();
+          var themesText = Array.isArray(payload && payload.themes)
+            ? payload.themes.join(" ").toLowerCase()
+            : String((payload && payload.themes) || "").toLowerCase();
+
+          var accommodationRate = /luxury|premium|resort|villa|suite|5/.test(accommodationText)
+            ? 5800
+            : /boutique|comfort|standard|mid|4/.test(accommodationText)
+              ? 3400
+              : /hostel|budget|dorm|guesthouse|homestay|3/.test(accommodationText)
+                ? 1800
+                : 2600;
+          var foodRate = /fine|premium|gourmet|upscale/.test(foodText)
+            ? 2200
+            : /street|local|simple|budget|economy/.test(foodText)
+              ? 900
+              : 1500;
+          var transportRate = /flight|air/.test(transportText)
+            ? 4200
+            : /train|rail/.test(transportText)
+              ? 1600
+              : /bus/.test(transportText)
+                ? 1200
+                : /taxi|cab|private|drive|road/.test(transportText)
+                  ? 1700
+                  : 1400;
+          var weatherLift = /winter|cold|snow/.test(weatherText)
+            ? 1200
+            : /rain|monsoon/.test(weatherText)
+              ? 800
+              : /hot|summer|humid/.test(weatherText)
+                ? 500
+                : 0;
+          var paceLift = /slow|relaxed|leisure/.test(paceText)
+            ? 1100
+            : /fast|packed|busy/.test(paceText)
+              ? -150
+              : 0;
+          var themeLift = /beach|coast|sea/.test(themesText)
+            ? 700
+            : /mountain|hill|trek|hike|nature|wildlife/.test(themesText)
+              ? 1000
+              : /temple|heritage|culture|museum|historic/.test(themesText)
+                ? 600
+                : 0;
+          var baseDaily = 2600;
+          var perPersonMultiplier = Math.max(1, travelerCount);
+          var estimatedMin = Math.max(
+            2000,
+            Math.round((days * baseDaily + accommodationRate * days + foodRate * days + transportRate + weatherLift + paceLift + themeLift) * perPersonMultiplier * 0.65)
+          );
+          var estimatedMax = Math.max(
+            estimatedMin + 2500,
+            Math.round(estimatedMin * 1.45)
+          );
+
           return {
             currency: currency,
-            suggestedBudgetMin: enteredBudget,
-            suggestedBudgetMax: enteredBudget,
-            budgetReasoning: "AI content generation is disabled for now. This preview uses your current form inputs only.",
-            missingExperiences: ["AI suggestions are paused for now."],
-            alternativeDestinations: ["AI suggestions are paused for now."]
+            suggestedBudgetMin: estimatedMin,
+            suggestedBudgetMax: estimatedMax,
+            budgetReasoning:
+              "Local budget estimate for " + days + " day" + (days > 1 ? "s" : "") +
+              " to " + destination + ". " +
+              (reasonText ? "Live AI was unavailable, so this estimate was generated locally. " : "") +
+              "It uses trip length, passengers, accommodation, food, transport, weather, and pace so the app still shows a practical suggestion.",
+            missingExperiences: [
+              "Add a main landmark or neighborhood walk in " + destination,
+              "Include a local food stop or market in " + destination,
+              "Add one scenic or cultural experience that fits your trip style"
+            ],
+            alternativeDestinations: [
+              "Nearby city with similar trip style",
+              "Another realistic same-region option",
+              "A simpler backup destination if budget is tight"
+            ]
           };
         }
 
@@ -5054,7 +5141,7 @@ html.dark .theme-toggle:hover {
           var payloadKey = getStep4PayloadKey(payload);
 
           if (!ENABLE_STEP4_AI) {
-            var localData = buildStep4LocalPlaceholder(payload);
+            var localData = buildStep4LocalFallback(payload, "AI content generation is disabled for now.");
             step4State.data = localData;
             step4State.hasResult = true;
             step4State.lastPayloadKey = payloadKey;
@@ -5088,29 +5175,17 @@ html.dark .theme-toggle:hover {
             rawResult = await requestStep4FromGemini(payload);
           } catch (error) {
             if (activeToken !== step4State.token) return;
-            step4State.running = false;
-            step4State.hasResult = false;
-            step4State.data = null;
-            renderStep4Error(
-              "Live AI fetch failed: " + String(error && error.message ? error.message : "Request failed"),
-              payload
+            rawResult = buildStep4LocalFallback(
+              payload,
+              String(error && error.message ? error.message : "Request failed")
             );
-            setStep4LoadingState(false, "feasibility");
-            setStep4ButtonBusy(false, "analysis");
-            return;
           }
 
           if (activeToken !== step4State.token) return;
 
           var normalized = normalizeStep4Data(rawResult, payload);
           if (!normalized) {
-            step4State.running = false;
-            step4State.hasResult = false;
-            step4State.data = null;
-            renderStep4Error("Live AI response was empty or invalid. Please try again.", payload);
-            setStep4LoadingState(false, "feasibility");
-            setStep4ButtonBusy(false, "analysis");
-            return;
+            normalized = buildStep4LocalFallback(payload, "Live AI response was empty or invalid.");
           }
 
           step4State.data = normalized;
@@ -5291,11 +5366,14 @@ html.dark .theme-toggle:hover {
           if (response && typeof response.credits === "number") {
             setCredits(response.credits);
           }
-          if (!response || !response.plan || !response.plan.id) {
+          var generatedPlanId = response && response.plan && response.plan.id
+            ? response.plan.id
+            : (response && response.planId ? response.planId : (response && response.id ? response.id : ""));
+          if (!generatedPlanId) {
             throw new Error("Plan generation failed");
           }
           planGenerationState.navigating = true;
-          window.location.href = "generated-plan.html?planId=" + encodeURIComponent(response.plan.id);
+          window.location.href = "generated-plan.html?planId=" + encodeURIComponent(generatedPlanId);
         }
 
         var planForm = document.getElementById("plan-form");

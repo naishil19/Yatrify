@@ -1092,6 +1092,9 @@ function buildFeasibilityPrompt(payload) {
   const food = normalizePayloadArray(data.food);
   const transport = normalizePayloadArray(data.transport);
   const landmarkHints = getDestinationLandmarkHints(data.destination);
+  const exactDestinationRule = String(data.destination || "").trim()
+    ? `Use the destination exactly as entered: ${String(data.destination).trim()}. If it includes a country or region, do not swap it for a more famous same-named place elsewhere.`
+    : "Use the destination exactly as entered and do not normalize it into a different place with the same name.";
 
   return [
     "Return only valid JSON.",
@@ -1129,6 +1132,7 @@ function buildFeasibilityPrompt(payload) {
     "- Treat the user budget as a comparison point only. Do not simply repeat it unless the full trip context truly supports it.",
     "- If the entered budget looks too low or too high for the trip, say so clearly in budgetReasoning and adjust the suggested range accordingly.",
     "- Make the reasoning specific and practical, explaining the biggest cost drivers.",
+    `- ${exactDestinationRule}`,
     "- missingExperiences must be destination-specific experiences, landmarks, areas, food, or activities for the requested destination only. Do not suggest experiences from other cities.",
     "- alternativeDestinations must be nearby cities, same-country cities, or realistic nearby places. Infer these on your own from the destination context; do not rely on hardcoded city examples.",
     "- Do not include unrelated cities from other countries unless the prompt explicitly asks for international alternatives.",
@@ -1466,6 +1470,10 @@ function normalizeBudgetToken(value) {
     .trim();
 }
 
+function escapeRegExp(value) {
+  return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 function parsePassengerCountsFromText(label) {
   const text = String(label || "").toLowerCase();
   const counts = { adults: 1, children: 0, infants: 0 };
@@ -1594,6 +1602,46 @@ function scaleBudgetModelToTargets(model, targetMinTotal, targetMaxTotal) {
       item.max = Math.max(item.min, Math.round(toNonNegativeInteger(item.max) * maxScale));
     });
   }
+
+  const rebalanceBudgetTotals = (key, targetTotal) => {
+    const target = Math.max(0, Math.round(Number(targetTotal) || 0));
+    if (!Number.isFinite(target) || target <= 0 || !items.length) return;
+    let currentTotal = items.reduce((sum, item) => sum + toNonNegativeInteger(item[key]), 0);
+    let diff = target - currentTotal;
+    if (!diff) return;
+    const reversedItems = items.slice().reverse();
+    if (diff > 0) {
+      reversedItems.forEach((item) => {
+        if (!diff) return;
+        const currentValue = toNonNegativeInteger(item[key]);
+        if (key === "min") {
+          const room = Math.max(0, toNonNegativeInteger(item.max) - currentValue);
+          if (!room) return;
+          const delta = Math.min(diff, room);
+          item.min = currentValue + delta;
+          diff -= delta;
+        } else {
+          item.max = currentValue + diff;
+          diff = 0;
+        }
+      });
+    } else {
+      diff = Math.abs(diff);
+      reversedItems.forEach((item) => {
+        if (!diff) return;
+        const currentValue = toNonNegativeInteger(item[key]);
+        const floor = key === "min" ? 0 : toNonNegativeInteger(item.min);
+        const room = Math.max(0, currentValue - floor);
+        if (!room) return;
+        const delta = Math.min(diff, room);
+        item[key] = currentValue - delta;
+        diff -= delta;
+      });
+    }
+  };
+
+  rebalanceBudgetTotals("min", targetMinTotal);
+  rebalanceBudgetTotals("max", targetMaxTotal);
   return normalized;
 }
 
@@ -1693,6 +1741,107 @@ function buildRealisticBudgetRange(trip, budgetGuidance) {
   if (!normalizedBudget) return null;
   normalizedBudget.currency = normalizedTrip.currency || "INR";
   return normalizedBudget;
+}
+
+function sumBudgetRangeTotals(budgetRange) {
+  const range = budgetRange && typeof budgetRange === "object" ? budgetRange : {};
+  let minTotal = 0;
+  let maxTotal = 0;
+  ["essentials", "activities", "transport"].forEach((group) => {
+    const list = Array.isArray(range[group]) ? range[group] : [];
+    list.forEach((item) => {
+      const minValue = toNonNegativeInteger(item && item.min);
+      const maxValue = Math.max(minValue, toNonNegativeInteger(item && item.max));
+      minTotal += minValue;
+      maxTotal += maxValue;
+    });
+  });
+  return {
+    min: Math.max(0, Math.round(minTotal)),
+    max: Math.max(Math.max(0, Math.round(minTotal)), Math.round(maxTotal)),
+  };
+}
+
+function anchorDestinationMentions(text, exactDestinationLabel) {
+  const exact = String(exactDestinationLabel || "").trim();
+  const source = String(text || "");
+  if (!exact) return source;
+
+  const parsed = normalizeBudgetLocationParts(exact, exact, "");
+  const city = String(parsed.city || "").trim();
+  if (!city || exact.toLowerCase() === city.toLowerCase()) {
+    return source;
+  }
+
+  const cityPattern = escapeRegExp(city);
+  let output = source;
+  output = output.replace(
+    new RegExp(`\\b${cityPattern}\\s*,\\s*[A-Za-z][A-Za-z\\s.-]{1,40}\\b`, "gi"),
+    exact
+  );
+  output = output.replace(
+    new RegExp(`\\b${cityPattern}\\s+[A-Za-z][A-Za-z\\s.-]{1,40}\\b`, "gi"),
+    exact
+  );
+  return output;
+}
+
+function anchorDestinationMentionsInValue(value, exactDestinationLabel) {
+  if (typeof value === "string") return anchorDestinationMentions(value, exactDestinationLabel);
+  if (Array.isArray(value)) return value.map((item) => anchorDestinationMentionsInValue(item, exactDestinationLabel));
+  if (value && typeof value === "object") {
+    const out = {};
+    Object.keys(value).forEach((key) => {
+      out[key] = anchorDestinationMentionsInValue(value[key], exactDestinationLabel);
+    });
+    return out;
+  }
+  return value;
+}
+
+function buildLocalFeasibilityResult(payload, reasonText) {
+  const trip = normalizeGeminiTripPayload(payload || {});
+  const budgetRange = buildRealisticBudgetRange(trip, null);
+  const totals = sumBudgetRangeTotals(budgetRange);
+  const destinationLabel = trip.destination || "your destination";
+  const originLabel = trip.startCity || "your origin city";
+  const userBudget = Number(trip.budget || 0);
+  const landmarkHints = getDestinationLandmarkHints(trip.destination);
+  const nearbyHints = landmarkHints.length
+    ? landmarkHints.slice(0, 3).map((item) => `${item} day`)
+    : [
+        `A deeper local-food trail in ${destinationLabel}`,
+        `A heritage walk around ${destinationLabel}`,
+        `A scenic viewpoint or market experience in ${destinationLabel}`,
+      ];
+
+  const budgetReasoning = [
+    `Local budget estimate for ${trip.totalDays} day${trip.totalDays > 1 ? "s" : ""} from ${originLabel} to ${destinationLabel} based on trip length, passenger count, accommodation, food, transport, and weather.`,
+    userBudget > 0
+      ? `Your entered budget of ${trip.currency} ${userBudget.toLocaleString("en-IN")} is used only as a comparison point.`
+      : "No entered budget was provided, so the estimate is based entirely on the trip details.",
+    reasonText
+      ? `AI fallback note: ${String(reasonText || "").replace(/\s+/g, " ").trim().slice(0, 140)}.`
+      : "This fallback keeps the budget practical even when the live AI response is unavailable or messy.",
+    "The numbers are grounded in the category breakdown below so they stay usable for planning.",
+  ].join(" ");
+
+  return {
+    currency: trip.currency || "INR",
+    suggestedBudgetMin: totals.min,
+    suggestedBudgetMax: totals.max,
+    budgetReasoning,
+    missingExperiences: dedupeStrings([
+      landmarkHints[0] ? `Spend more time at ${landmarkHints[0]}` : `Explore the main landmark scene in ${destinationLabel}`,
+      landmarkHints[1] ? `Add ${landmarkHints[1]}` : `Try a local food street or market in ${destinationLabel}`,
+      landmarkHints[2] ? `Include ${landmarkHints[2]}` : `Include a cultural walk or viewpoint in ${destinationLabel}`,
+    ]).slice(0, 5),
+    alternativeDestinations: dedupeStrings([
+      nearbyHints[0],
+      nearbyHints[1],
+      nearbyHints[2],
+    ]).slice(0, 5),
+  };
 }
 
 function normalizeGeminiTripPayload(payload) {
@@ -2092,7 +2241,7 @@ const DESTINATION_LANDMARK_HINTS = [
     ],
   },
   {
-    keys: ["paris"],
+    keys: ["paris, france", "paris france", "france"],
     places: [
       "Eiffel Tower",
       "Louvre Museum",
@@ -3009,6 +3158,7 @@ async function requestGeminiSectionsWithFallback({ apiKey, model, promptText }) 
 
 app.post("/api/feasibility", express.json(), async (req, res) => {
   const payload = normalizeGeminiTripPayload(req.body || {});
+  const startedAt = Date.now();
   if (isMockAiEnabled()) {
     const mock = buildMockFeasibilityResult(payload);
     return res.json({
@@ -3024,10 +3174,19 @@ app.post("/api/feasibility", express.json(), async (req, res) => {
 
   const apiKey = String(process.env.GEMINI_API_KEY || "").trim();
   if (!apiKey) {
-    return res.status(500).json({ error: "GEMINI_API_KEY not set" });
+    const fallback = buildLocalFeasibilityResult(payload, "GEMINI_API_KEY not set");
+    return res.json({
+      ...fallback,
+      _meta: {
+        source: "local-fallback",
+        model: "local-estimator",
+        usedGoogleSearch: false,
+        elapsedMs: Date.now() - startedAt,
+        fallbackReason: "GEMINI_API_KEY not set",
+      },
+    });
   }
 
-  const startedAt = Date.now();
   const modelCandidates = dedupeStrings([
     "gemini-2.5-flash",
     "gemini-2.5-flash-lite",
@@ -3050,9 +3209,10 @@ app.post("/api/feasibility", express.json(), async (req, res) => {
       if (!normalized) {
         continue;
       }
+      const anchored = anchorDestinationMentionsInValue(normalized, payload.destination);
 
       return res.json({
-        ...normalized,
+        ...anchored,
         _meta: {
           source: "gemini",
           model,
@@ -3062,13 +3222,34 @@ app.post("/api/feasibility", express.json(), async (req, res) => {
       });
     }
 
-    return res.status(502).json({ error: "Gemini response parsing failed" });
+    const fallback = buildLocalFeasibilityResult(payload, "Gemini response parsing failed");
+    return res.json({
+      ...fallback,
+      _meta: {
+        source: "local-fallback",
+        model: "local-estimator",
+        usedGoogleSearch: false,
+        elapsedMs: Date.now() - startedAt,
+        fallbackReason: "Gemini response parsing failed",
+      },
+    });
   } catch (error) {
-    return res.status(500).json({
-      error:
-        error && error.message
-          ? `Gemini feasibility request failed: ${error.message}`
-          : "Gemini feasibility request failed",
+    const fallback = buildLocalFeasibilityResult(
+      payload,
+      error && error.message ? `Gemini feasibility request failed: ${error.message}` : "Gemini feasibility request failed"
+    );
+    return res.json({
+      ...fallback,
+      _meta: {
+        source: "local-fallback",
+        model: "local-estimator",
+        usedGoogleSearch: false,
+        elapsedMs: Date.now() - startedAt,
+        fallbackReason:
+          error && error.message
+            ? `Gemini feasibility request failed: ${error.message}`
+            : "Gemini feasibility request failed",
+      },
     });
   }
 });
@@ -3086,8 +3267,54 @@ async function generateGeminiSections(payload, options = {}) {
             toNonNegativeInteger(settings.budgetGuidance.suggestedBudgetMin),
             toNonNegativeInteger(settings.budgetGuidance.suggestedBudgetMax)
           ),
-        }
+      }
       : null;
+  const applyBudgetGuidanceToParsed = (parsed, sourceLabel) => {
+    if (!parsed || typeof parsed !== "object") return parsed;
+    if (budgetGuidance) {
+      parsed.feasibility = Object.assign({}, budgetGuidance);
+      const targetMin = toNonNegativeInteger(budgetGuidance.suggestedBudgetMin);
+      const targetMax = Math.max(targetMin, toNonNegativeInteger(budgetGuidance.suggestedBudgetMax));
+      const budgetModel = parsed.budgetRange && typeof parsed.budgetRange === "object" ? parsed.budgetRange : null;
+      if (budgetModel) {
+        const scaled = scaleBudgetModelToTargets(budgetModel, targetMin, targetMax);
+        const normalizedScaled = normalized ? normalizeBudgetRangePercentages(scaled, normalized.currency) : scaled;
+        if (normalizedScaled) {
+          parsed.budgetRange = normalizedScaled;
+          parsed.budgetRangeSource = sourceLabel || parsed.budgetRangeSource || "feasibility";
+        }
+      }
+    }
+    return parsed;
+  };
+  const buildLocalFallback = (reasonText) => {
+    const fallback = buildMockGeminiSections(normalized, { budgetGuidance });
+    if (fallback && fallback.parsed) {
+      if (seededBudgetRange) {
+        fallback.parsed.budgetRange = seededBudgetRange;
+        fallback.parsed.budgetRangeSource = "manual";
+      }
+      const normalizedBudget = normalizeBudgetRangePercentages(
+        fallback.parsed.budgetRange,
+        normalized.currency
+      );
+      if (normalizedBudget) {
+        fallback.parsed.budgetRange = normalizedBudget;
+      }
+      applyBudgetGuidanceToParsed(fallback.parsed, budgetGuidance ? "feasibility" : "auto");
+      fallback.parsed.packingChecklist = buildDestinationPackingChecklist(normalized);
+      fallback.parsed.packingChecklistSource = "auto";
+    }
+    if (fallback && fallback.meta) {
+      fallback.meta.source = "local-fallback";
+      fallback.meta.model = "local-estimator";
+      fallback.meta.usedGoogleSearch = false;
+      fallback.meta.elapsedMs = 0;
+      fallback.meta.fallbackReason = String(reasonText || "").trim();
+      fallback.meta.budgetSeeded = !!seededBudgetRange;
+    }
+    return fallback;
+  };
   if (isMockAiEnabled()) {
     const mockResult = buildMockGeminiSections(normalized, { budgetGuidance });
     if (seededBudgetRange && mockResult && mockResult.parsed) {
@@ -3101,6 +3328,7 @@ async function generateGeminiSections(payload, options = {}) {
       if (normalizedBudget) {
         mockResult.parsed.budgetRange = normalizedBudget;
       }
+      applyBudgetGuidanceToParsed(mockResult.parsed, budgetGuidance ? "feasibility" : "auto");
     }
     if (mockResult && mockResult.meta) {
       mockResult.meta.budgetSeeded = !!seededBudgetRange;
@@ -3110,7 +3338,7 @@ async function generateGeminiSections(payload, options = {}) {
 
   const apiKey = String(process.env.GEMINI_API_KEY || "").trim();
   if (!apiKey) {
-    throw new Error("GEMINI_API_KEY not set");
+    return buildLocalFallback("GEMINI_API_KEY not set");
   }
 
   const startedAt = Date.now();
@@ -3187,9 +3415,7 @@ async function generateGeminiSections(payload, options = {}) {
       })
       .join(" | ")
       .slice(0, 900);
-    const err = new Error("Gemini request failed");
-    err.detail = detail;
-    throw err;
+    return buildLocalFallback(detail || "Gemini request failed");
   }
 
   if (seededBudgetRange) {
@@ -3214,6 +3440,7 @@ async function generateGeminiSections(payload, options = {}) {
       budgetRangeSource: bestOutput.parsed && bestOutput.parsed.budgetRangeSource ? bestOutput.parsed.budgetRangeSource : "auto",
     });
   }
+  applyBudgetGuidanceToParsed(bestOutput.parsed, budgetGuidance ? "feasibility" : bestOutput.parsed.budgetRangeSource);
 
   const generatedPacking = dedupeStrings(
     Array.isArray(bestOutput.parsed && bestOutput.parsed.packingChecklist)
@@ -3230,6 +3457,8 @@ async function generateGeminiSections(payload, options = {}) {
     });
   }
 
+  bestOutput.parsed = anchorDestinationMentionsInValue(bestOutput.parsed, normalized.destination);
+
   return {
     parsed: bestOutput.parsed,
     meta: {
@@ -3245,7 +3474,12 @@ async function generateGeminiSections(payload, options = {}) {
 
 app.post("/api/gemini/plan-sections", express.json(), async (req, res) => {
   try {
-    const result = await generateGeminiSections(req.body || {});
+    const payload = req.body || {};
+    const normalized = normalizeGeminiTripPayload(payload);
+    const result = await generateGeminiSections(payload, {
+      budgetRangeSeed: extractBudgetRangeSeedFromRequest(payload, normalized),
+      budgetGuidance: extractBudgetGuidanceFromRequest(payload, normalized),
+    });
     return res.json({
       ...result.parsed,
       _meta: result.meta,
@@ -3772,8 +4006,47 @@ app.post("/api/plans/generate", requireAuth, requireDb, express.json(), async (r
       return res.status(402).json({ error: "Insufficient credits" });
     }
 
-    const generated = await generateGeminiSections(payload, { budgetRangeSeed, budgetGuidance });
-    const plan = await store.createPlan(user.id, payload, generated.parsed, {});
+    let generated;
+    try {
+      generated = await generateGeminiSections(payload, { budgetRangeSeed, budgetGuidance });
+    } catch (generationError) {
+      console.error("Gemini plan generation failed, falling back to local sections:", generationError);
+      const localFallback = buildMockGeminiSections(payload, { budgetGuidance });
+      if (localFallback && localFallback.parsed) {
+        if (budgetRangeSeed) {
+          localFallback.parsed.budgetRange = budgetRangeSeed;
+          localFallback.parsed.budgetRangeSource = "manual";
+        }
+        localFallback.parsed = anchorDestinationMentionsInValue(localFallback.parsed, payload.destination);
+      }
+      if (localFallback && localFallback.meta) {
+        localFallback.meta = Object.assign({}, localFallback.meta, {
+          source: "local-fallback",
+          model: "local-estimator",
+          usedGoogleSearch: false,
+          elapsedMs: 0,
+          fallbackReason: generationError && generationError.message ? generationError.message : "Gemini plan generation failed",
+        });
+      }
+      generated = localFallback;
+    }
+
+    if (!generated || !generated.parsed || typeof generated.parsed !== "object") {
+      generated = buildMockGeminiSections(payload, { budgetGuidance });
+      if (generated && generated.parsed) {
+        if (budgetRangeSeed) {
+          generated.parsed.budgetRange = budgetRangeSeed;
+          generated.parsed.budgetRangeSource = "manual";
+        }
+        generated.parsed = anchorDestinationMentionsInValue(generated.parsed, payload.destination);
+      }
+    }
+
+    const planSections = generated && generated.parsed && typeof generated.parsed === "object" ? generated.parsed : {};
+    if (budgetGuidance) {
+      planSections.feasibility = Object.assign({}, budgetGuidance);
+    }
+    const plan = await store.createPlan(user.id, payload, planSections, {});
     const creditsResult = await store.consumeCredits(user.id, 1, "generate", plan.id);
     if (!creditsResult) {
       await store.deletePlan(user.id, plan.id);
@@ -3783,21 +4056,15 @@ app.post("/api/plans/generate", requireAuth, requireDb, express.json(), async (r
 
     return res.json({
       plan,
+      planId: plan.id,
       credits: creditsLeft,
       _meta: generated.meta,
     });
   } catch (error) {
     console.error("POST /api/plans/generate failed:", error);
-    if (error && error.message === "GEMINI_API_KEY not set") {
-      return res.status(500).json({ error: "GEMINI_API_KEY not set" });
-    }
-    if (error && error.detail) {
-      return res.status(502).json({ error: "Gemini request failed", detail: error.detail });
-    }
-    if (error && error.message) {
-      return res.status(500).json({ error: error.message });
-    }
-    return res.status(500).json({ error: "Plan generation failed" });
+    return res.status(500).json({
+      error: error && error.message ? error.message : "Plan generation failed",
+    });
   }
 });
 
@@ -4169,20 +4436,62 @@ app.get("/api/community/plans/:id", requireDb, async (req, res) => {
   }
 });
 
+const CSC_JSON_CACHE_TTL_MS = 15 * 60 * 1000;
+const cscJsonCache = new Map();
+const cscJsonPromiseCache = new Map();
+
+function getCachedCscJson(pathname) {
+  const key = String(pathname || "").trim();
+  if (!key) return null;
+  const entry = cscJsonCache.get(key);
+  if (!entry) return null;
+  if (entry.expiresAt <= Date.now()) {
+    cscJsonCache.delete(key);
+    return null;
+  }
+  return entry.value;
+}
+
+function setCachedCscJson(pathname, value) {
+  const key = String(pathname || "").trim();
+  if (!key) return;
+  cscJsonCache.set(key, {
+    value,
+    expiresAt: Date.now() + CSC_JSON_CACHE_TTL_MS,
+  });
+}
+
 async function fetchCSCJson(pathname) {
+  const key = String(pathname || "").trim();
+  if (!key) return [];
+  const cached = getCachedCscJson(key);
+  if (cached) return cached;
+  if (cscJsonPromiseCache.has(key)) {
+    return cscJsonPromiseCache.get(key);
+  }
   if (!process.env.CSC_API_KEY) {
     throw new Error("CSC_API_KEY missing");
   }
-  const response = await fetch(`https://api.countrystatecity.in/v1${pathname}`, {
-    method: "GET",
-    headers: {
-      "X-CSCAPI-KEY": process.env.CSC_API_KEY,
-    },
-  });
-  if (!response.ok) {
-    throw new Error(`CSC request failed: ${response.status}`);
+  const promise = (async () => {
+    const response = await fetch(`https://api.countrystatecity.in/v1${key}`, {
+      method: "GET",
+      headers: {
+        "X-CSCAPI-KEY": process.env.CSC_API_KEY,
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`CSC request failed: ${response.status}`);
+    }
+    const payload = await response.json();
+    setCachedCscJson(key, payload);
+    return payload;
+  })();
+  cscJsonPromiseCache.set(key, promise);
+  try {
+    return await promise;
+  } finally {
+    cscJsonPromiseCache.delete(key);
   }
-  return response.json();
 }
 
 app.get("/api/csc/countries", async (_req, res) => {

@@ -6078,6 +6078,17 @@
         };
       }
 
+      function normalizePlanFeasibility(rawFeasibility) {
+        if (!rawFeasibility || typeof rawFeasibility !== "object") return null;
+        var minValue = Math.max(0, Math.round(toFiniteNumber(rawFeasibility.suggestedBudgetMin, rawFeasibility.budgetMin)));
+        var maxValue = Math.max(minValue, Math.round(toFiniteNumber(rawFeasibility.suggestedBudgetMax, rawFeasibility.budgetMax)));
+        return {
+          currency: String(rawFeasibility.currency || "INR").trim().toUpperCase() || "INR",
+          suggestedBudgetMin: minValue,
+          suggestedBudgetMax: maxValue
+        };
+      }
+
       function normalizeGeminiSectionsPayload(rawPayload) {
         if (!rawPayload || typeof rawPayload !== "object") return null;
         var highlightsSource = rawPayload.tripHighlights && typeof rawPayload.tripHighlights === "object"
@@ -6110,6 +6121,7 @@
           itinerary: itinerary,
           budgetRange: normalizeAiBudgetRange(rawPayload.budgetRange),
           budgetRangeSource: String(rawPayload.budgetRangeSource || "").trim().toLowerCase(),
+          feasibility: normalizePlanFeasibility(rawPayload.feasibility),
           packingChecklist: normalizeTextList(rawPayload.packingChecklist, 18)
         };
       }
@@ -6142,7 +6154,8 @@
           passengers: String(planData.passengers || "").trim(),
           preferences: String(planData.preferences || "").trim(),
           totalDays: Number(derived.durationDays) || 1,
-          dateRangeText: String(derived.dateRangeText || "").trim()
+          dateRangeText: String(derived.dateRangeText || "").trim(),
+          feasibility: normalizePlanFeasibility(planData.sections && planData.sections.feasibility ? planData.sections.feasibility : null)
         };
       }
 
@@ -6162,6 +6175,20 @@
 
       function applyAiBudgetRangeIfPresent() {
         if (budgetEditState.active) return;
+        var budgetSource = String(aiGeneratedSections && aiGeneratedSections.budgetRangeSource || "").trim().toLowerCase();
+        if (budgetSource === "manual" && aiGeneratedSections && aiGeneratedSections.budgetRange) {
+          tabData = cloneBudgetData(aiGeneratedSections.budgetRange);
+          return;
+        }
+        var feasibility = aiGeneratedSections && aiGeneratedSections.feasibility ? normalizePlanFeasibility(aiGeneratedSections.feasibility) : null;
+        if (feasibility) {
+          var budgetModel = aiGeneratedSections && aiGeneratedSections.budgetRange
+            ? cloneBudgetData(aiGeneratedSections.budgetRange)
+            : buildRealisticBudgetModel();
+          scaleBudgetModelToTargets(budgetModel, feasibility.suggestedBudgetMin, feasibility.suggestedBudgetMax);
+          tabData = budgetModel;
+          return;
+        }
         if (aiGeneratedSections && aiGeneratedSections.budgetRange) {
           tabData = cloneBudgetData(aiGeneratedSections.budgetRange);
           return;
@@ -6181,8 +6208,14 @@
           if (qualityIssues.length) {
             console.warn("Gemini sections quality warnings:", qualityIssues);
           }
+          var preservedFeasibility = aiGeneratedSections && aiGeneratedSections.feasibility
+            ? normalizePlanFeasibility(aiGeneratedSections.feasibility)
+            : null;
           var normalized = anchorDestinationMentionsInSections(normalizeGeminiSectionsPayload(payload));
           if (!normalized) return;
+          if (preservedFeasibility) {
+            normalized.feasibility = preservedFeasibility;
+          }
           aiGeneratedSections = normalized;
           applyAiBudgetRangeIfPresent();
           renderHighlights();
@@ -6533,7 +6566,13 @@
         planData = normalizePlanInput(nextPlan);
         derived = derivePlanData(planData);
         hydratePublishState();
+        var preservedFeasibility = aiGeneratedSections && aiGeneratedSections.feasibility
+          ? normalizePlanFeasibility(aiGeneratedSections.feasibility)
+          : null;
         aiGeneratedSections = anchorDestinationMentionsInSections(normalizeGeminiSectionsPayload(planData.sections || {}));
+        if (preservedFeasibility) {
+          aiGeneratedSections.feasibility = preservedFeasibility;
+        }
         applyAiBudgetRangeIfPresent();
       }
 
@@ -8180,6 +8219,7 @@
         var rome2rioRoute = "https://www.rome2rio.com/s/" + encodedOrigin + "/" + encodedDestination;
         var hotelUrl = "https://www.google.com/travel/hotels/" + encodeURIComponent(destination || "travel");
         if (dateContext.dateIso) {
+          rome2rioRoute += "?date=" + encodeURIComponent(dateContext.dateIso);
           hotelUrl += "?checkin=" + encodeURIComponent(dateContext.dateIso) + "&checkout=" + encodeURIComponent(dateContext.nextDateIso || dateContext.dateIso);
         }
         return {
@@ -8369,18 +8409,9 @@
             : parsedRoute
               ? buildRouteLinks(parsedRoute.origin, parsedRoute.destination, links)
               : links;
-          if (icon.indexOf("plane") !== -1 || label.indexOf("flight") !== -1 || label.indexOf("air") !== -1) return routeLinks.flights || routeLinks.rome2rio;
-          if (icon.indexOf("train") !== -1 || label.indexOf("train") !== -1 || label.indexOf("rail") !== -1) return routeLinks.trains || routeLinks.rome2rio || routeLinks.transport;
-          if (icon.indexOf("bus") !== -1 || label.indexOf("bus") !== -1) return routeLinks.buses || routeLinks.rome2rio || routeLinks.transport;
-          if (icon.indexOf("car") !== -1 || label.indexOf("cab") !== -1 || label.indexOf("taxi") !== -1) {
-            // For road mode, prefer actual directions. Only use cab searches when the chip explicitly mentions cabs/taxis.
-            if (cls === "route-road") {
-              if (label.indexOf("cab") !== -1 || label.indexOf("taxi") !== -1) return routeLinks.cabs || routeLinks.rome2rio || routeLinks.transport;
-              return routeLinks.driving || routeLinks.rome2rio || routeLinks.cabs || routeLinks.transport;
-            }
-            return routeLinks.cabs || routeLinks.rome2rio || routeLinks.transport;
+          if (icon.indexOf("plane") !== -1 || label.indexOf("flight") !== -1 || label.indexOf("air") !== -1) {
+            return routeLinks.flights || routeLinks.rome2rio || routeLinks.transport;
           }
-          if (cls === "route-road") return routeLinks.driving || routeLinks.rome2rio || routeLinks.transport;
           return routeLinks.rome2rio || routeLinks.transport || "#";
         }
         if (cls === "activity") return links.activities;
@@ -9251,6 +9282,46 @@
             item.max = Math.max(item.min, Math.round(Math.max(0, Number(item.max) || 0) * maxScale));
           });
         }
+        var rebalanceBudgetTotals = function (key, targetTotal) {
+          var target = Math.max(0, Math.round(Number(targetTotal) || 0));
+          if (!isFinite(target) || target <= 0 || !items.length) return;
+          var currentTotal = items.reduce(function (sum, item) {
+            return sum + Math.max(0, Math.round(Number(item[key]) || 0));
+          }, 0);
+          var diff = target - currentTotal;
+          if (!diff) return;
+          var reversedItems = items.slice().reverse();
+          if (diff > 0) {
+            reversedItems.forEach(function (item) {
+              if (!diff) return;
+              var currentValue = Math.max(0, Math.round(Number(item[key]) || 0));
+              if (key === "min") {
+                var room = Math.max(0, Math.max(0, Math.round(Number(item.max) || 0)) - currentValue);
+                if (!room) return;
+                var delta = Math.min(diff, room);
+                item.min = currentValue + delta;
+                diff -= delta;
+              } else {
+                item.max = currentValue + diff;
+                diff = 0;
+              }
+            });
+          } else {
+            diff = Math.abs(diff);
+            reversedItems.forEach(function (item) {
+              if (!diff) return;
+              var currentValue = Math.max(0, Math.round(Number(item[key]) || 0));
+              var floor = key === "min" ? 0 : Math.max(0, Math.round(Number(item.min) || 0));
+              var room = Math.max(0, currentValue - floor);
+              if (!room) return;
+              var delta = Math.min(diff, room);
+              item[key] = currentValue - delta;
+              diff -= delta;
+            });
+          }
+        };
+        rebalanceBudgetTotals("min", targetMinTotal);
+        rebalanceBudgetTotals("max", targetMaxTotal);
         return model;
       }
 
