@@ -932,6 +932,12 @@ function parseJsonFromText(rawText) {
     .replace(/^```/, "")
     .replace(/```$/, "")
     .trim();
+  const normalizeLooseJson = (value) =>
+    String(value || "")
+      .replace(/[“”]/g, '"')
+      .replace(/[‘’]/g, "'")
+      .replace(/,\s*([}\]])/g, "$1")
+      .trim();
   try {
     return JSON.parse(cleaned);
   } catch {
@@ -940,7 +946,15 @@ function parseJsonFromText(rawText) {
     try {
       return JSON.parse(match[0]);
     } catch {
-      return null;
+      try {
+        return JSON.parse(normalizeLooseJson(match[0]));
+      } catch {
+        try {
+          return JSON.parse(normalizeLooseJson(cleaned));
+        } catch {
+          return null;
+        }
+      }
     }
   }
 }
@@ -1818,9 +1832,7 @@ function buildLocalFeasibilityResult(payload, reasonText) {
     userBudget > 0
       ? `Your entered budget of ${trip.currency} ${userBudget.toLocaleString("en-IN")} is used only as a comparison point.`
       : "No entered budget was provided, so the estimate is based entirely on the trip details.",
-    reasonText
-      ? `AI fallback note: ${String(reasonText || "").replace(/\s+/g, " ").trim().slice(0, 140)}.`
-      : "This fallback keeps the budget practical even when the live AI response is unavailable or messy.",
+    "This estimate stays practical even when live AI is unavailable or returns incomplete data.",
     "The numbers are grounded in the category breakdown below so they stay usable for planning.",
   ].join(" ");
 
@@ -1960,6 +1972,10 @@ function buildMockTripHighlights(trip) {
 function buildMockItineraryDay(trip, dayNumber, totalDays, landmarkHints) {
   const city = trip.destination || "the destination";
   const origin = trip.startCity || "your origin city";
+  const firstHint = landmarkHints[0] || `${city} main sights`;
+  const secondHint = landmarkHints[1] || firstHint;
+  const thirdHint = landmarkHints[2] || secondHint;
+  const fourthHint = landmarkHints[3] || thirdHint;
   const dayAnchor = totalDays === 1
     ? "Arrival and orientation"
     : dayNumber === 1
@@ -1970,6 +1986,8 @@ function buildMockItineraryDay(trip, dayNumber, totalDays, landmarkHints) {
           ? "Main sightseeing loop"
           : `Day ${dayNumber} exploration`;
   const theme = landmarkHints[(dayNumber - 1) % Math.max(1, landmarkHints.length)] || `${city} exploration`;
+  const anchorName = dayNumber === 1 ? firstHint : dayNumber === totalDays ? thirdHint : theme;
+  const secondaryName = dayNumber === 1 ? secondHint : dayNumber === totalDays ? secondHint : fourthHint;
   const transport = normalizePayloadArray(trip.transport).map((value) => String(value || "").toLowerCase());
   const hasFlight = transport.some((value) => value.includes("flight") || value.includes("plane") || value.includes("air"));
   const hasTrain = transport.some((value) => value.includes("train") || value.includes("rail"));
@@ -2001,24 +2019,26 @@ function buildMockItineraryDay(trip, dayNumber, totalDays, landmarkHints) {
     quickBookings.push(`Hotels in ${city}`);
   }
    quickBookings.push(`${theme}`);
+  if (dayNumber === 1 && firstHint) quickBookings.push(firstHint);
+  if (dayNumber !== 1 && secondaryName) quickBookings.push(secondaryName);
   return {
     dayNumber,
     title: `${dayAnchor} - Day ${dayNumber}`,
     dateLabel: `Day ${dayNumber}`,
     schedule: {
       morning: dayNumber === 1
-        ? `Arrive from ${origin}, check in, and keep the morning light with a relaxed breakfast and an easy first stop in ${city}.`
+        ? `Arrive from ${origin}, check in, and keep the morning light with a relaxed breakfast and an easy first stop near ${firstHint}.`
         : dayNumber === totalDays
-          ? `Start with a slower breakfast and a short final stop near ${city} before checkout and departure.`
-          : `Start with a relaxed breakfast and a first stop near ${theme}.`,
+          ? `Start with a slower breakfast and a short final stop near ${firstHint} before checkout and departure.`
+          : `Start with a relaxed breakfast and a first stop near ${anchorName}.`,
       afternoon: dayNumber === 1
-        ? `Use the afternoon for an orientation walk, a first landmark, and a practical transfer window around ${city}.`
+        ? `Use the afternoon for an orientation walk, a first landmark, and a practical transfer window around ${secondHint}.`
         : dayNumber === totalDays
           ? `Keep the afternoon open for checkout, a last lunch, and the transfer back toward ${origin}.`
-          : `Move through the main sightseeing loop with lunch, a useful transfer window, and time around ${theme}.`,
+          : `Move through the main sightseeing loop with lunch, a useful transfer window, and time around ${anchorName}.`,
       evening: dayNumber === totalDays
         ? `Use the evening for a final look at ${city} or the airport/station transfer, depending on your return timing.`
-        : `Visit a different landmark or market in ${city} for sunset, photos, or a guided stroll.`,
+        : `Visit a different landmark or market near ${secondaryName} for sunset, photos, or a guided stroll.`,
       night: dayNumber === totalDays
         ? `End the trip with a calm dinner and the return journey toward ${origin}.`
         : `End with a calm dinner and return to your stay after a light evening in ${city}.`,
@@ -2041,7 +2061,7 @@ function buildMockItineraryDay(trip, dayNumber, totalDays, landmarkHints) {
           `Stay close to your current hotel for an easy evening`,
         ],
     optionalActivities: [
-      `Short heritage walk around ${theme}`,
+      `Short heritage walk around ${anchorName}`,
       `Local cafe or market stop in ${city}`,
       `Easy scenic break near ${city}`,
     ],
@@ -2049,7 +2069,7 @@ function buildMockItineraryDay(trip, dayNumber, totalDays, landmarkHints) {
       ? `Start early so transfers stay easy on the ${routeText} route.`
       : dayNumber === totalDays
         ? `Keep your bags ready and leave a buffer for checkout and the final transfer back toward ${origin}.`
-        : `Keep the middle of the day flexible and use the quieter evening hours for ${theme}.`,
+        : `Keep the middle of the day flexible and use the quieter evening hours for ${anchorName}.`,
     quickBookings: dedupeStrings(quickBookings).slice(0, 4),
   };
 }
@@ -2362,6 +2382,58 @@ const DESTINATION_LANDMARK_HINTS = [
       "The Beatles Ashram",
       "Neer Garh Waterfall",
       "Shivpuri rafting point",
+    ],
+  },
+  {
+    keys: ["ayodhya"],
+    places: [
+      "Ram Janmabhoomi Temple",
+      "Hanuman Garhi",
+      "Kanak Bhawan",
+      "Sarayu Ghats",
+      "Nageshwarnath Temple",
+      "Guptar Ghat",
+      "Treta Ke Thakur",
+      "Dashrath Mahal",
+    ],
+  },
+  {
+    keys: ["vrindavan"],
+    places: [
+      "Banke Bihari Temple",
+      "Prem Mandir",
+      "ISKCON Vrindavan",
+      "Seva Kunj",
+      "Nidhivan",
+      "Yamuna Ghats",
+      "Radha Raman Temple",
+      "Kesi Ghat",
+    ],
+  },
+  {
+    keys: ["varanasi", "kashi"],
+    places: [
+      "Dashashwamedh Ghat",
+      "Assi Ghat",
+      "Kashi Vishwanath Temple",
+      "Manikarnika Ghat",
+      "Sarnath",
+      "Ramnagar Fort",
+      "Banaras Hindu University",
+      "Ganga Aarti",
+    ],
+  },
+  {
+    keys: ["prayagraj", "allahabad"],
+    places: [
+      "Triveni Sangam",
+      "Anand Bhavan",
+      "Allahabad Fort",
+      "Khusro Bagh",
+      "Hanuman Mandir",
+      "Minto Park",
+      "Patalpuri Temple",
+      "Alfred Park",
     ],
   },
   {
