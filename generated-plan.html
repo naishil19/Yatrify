@@ -5747,7 +5747,7 @@
           emitPageReady();
         });
         if (!hasPersistedSections) {
-          hydrateGeminiSections();
+          await hydrateGeminiSections();
         }
       } catch (error) {
         if (isInviteJoinFlow && error && Number(error.status) === 401) {
@@ -5933,6 +5933,19 @@
       }
 
       function getApiBaseUrl() {
+        if (typeof window !== "undefined" && window.location) {
+          var host = String(window.location.hostname || "").toLowerCase();
+          var protocol = String(window.location.protocol || "").toLowerCase();
+          if (
+            protocol === "file:" ||
+            host === "localhost" ||
+            host === "127.0.0.1" ||
+            host === "0.0.0.0" ||
+            host === "::1"
+          ) {
+            return "";
+          }
+        }
         return (window.__YATRIFY_API_BASE_URL && String(window.__YATRIFY_API_BASE_URL).trim()) || "";
       }
 
@@ -6126,6 +6139,45 @@
         };
       }
 
+      function looksLikeFallbackSections(sections) {
+        if (!sections || typeof sections !== "object") return false;
+        var tripHighlights = sections.tripHighlights && typeof sections.tripHighlights === "object"
+          ? sections.tripHighlights
+          : {};
+        var weatherAnalysis = sections.weatherAnalysis && typeof sections.weatherAnalysis === "object"
+          ? sections.weatherAnalysis
+          : {};
+        var itinerary = Array.isArray(sections.itinerary) ? sections.itinerary : [];
+        var summaryText = String(tripHighlights.summary || "").toLowerCase();
+        var titleText = String(tripHighlights.tripTitle || "").toLowerCase();
+        var weatherText = String(weatherAnalysis.expectedConditions || "").toLowerCase() + " " + String(weatherAnalysis.bestTimeToVisit || "").toLowerCase();
+        var itineraryFallbackHits = itinerary.filter(function (day) {
+          if (!day || typeof day !== "object") return false;
+          var dayTitle = String(day.title || "").toLowerCase();
+          var daySchedule = day.schedule && typeof day.schedule === "object"
+            ? [
+              String(day.schedule.morning || "").toLowerCase(),
+              String(day.schedule.afternoon || "").toLowerCase(),
+              String(day.schedule.evening || "").toLowerCase(),
+              String(day.schedule.night || "").toLowerCase()
+            ].join(" ")
+            : "";
+          return (
+            /exploration\s*-\s*day\s*\d+/.test(dayTitle) ||
+            /relaxed breakfast and a first stop near/.test(daySchedule) ||
+            /move into a nearby area for lunch/.test(daySchedule) ||
+            /visit a different landmark or market/.test(daySchedule) ||
+            /end with a calm dinner and return to your stay/.test(daySchedule)
+          );
+        }).length;
+        return (
+          /mock weather outlook/.test(weatherText) ||
+          /best time depends on the selected travel window/.test(weatherText) ||
+          (/this\s+\d+-day trip from/.test(summaryText) && /shaped around the route, your pace/.test(summaryText)) ||
+          (/trip plan/.test(titleText) && itineraryFallbackHits >= Math.max(1, Math.ceil(itinerary.length / 2)))
+        );
+      }
+
       function getAiItineraryDay(dayNumber) {
         if (!aiGeneratedSections || !Array.isArray(aiGeneratedSections.itinerary) || !aiGeneratedSections.itinerary.length) {
           return null;
@@ -6208,16 +6260,15 @@
           if (qualityIssues.length) {
             console.warn("Gemini sections quality warnings:", qualityIssues);
           }
-          var preservedFeasibility = aiGeneratedSections && aiGeneratedSections.feasibility
-            ? normalizePlanFeasibility(aiGeneratedSections.feasibility)
-            : null;
           var normalized = anchorDestinationMentionsInSections(normalizeGeminiSectionsPayload(payload));
           if (!normalized) return;
-          if (preservedFeasibility) {
-            normalized.feasibility = preservedFeasibility;
-          }
           aiGeneratedSections = normalized;
           applyAiBudgetRangeIfPresent();
+          if (!isPlanReadOnly() && activePlanId && window.YatrifyPlanService) {
+            persistPlanSections(normalized).catch(function (error) {
+              console.warn("Failed to persist refreshed Gemini sections.", error);
+            });
+          }
           renderHighlights();
           renderWeather();
           renderItinerary();
@@ -6566,13 +6617,7 @@
         planData = normalizePlanInput(nextPlan);
         derived = derivePlanData(planData);
         hydratePublishState();
-        var preservedFeasibility = aiGeneratedSections && aiGeneratedSections.feasibility
-          ? normalizePlanFeasibility(aiGeneratedSections.feasibility)
-          : null;
         aiGeneratedSections = anchorDestinationMentionsInSections(normalizeGeminiSectionsPayload(planData.sections || {}));
-        if (preservedFeasibility) {
-          aiGeneratedSections.feasibility = preservedFeasibility;
-        }
         applyAiBudgetRangeIfPresent();
       }
 
@@ -8108,6 +8153,17 @@
         return scoreLocalTransportCandidate(text) >= 6;
       }
 
+      function isLikelyRouteStopTerm(value) {
+        var text = String(value || "").replace(/\s+/g, " ").trim();
+        if (!text) return false;
+        if (!isLikelyPlaceTerm(text)) return false;
+        if (isGenericPlaceFragment(text)) return false;
+        if (/(exploration|explore|visit|visited|visiting|tour|touring|activity|activities|experience|experiences|guide|guided|trip|package|booking|search|day\s*\d+|morning|afternoon|evening|night)/i.test(text)) {
+          return false;
+        }
+        return true;
+      }
+
       function getRouteBookingChip(direction) {
         var transportPrefs = Array.isArray(derived.plan && derived.plan.transport)
           ? derived.plan.transport.map(function (value) { return String(value || "").toLowerCase(); })
@@ -8144,15 +8200,20 @@
           var originLower = String(getCanonicalStartCityLabel() || "").toLowerCase();
           if (lower === cityLower || lower === originLower) return false;
           if (lower.indexOf("day") !== -1) return false;
-          if (isGenericPlaceFragment(value)) return false;
+          if (!isLikelyRouteStopTerm(value)) return false;
           return true;
         });
         var activityCandidates = Array.isArray(activities) ? activities.slice(0, 3) : [];
         var extraCandidates = Array.isArray(optionalSource) ? optionalSource.slice(0, 3) : [];
+        var activityPlaceCandidates = [];
+        activityCandidates.concat(extraCandidates).forEach(function (chunk) {
+          extractPlaceTermsFromText(chunk, 4).forEach(function (term) {
+            if (isLikelyRouteStopTerm(term)) activityPlaceCandidates.push(term);
+          });
+        });
         var targetPool = localPlaces
-          .concat(activityCandidates)
-          .concat(extraCandidates)
-          .filter(Boolean);
+          .concat(activityPlaceCandidates)
+          .filter(function (term) { return isLikelyRouteStopTerm(term); });
         targetPool.sort(function (a, b) {
           return scoreLocalTransportCandidate(b) - scoreLocalTransportCandidate(a);
         });
@@ -8212,27 +8273,58 @@
         var origin = String(originCity || "").trim();
         var destination = String(destinationCity || "").trim();
         var dateContext = getBookingDateContext(context || {});
-        var dateSuffix = dateContext.datePhrase ? " on " + dateContext.datePhrase : "";
         var encodedOrigin = encodeURIComponent(origin || "travel");
         var encodedDestination = encodeURIComponent(destination || "travel");
         var routeQuery = [origin, destination].filter(Boolean).join(" to ").trim() || destination || origin || "travel";
         var rome2rioRoute = "https://www.rome2rio.com/s/" + encodedOrigin + "/" + encodedDestination;
         var hotelUrl = "https://www.google.com/travel/hotels/" + encodeURIComponent(destination || "travel");
         if (dateContext.dateIso) {
-          rome2rioRoute += "?date=" + encodeURIComponent(dateContext.dateIso);
           hotelUrl += "?checkin=" + encodeURIComponent(dateContext.dateIso) + "&checkout=" + encodeURIComponent(dateContext.nextDateIso || dateContext.dateIso);
         }
         return {
-          flights: "https://www.google.com/travel/flights?q=" + encodeURIComponent(routeQuery + dateSuffix),
+          flights: buildGoogleFlightsUrl(origin, destination, dateContext),
           hotels: hotelUrl,
-          activities: "https://www.getyourguide.com/s/?q=" + encodeURIComponent((destination || "travel") + dateSuffix),
-          trains: "https://www.google.com/search?q=" + encodeURIComponent(("train tickets " + routeQuery + dateSuffix).trim()),
-          buses: "https://www.google.com/search?q=" + encodeURIComponent(("bus tickets " + routeQuery + dateSuffix).trim()),
-          cabs: "https://www.google.com/search?q=" + encodeURIComponent(("intercity cab " + routeQuery + dateSuffix).trim()),
+          activities: buildGetYourGuideActivityUrl(destination || "travel", dateContext),
+          trains: "https://www.google.com/search?q=" + encodeURIComponent(("train tickets " + routeQuery).trim()),
+          buses: "https://www.google.com/search?q=" + encodeURIComponent(("bus tickets " + routeQuery).trim()),
+          cabs: "https://www.google.com/search?q=" + encodeURIComponent(("intercity cab " + routeQuery).trim()),
           driving: "https://www.google.com/maps/dir/?api=1&origin=" + encodedOrigin + "&destination=" + encodedDestination + "&travelmode=driving",
-          transport: "https://www.google.com/search?q=" + encodeURIComponent(("transport " + routeQuery + dateSuffix).trim()),
+          transport: "https://www.google.com/search?q=" + encodeURIComponent(("transport " + routeQuery).trim()),
           rome2rio: rome2rioRoute
         };
+      }
+
+      function buildGetYourGuideActivityUrl(baseQuery, dateContext) {
+        var query = String(baseQuery || "").replace(/\s+/g, " ").trim() || "activity";
+        var url = "https://www.getyourguide.com/s/?q=" + encodeURIComponent(query);
+        if (dateContext && dateContext.dateIso) {
+          url += "&date_from=" + encodeURIComponent(dateContext.dateIso);
+        }
+        return url;
+      }
+
+      function buildViatorActivityUrl(baseQuery, dateContext) {
+        var query = String(baseQuery || "").replace(/\s+/g, " ").trim() || "activity";
+        var url = "https://www.viator.com/searchResults/all?text=" + encodeURIComponent(query);
+        if (dateContext && dateContext.dateIso) {
+          url += "&travelDate=" + encodeURIComponent(dateContext.dateIso);
+        }
+        return url;
+      }
+
+      function buildGoogleFlightsUrl(originCity, destinationCity, dateContext) {
+        var origin = String(originCity || "").trim();
+        var destination = String(destinationCity || "").trim();
+        var dateIso = dateContext && dateContext.dateIso ? String(dateContext.dateIso || "").trim() : "";
+        if (origin && destination && dateIso) {
+          return "https://www.google.com/flights?hl=en#flt=" +
+            encodeURIComponent(origin) + "." +
+            encodeURIComponent(destination) + "." +
+            encodeURIComponent(dateIso) +
+            ";c:USD;e:1;sd:1;t:f";
+        }
+        var fallbackQuery = [origin, destination].filter(Boolean).join(" to ").trim() || destination || origin || "travel";
+        return "https://www.google.com/travel/flights?q=" + encodeURIComponent(fallbackQuery);
       }
 
       function buildRealQuickBookingChip(label, context) {
@@ -8367,9 +8459,7 @@
         var destinationCity = getCanonicalDestinationLabel();
         var routeQuery = [origin, destinationCity].filter(Boolean).join(" to ").trim();
         var query = destination || "travel";
-        var dateSuffix = dateContext.datePhrase ? " on " + dateContext.datePhrase : "";
         var encoded = encodeURIComponent(query);
-        var encodedRoute = encodeURIComponent((routeQuery || query) + dateSuffix);
         var encodedOrigin = encodeURIComponent(origin || "");
         var encodedDestination = encodeURIComponent(destinationCity || destination || "");
         var hotelUrl = "https://www.google.com/travel/hotels/" + encodeURIComponent(destinationCity || destination || "travel");
@@ -8381,14 +8471,14 @@
           dateLabel: dateContext.dateLabel,
           nextDateIso: dateContext.nextDateIso,
           datePhrase: dateContext.datePhrase,
-          flights: "https://www.google.com/travel/flights?q=" + encodedRoute,
+          flights: buildGoogleFlightsUrl(origin, destinationCity || destination, dateContext),
           hotels: hotelUrl,
-          activities: "https://www.getyourguide.com/s/?q=" + encodeURIComponent((query + dateSuffix).trim()),
-          trains: "https://www.google.com/search?q=" + encodeURIComponent(("train tickets " + (routeQuery || destinationCity || query) + dateSuffix).trim()),
-          buses: "https://www.google.com/search?q=" + encodeURIComponent(("bus tickets " + (routeQuery || destinationCity || query) + dateSuffix).trim()),
-          cabs: "https://www.google.com/search?q=" + encodeURIComponent(("intercity cab " + (routeQuery || destinationCity || query) + dateSuffix).trim()),
+          activities: buildGetYourGuideActivityUrl(query, dateContext),
+          trains: "https://www.google.com/search?q=" + encodeURIComponent(("train tickets " + (routeQuery || destinationCity || query)).trim()),
+          buses: "https://www.google.com/search?q=" + encodeURIComponent(("bus tickets " + (routeQuery || destinationCity || query)).trim()),
+          cabs: "https://www.google.com/search?q=" + encodeURIComponent(("intercity cab " + (routeQuery || destinationCity || query)).trim()),
           driving: "https://www.google.com/maps/dir/?api=1&origin=" + encodedOrigin + "&destination=" + encodedDestination + "&travelmode=driving",
-          transport: "https://www.google.com/search?q=" + encodeURIComponent(("transport " + (routeQuery || destinationCity || query) + dateSuffix).trim())
+          transport: "https://www.google.com/search?q=" + encodeURIComponent(("transport " + (routeQuery || destinationCity || query)).trim())
         };
       }
 
@@ -8404,11 +8494,16 @@
           var parsedRoute = (!routeOrigin || !routeDestination)
             ? parseRouteEndpointsFromLabel(chip && chip.label ? chip.label : "")
             : null;
+          if (parsedRoute) {
+            if (!isLikelyRouteStopTerm(parsedRoute.origin) || !isLikelyRouteStopTerm(parsedRoute.destination)) {
+              parsedRoute = null;
+            }
+          }
           var routeLinks = (routeOrigin && routeDestination)
             ? buildRouteLinks(routeOrigin, routeDestination, links)
             : parsedRoute
               ? buildRouteLinks(parsedRoute.origin, parsedRoute.destination, links)
-              : links;
+              : buildRouteLinks(getCanonicalStartCityLabel(), getCanonicalDestinationLabel(), links);
           if (icon.indexOf("plane") !== -1 || label.indexOf("flight") !== -1 || label.indexOf("air") !== -1) {
             return routeLinks.flights || routeLinks.rome2rio || routeLinks.transport;
           }
@@ -8421,14 +8516,14 @@
       function getActivityBookingLinks(activityLabel, context) {
         var dateContext = getBookingDateContext(context || {});
         var destinationCity = getCanonicalDestinationLabel();
-        var query = [String(activityLabel || "").trim(), destinationCity, dateContext.datePhrase ? "on " + dateContext.datePhrase : ""]
+        var query = [String(activityLabel || "").trim(), destinationCity]
           .filter(Boolean)
           .join(" ")
           .trim();
         var encoded = encodeURIComponent(query || destinationCity || "activity");
         return {
-          viator: "https://www.viator.com/searchResults/all?text=" + encoded,
-          getyourguide: "https://www.getyourguide.com/s/?q=" + encoded
+          viator: buildViatorActivityUrl(query || destinationCity || "activity", dateContext),
+          getyourguide: buildGetYourGuideActivityUrl(query || destinationCity || "activity", dateContext)
         };
       }
 
@@ -9047,7 +9142,7 @@
             '<span class="activity-booking-option-text">Book on Viator</span>' +
             '<i class="activity-booking-option-trailing" data-lucide="external-link"></i>' +
             "</a>" +
-            '<a class="activity-booking-option" data-site="gyg" href="https://www.getyourguide.com/s/?q=activity" target="_blank" rel="noopener noreferrer">' +
+            '<a class="activity-booking-option" data-site="gyg" href="#" target="_blank" rel="noopener noreferrer">' +
             '<span class="activity-booking-option-icon"><img src="images/G.jpg" alt="" aria-hidden="true"></span>' +
             '<span class="activity-booking-option-text">Book on GetYourGuide</span>' +
             '<i class="activity-booking-option-trailing" data-lucide="external-link"></i>' +
@@ -9282,46 +9377,6 @@
             item.max = Math.max(item.min, Math.round(Math.max(0, Number(item.max) || 0) * maxScale));
           });
         }
-        var rebalanceBudgetTotals = function (key, targetTotal) {
-          var target = Math.max(0, Math.round(Number(targetTotal) || 0));
-          if (!isFinite(target) || target <= 0 || !items.length) return;
-          var currentTotal = items.reduce(function (sum, item) {
-            return sum + Math.max(0, Math.round(Number(item[key]) || 0));
-          }, 0);
-          var diff = target - currentTotal;
-          if (!diff) return;
-          var reversedItems = items.slice().reverse();
-          if (diff > 0) {
-            reversedItems.forEach(function (item) {
-              if (!diff) return;
-              var currentValue = Math.max(0, Math.round(Number(item[key]) || 0));
-              if (key === "min") {
-                var room = Math.max(0, Math.max(0, Math.round(Number(item.max) || 0)) - currentValue);
-                if (!room) return;
-                var delta = Math.min(diff, room);
-                item.min = currentValue + delta;
-                diff -= delta;
-              } else {
-                item.max = currentValue + diff;
-                diff = 0;
-              }
-            });
-          } else {
-            diff = Math.abs(diff);
-            reversedItems.forEach(function (item) {
-              if (!diff) return;
-              var currentValue = Math.max(0, Math.round(Number(item[key]) || 0));
-              var floor = key === "min" ? 0 : Math.max(0, Math.round(Number(item.min) || 0));
-              var room = Math.max(0, currentValue - floor);
-              if (!room) return;
-              var delta = Math.min(diff, room);
-              item[key] = currentValue - delta;
-              diff -= delta;
-            });
-          }
-        };
-        rebalanceBudgetTotals("min", targetMinTotal);
-        rebalanceBudgetTotals("max", targetMaxTotal);
         return model;
       }
 
@@ -9511,7 +9566,8 @@
           isBeach: /beach|coast|coastal|island|ocean|sea|lagoon|resort|watersport/.test(context),
           isTemple: /temple|heritage|mosque|church|sacred|religious|palace|fort|museum|old town|old city|historic|cultural/.test(context),
           isUrban: /market|shopping|city|urban|nightlife|food|street|bazaar|bazar/.test(context),
-          isTrail: /forest|nature|wildlife|jungle|safari|trail|trek|hike|viewpoint|valley|waterfall|mountain|hill/.test(context)
+          isTrail: /forest|nature|wildlife|jungle|safari|trail|trek|hike|viewpoint|valley|waterfall|mountain|hill/.test(context),
+          isPilgrimage: /ayodhya|varanasi|vrindavan|mathura|tirupati|shirdi|haridwar|rishikesh|puri|dwarka|somnath|ujjain|pushkar|ajmer|amritsar|madurai|kedarnath|badrinath|kanchipuram|vaishno|sarnath|guruvayur|temple|pilgrim|sacred|holy/.test(context)
         };
       }
 
@@ -9531,16 +9587,7 @@
         var signals = getPackingDestinationSignals();
         var month = derived.startDate.getMonth() + 1;
         var duration = derived.durationDays;
-        var items = [
-          "Passport or ID",
-          "Travel tickets and hotel confirmations",
-          "Wallet, cards, and some cash",
-          "Phone charger and cable",
-          "Power bank",
-          "Basic medicines and prescriptions",
-          "Toiletries kit",
-          "Universal travel adapter"
-        ];
+        var items = [];
 
         function addItems() {
           for (var i = 0; i < arguments.length; i += 1) {
@@ -9594,6 +9641,15 @@
           );
         }
 
+        if (signals.isPilgrimage) {
+          addItems(
+            "Respectful clothing for " + signals.destinationLabel,
+            "Extra scarf or dupatta for temple visits in " + signals.destinationLabel,
+            "Socks for shoe-removal spots in " + signals.destinationLabel,
+            "Printed or offline directions for " + signals.destinationLabel + " temples and ghats"
+          );
+        }
+
         if (signals.isUrban) {
           addItems(
             "Comfortable walking shoes for " + signals.destinationLabel,
@@ -9630,6 +9686,17 @@
         if (signals.destinationCountry) {
           addItems("Local SIM or eSIM support for " + signals.destinationCountry);
         }
+
+        addItems(
+          "Passport or ID",
+          "Travel tickets and hotel confirmations",
+          "Wallet, cards, and some cash",
+          "Phone charger and cable",
+          "Power bank",
+          "Basic medicines and prescriptions",
+          "Toiletries kit",
+          "Universal travel adapter"
+        );
 
         return dedupePackingItems(items).slice(0, 18);
       }

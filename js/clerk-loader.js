@@ -1,4 +1,17 @@
 (function () {
+  function isLocalDevHost() {
+    if (typeof window === "undefined" || !window.location) return false;
+    var hostname = String(window.location.hostname || "").toLowerCase();
+    var protocol = String(window.location.protocol || "").toLowerCase();
+    return (
+      protocol === "file:" ||
+      hostname === "localhost" ||
+      hostname === "127.0.0.1" ||
+      hostname === "0.0.0.0" ||
+      hostname === "::1"
+    );
+  }
+
   var configuredBase = window.__YATRIFY_API_BASE_URL;
   var defaultBase = "";
   var clerkCdnUrl = "https://cdn.jsdelivr.net/npm/@clerk/clerk-js@5/dist/clerk.browser.js";
@@ -9,6 +22,7 @@
   var apiBase = normalizeApiBase(configuredBase) || readCachedApiBase() || defaultBase;
 
   function normalizeApiBase(base) {
+    if (isLocalDevHost()) return "";
     var value = String(base || "").trim().replace(/\/+$/, "");
     if (!value) return "";
     value = value.replace(/\/api$/, "");
@@ -38,7 +52,7 @@
       })
       .then(normalizeConfig)
       .then(function (config) {
-        if (config.apiBaseUrl) {
+        if (config.apiBaseUrl && !isLocalDevHost()) {
           apiBase = normalizeApiBase(config.apiBaseUrl);
           window.__YATRIFY_API_BASE_URL = apiBase;
           cacheApiBase(apiBase);
@@ -55,6 +69,7 @@
   }
 
   function readCachedApiBase() {
+    if (isLocalDevHost()) return "";
     try {
       return normalizeApiBase(localStorage.getItem(cachedApiBaseStorageName) || "");
     } catch (_e) {
@@ -63,6 +78,7 @@
   }
 
   function cacheApiBase(base) {
+    if (isLocalDevHost()) return;
     var value = normalizeApiBase(base);
     if (!value) return;
     try {

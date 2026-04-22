@@ -3,7 +3,21 @@
   var authLoadTimeoutMs = 8000;
   var apiRequestTimeoutMs = 12000;
 
+  function isLocalDevHost() {
+    if (typeof window === "undefined" || !window.location) return false;
+    var hostname = String(window.location.hostname || "").toLowerCase();
+    var protocol = String(window.location.protocol || "").toLowerCase();
+    return (
+      protocol === "file:" ||
+      hostname === "localhost" ||
+      hostname === "127.0.0.1" ||
+      hostname === "0.0.0.0" ||
+      hostname === "::1"
+    );
+  }
+
   function normalizeApiBase(base) {
+    if (isLocalDevHost()) return "";
     var value = String(base || "").trim().replace(/\/+$/, "");
     if (!value) return "";
     value = value.replace(/\/api$/, "");
@@ -17,6 +31,7 @@
   }
 
   function getApiBase() {
+    if (isLocalDevHost()) return "";
     var base =
       (typeof window !== "undefined" && (window.__YATRIFY_API_BASE_URL || window.YATRIFY_API_BASE_URL)) ||
       "";

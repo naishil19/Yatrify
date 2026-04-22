@@ -791,11 +791,26 @@ app.get("/health", (_req, res) => {
   res.json({ ok: true });
 });
 
-app.get("/api/public-config", (_req, res) => {
+function isLocalRequestHost(hostValue) {
+  const host = String(hostValue || "").trim().toLowerCase();
+  return (
+    host === "localhost" ||
+    host === "127.0.0.1" ||
+    host === "0.0.0.0" ||
+    host === "::1" ||
+    host.startsWith("localhost:") ||
+    host.startsWith("127.0.0.1:") ||
+    host.startsWith("0.0.0.0:") ||
+    host.startsWith("[::1]:")
+  );
+}
+
+app.get("/api/public-config", (req, res) => {
   const razorpayCredentials = getRazorpayCredentials();
+  const requestHost = String(req.hostname || req.get("host") || "").trim();
   return res.json({
     clerkPublishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || "",
-    apiBaseUrl: process.env.API_BASE_URL || "",
+    apiBaseUrl: isLocalRequestHost(requestHost) ? "" : (process.env.API_BASE_URL || ""),
     razorpayKeyId: razorpayCredentials ? razorpayCredentials.keyId : "",
     creditPack: getCreditPackConfig(),
   });
@@ -1602,46 +1617,6 @@ function scaleBudgetModelToTargets(model, targetMinTotal, targetMaxTotal) {
       item.max = Math.max(item.min, Math.round(toNonNegativeInteger(item.max) * maxScale));
     });
   }
-
-  const rebalanceBudgetTotals = (key, targetTotal) => {
-    const target = Math.max(0, Math.round(Number(targetTotal) || 0));
-    if (!Number.isFinite(target) || target <= 0 || !items.length) return;
-    let currentTotal = items.reduce((sum, item) => sum + toNonNegativeInteger(item[key]), 0);
-    let diff = target - currentTotal;
-    if (!diff) return;
-    const reversedItems = items.slice().reverse();
-    if (diff > 0) {
-      reversedItems.forEach((item) => {
-        if (!diff) return;
-        const currentValue = toNonNegativeInteger(item[key]);
-        if (key === "min") {
-          const room = Math.max(0, toNonNegativeInteger(item.max) - currentValue);
-          if (!room) return;
-          const delta = Math.min(diff, room);
-          item.min = currentValue + delta;
-          diff -= delta;
-        } else {
-          item.max = currentValue + diff;
-          diff = 0;
-        }
-      });
-    } else {
-      diff = Math.abs(diff);
-      reversedItems.forEach((item) => {
-        if (!diff) return;
-        const currentValue = toNonNegativeInteger(item[key]);
-        const floor = key === "min" ? 0 : toNonNegativeInteger(item.min);
-        const room = Math.max(0, currentValue - floor);
-        if (!room) return;
-        const delta = Math.min(diff, room);
-        item[key] = currentValue - delta;
-        diff -= delta;
-      });
-    }
-  };
-
-  rebalanceBudgetTotals("min", targetMinTotal);
-  rebalanceBudgetTotals("max", targetMaxTotal);
   return normalized;
 }
 
@@ -1940,6 +1915,10 @@ function buildMockTripHighlights(trip) {
   const city = trip.destination || "your destination";
   const origin = trip.startCity || "your origin city";
   const themes = normalizePayloadArray(trip.themes);
+  const landmarkHints = getDestinationLandmarkHints(trip.destination);
+  const placeLine = landmarkHints.length
+    ? `It gives you a natural path through ${dedupeStrings(landmarkHints.slice(0, 3)).join(", ")} while still leaving room for meals, short breaks, and slower local moments.`
+    : `It keeps the plan grounded in ${city} with a mix of the main sights, practical transfers, and enough breathing room for meals, short breaks, and unhurried local moments.`;
   return {
     tripTitle: `${city} Trip Plan`,
     travelWindow: trip.dateRangeText || `${trip.startDate || "Start date"} to ${trip.endDate || "End date"}`,
@@ -1951,13 +1930,22 @@ function buildMockTripHighlights(trip) {
         ? themes
         : ["Sightseeing", "Food", "Culture"]
     ).slice(0, 4),
-    summary: `This ${trip.totalDays}-day trip from ${origin} to ${city} is shaped around the route, your pace, and the kind of experiences you picked in the form. It keeps the plan grounded in ${city} with a mix of main sights, practical transfers, and enough breathing room for meals, short breaks, and unhurried local moments. Expect a trip that feels organized but still interesting, with the main landmarks and neighborhood stops doing the heavy lifting instead of generic filler.`,
+    summary: `This ${trip.totalDays}-day trip from ${origin} to ${city} is shaped around the route, your pace, and the kind of experiences you picked in the form. ${placeLine} Expect a trip that feels organized but still interesting, with the main landmarks and neighborhood stops doing the heavy lifting instead of generic filler.`,
   };
 }
 
 function buildMockItineraryDay(trip, dayNumber, totalDays, landmarkHints) {
   const city = trip.destination || "the destination";
   const origin = trip.startCity || "your origin city";
+  const dayAnchor = totalDays === 1
+    ? "Arrival and orientation"
+    : dayNumber === 1
+      ? "Arrival and check-in"
+      : dayNumber === totalDays
+        ? "Wrap-up and departure"
+        : dayNumber === 2
+          ? "Main sightseeing loop"
+          : `Day ${dayNumber} exploration`;
   const theme = landmarkHints[(dayNumber - 1) % Math.max(1, landmarkHints.length)] || `${city} exploration`;
   const transport = normalizePayloadArray(trip.transport).map((value) => String(value || "").toLowerCase());
   const hasFlight = transport.some((value) => value.includes("flight") || value.includes("plane") || value.includes("air"));
@@ -1989,16 +1977,28 @@ function buildMockItineraryDay(trip, dayNumber, totalDays, landmarkHints) {
   if (dayNumber === 1) {
     quickBookings.push(`Hotels in ${city}`);
   }
-  quickBookings.push(`${theme}`);
+   quickBookings.push(`${theme}`);
   return {
     dayNumber,
-    title: `${theme} - Day ${dayNumber}`,
+    title: `${dayAnchor} - Day ${dayNumber}`,
     dateLabel: `Day ${dayNumber}`,
     schedule: {
-      morning: `${theme} morning start with a relaxed breakfast and a first stop near ${city}.`,
-      afternoon: `Move into a nearby area for lunch, sightseeing, and a practical transfer window around ${city}.`,
-      evening: `Visit a different landmark or market in ${city} for sunset, photos, or a guided stroll.`,
-      night: `End with a calm dinner and return to your stay after a light evening in ${city}.`,
+      morning: dayNumber === 1
+        ? `Arrive from ${origin}, check in, and keep the morning light with a relaxed breakfast and an easy first stop in ${city}.`
+        : dayNumber === totalDays
+          ? `Start with a slower breakfast and a short final stop near ${city} before checkout and departure.`
+          : `Start with a relaxed breakfast and a first stop near ${theme}.`,
+      afternoon: dayNumber === 1
+        ? `Use the afternoon for an orientation walk, a first landmark, and a practical transfer window around ${city}.`
+        : dayNumber === totalDays
+          ? `Keep the afternoon open for checkout, a last lunch, and the transfer back toward ${origin}.`
+          : `Move through the main sightseeing loop with lunch, a useful transfer window, and time around ${theme}.`,
+      evening: dayNumber === totalDays
+        ? `Use the evening for a final look at ${city} or the airport/station transfer, depending on your return timing.`
+        : `Visit a different landmark or market in ${city} for sunset, photos, or a guided stroll.`,
+      night: dayNumber === totalDays
+        ? `End the trip with a calm dinner and the return journey toward ${origin}.`
+        : `End with a calm dinner and return to your stay after a light evening in ${city}.`,
     },
     foodRecommendations: [
       `${city} local breakfast`,
@@ -2024,7 +2024,9 @@ function buildMockItineraryDay(trip, dayNumber, totalDays, landmarkHints) {
     ],
     tip: dayNumber === 1
       ? `Start early so transfers stay easy on the ${routeText} route.`
-      : `Keep the middle of the day flexible and use the quieter evening hours for ${theme}.`,
+      : dayNumber === totalDays
+        ? `Keep your bags ready and leave a buffer for checkout and the final transfer back toward ${origin}.`
+        : `Keep the middle of the day flexible and use the quieter evening hours for ${theme}.`,
     quickBookings: dedupeStrings(quickBookings).slice(0, 4),
   };
 }
@@ -2045,16 +2047,8 @@ function buildDestinationPackingChecklist(trip) {
   const passengersText = normalizeLookupText(normalizedTrip.passengers || "");
   const landmarkHints = getDestinationLandmarkHints(normalizedTrip.destination);
   const contextText = [destinationText, countryText, weatherText, interestsText, normalizeLookupText(landmarkHints.join(" "))].filter(Boolean).join(" ");
-  const items = [
-    "Passport or ID",
-    "Travel tickets and hotel confirmations",
-    "Wallet, cards, and some cash",
-    "Phone charger and cable",
-    "Power bank",
-    "Basic medicines and prescriptions",
-    "Toiletries kit",
-    "Universal travel adapter",
-  ];
+  const isPilgrimageTrip = /ayodhya|varanasi|vrindavan|mathura|tirupati|shirdi|haridwar|rishikesh|puri|dwarka|somnath|ujjain|pushkar|ajmer|amritsar|madurai|kedarnath|badrinath|kanchipuram|vaishno|sarnath|guruvayur|temple|pilgrim|sacred|holy/i.test(contextText);
+  const items = [];
 
   const add = (...values) => {
     values.forEach((value) => {
@@ -2108,6 +2102,15 @@ function buildDestinationPackingChecklist(trip) {
     );
   }
 
+  if (isPilgrimageTrip) {
+    add(
+      `Respectful clothing for ${destinationLabel}`,
+      `Extra scarf or dupatta for temple visits in ${destinationLabel}`,
+      `Socks for shoe-removal spots in ${destinationLabel}`,
+      `Printed or offline directions for ${destinationLabel} temples and ghats`
+    );
+  }
+
   if (/(market|shopping|city|urban|nightlife|food|street|bazaar|bazar)/i.test(contextText)) {
     add(
       `Comfortable walking shoes for ${destinationLabel}`,
@@ -2145,6 +2148,17 @@ function buildDestinationPackingChecklist(trip) {
   if (/vegetarian|vegan|jain|halal|kosher/i.test(foodText)) {
     add("Snack backups that match your food preference");
   }
+
+  add(
+    "Passport or ID",
+    "Travel tickets and hotel confirmations",
+    "Wallet, cards, and some cash",
+    "Phone charger and cable",
+    "Power bank",
+    "Basic medicines and prescriptions",
+    "Toiletries kit",
+    "Universal travel adapter"
+  );
 
   if (normalizedTrip.totalDays >= 7) {
     add(
@@ -2185,8 +2199,8 @@ function buildMockGeminiSections(payload, options = {}) {
     parsed: {
       tripHighlights: buildMockTripHighlights(trip),
       weatherAnalysis: {
-        expectedConditions: `Mock weather outlook for ${trip.destination || "the destination"} based on your selected weather preference.`,
-        bestTimeToVisit: trip.weather || "Best time depends on the selected travel window.",
+        expectedConditions: `For ${trip.destination || "the destination"}, expect a practical local weather pattern that matches your selected preference. Plan early starts, midday breaks, and lighter evening movement so the day stays comfortable across sightseeing and transfers.`,
+        bestTimeToVisit: `The most comfortable part of this trip is usually the window that matches your selected dates and pace. Start early, keep one flexible midday slot, and use evenings for slower sightseeing or food stops if the weather turns warmer or wetter than expected.`,
       },
       itinerary,
       budgetRange: budgetRange,
@@ -2848,18 +2862,6 @@ function buildGeminiSectionsPrompt(payload, options = {}) {
     previousJson && JSON.stringify(previousJson).length > 0
       ? JSON.stringify(previousJson).slice(0, 7000)
       : "";
-  const budgetGuidance =
-    options.budgetGuidance && typeof options.budgetGuidance === "object"
-      ? options.budgetGuidance
-      : null;
-  const guidanceMin = budgetGuidance ? toNonNegativeInteger(budgetGuidance.suggestedBudgetMin) : 0;
-  const guidanceMax = budgetGuidance
-    ? Math.max(guidanceMin, toNonNegativeInteger(budgetGuidance.suggestedBudgetMax))
-    : 0;
-  const guidanceCurrency = budgetGuidance
-    ? String(budgetGuidance.currency || data.currency || "INR").trim().toUpperCase() || "INR"
-    : data.currency || "INR";
-
   return [
     "Return only valid JSON. Do not wrap output in markdown code fences.",
     "You are an expert local travel planner generating real-life, actionable trip content for a travel web app.",
@@ -2885,11 +2887,7 @@ function buildGeminiSectionsPrompt(payload, options = {}) {
     `Transport: ${data.transport.length ? data.transport.join(", ") : "None"}`,
     `Currency: ${data.currency}`,
     `Budget input: ${data.budget || "Not provided"}`,
-    `Budget guidance range: ${
-      budgetGuidance
-        ? `${guidanceCurrency} ${guidanceMin.toLocaleString("en-IN")} - ${guidanceMax.toLocaleString("en-IN")}`
-        : "Not provided"
-    }`,
+    `Budget guidance range: Not provided`,
     `Passengers: ${data.passengers || "Not specified"}`,
     `Extra preferences: ${data.preferences || "None"}`,
     `Destination landmark hints: ${
@@ -3014,9 +3012,6 @@ function buildGeminiSectionsPrompt(payload, options = {}) {
     "- Use the category percentages to reflect this exact trip context (duration, hotel style, route distance, activities intensity, and transport mode).",
     "- The sum of all category pct values should be close to 100 (acceptable range: 96 to 104 due rounding).",
     "- Set visa pct and amounts above 0 only when cross-border travel is likely; otherwise keep visa at 0.",
-    budgetGuidance
-      ? `- Budget totals should align with guidance. Keep summed category min/max close to ${guidanceCurrency} ${guidanceMin.toLocaleString("en-IN")} - ${guidanceMax.toLocaleString("en-IN")} (within about +/-15%).`
-      : "",
     "- packingChecklist should contain 12-18 actionable items.",
     "- Packing checklist items must be specific and practical, not just category labels. Include must-have items such as documents, wallet/cards, medicines, chargers, power bank, weather protection, footwear, toiletries, clothing layers, and destination-specific gear.",
     "- Make the checklist destination-aware. Mix universal essentials with items tied to the destination's climate, terrain, activities, and local norms. Do not reuse the same generic packing list for every trip.",
@@ -3269,24 +3264,6 @@ async function generateGeminiSections(payload, options = {}) {
           ),
       }
       : null;
-  const applyBudgetGuidanceToParsed = (parsed, sourceLabel) => {
-    if (!parsed || typeof parsed !== "object") return parsed;
-    if (budgetGuidance) {
-      parsed.feasibility = Object.assign({}, budgetGuidance);
-      const targetMin = toNonNegativeInteger(budgetGuidance.suggestedBudgetMin);
-      const targetMax = Math.max(targetMin, toNonNegativeInteger(budgetGuidance.suggestedBudgetMax));
-      const budgetModel = parsed.budgetRange && typeof parsed.budgetRange === "object" ? parsed.budgetRange : null;
-      if (budgetModel) {
-        const scaled = scaleBudgetModelToTargets(budgetModel, targetMin, targetMax);
-        const normalizedScaled = normalized ? normalizeBudgetRangePercentages(scaled, normalized.currency) : scaled;
-        if (normalizedScaled) {
-          parsed.budgetRange = normalizedScaled;
-          parsed.budgetRangeSource = sourceLabel || parsed.budgetRangeSource || "feasibility";
-        }
-      }
-    }
-    return parsed;
-  };
   const buildLocalFallback = (reasonText) => {
     const fallback = buildMockGeminiSections(normalized, { budgetGuidance });
     if (fallback && fallback.parsed) {
@@ -3301,7 +3278,6 @@ async function generateGeminiSections(payload, options = {}) {
       if (normalizedBudget) {
         fallback.parsed.budgetRange = normalizedBudget;
       }
-      applyBudgetGuidanceToParsed(fallback.parsed, budgetGuidance ? "feasibility" : "auto");
       fallback.parsed.packingChecklist = buildDestinationPackingChecklist(normalized);
       fallback.parsed.packingChecklistSource = "auto";
     }
@@ -3328,7 +3304,6 @@ async function generateGeminiSections(payload, options = {}) {
       if (normalizedBudget) {
         mockResult.parsed.budgetRange = normalizedBudget;
       }
-      applyBudgetGuidanceToParsed(mockResult.parsed, budgetGuidance ? "feasibility" : "auto");
     }
     if (mockResult && mockResult.meta) {
       mockResult.meta.budgetSeeded = !!seededBudgetRange;
@@ -3343,80 +3318,26 @@ async function generateGeminiSections(payload, options = {}) {
 
   const startedAt = Date.now();
 
-  const modelCandidates = dedupeStrings([
-    "gemini-2.5-flash",
-    "gemini-2.5-flash-lite",
-  ]);
-  const attemptLog = [];
-  let bestOutput = null;
-
-  for (let modelIndex = 0; modelIndex < modelCandidates.length; modelIndex += 1) {
-    const modelName = modelCandidates[modelIndex];
-    const basePrompt = buildGeminiSectionsPrompt(normalized, { budgetGuidance });
-    const primary = await requestGeminiSectionsWithFallback({
-      apiKey,
-      model: modelName,
-      promptText: basePrompt,
-    });
-    attemptLog.push(...primary.attempts);
-    if (!primary.ok || !primary.result || !primary.result.parsed) {
-      continue;
-    }
-
-    const baseQuality = evaluateGeminiSectionsQuality(primary.result.parsed, normalized);
-    let selected = {
-      parsed: primary.result.parsed,
-      quality: baseQuality,
-      model: modelName,
-      usedGoogleSearch: primary.result.useGoogleSearch,
-    };
-
-    if (!baseQuality.ok) {
-      const revisionPrompt = buildGeminiSectionsPrompt(normalized, {
-        isRevision: true,
-        focusIssues: baseQuality.issues,
-        previousJson: primary.result.parsed,
-        budgetGuidance,
-      });
-      const revision = await requestGeminiSectionsWithFallback({
-        apiKey,
-        model: modelName,
-        promptText: revisionPrompt,
-      });
-      attemptLog.push(...revision.attempts);
-      if (revision.ok && revision.result && revision.result.parsed) {
-        const revisionQuality = evaluateGeminiSectionsQuality(revision.result.parsed, normalized);
-        if (revisionQuality.issues.length <= selected.quality.issues.length) {
-          selected = {
-            parsed: revision.result.parsed,
-            quality: revisionQuality,
-            model: modelName,
-            usedGoogleSearch: revision.result.useGoogleSearch,
-          };
-        }
-      }
-    }
-
-    if (
-      !bestOutput ||
-      selected.quality.issues.length < bestOutput.quality.issues.length ||
-      (selected.quality.issues.length === bestOutput.quality.issues.length && selected.quality.ok)
-    ) {
-      bestOutput = selected;
-    }
-    if (selected.quality.ok) break;
-  }
-
-  if (!bestOutput) {
-    const detail = attemptLog
-      .map((entry) => {
-        const toolMode = entry.useGoogleSearch ? "with_google_search" : "without_google_search";
-        return `${entry.model}:${toolMode}:${entry.status}${entry.errorText ? `:${entry.errorText}` : ""}`;
-      })
-      .join(" | ")
-      .slice(0, 900);
+  const modelName = "gemini-2.5-flash-lite";
+  const basePrompt = buildGeminiSectionsPrompt(normalized, { budgetGuidance });
+  const attempt = await requestGeminiSectionsOnce({
+    apiKey,
+    model: modelName,
+    promptText: basePrompt,
+    useGoogleSearch: false,
+  });
+  if (!attempt.ok || !attempt.parsed) {
+    const detail = `${modelName}:without_google_search:${attempt.status}${attempt.errorText ? `:${attempt.errorText}` : ""}`.slice(0, 900);
     return buildLocalFallback(detail || "Gemini request failed");
   }
+
+  const baseQuality = evaluateGeminiSectionsQuality(attempt.parsed, normalized);
+  let bestOutput = {
+    parsed: attempt.parsed,
+    quality: baseQuality,
+    model: modelName,
+    usedGoogleSearch: false,
+  };
 
   if (seededBudgetRange) {
     bestOutput.parsed = Object.assign({}, bestOutput.parsed, {
@@ -3440,8 +3361,6 @@ async function generateGeminiSections(payload, options = {}) {
       budgetRangeSource: bestOutput.parsed && bestOutput.parsed.budgetRangeSource ? bestOutput.parsed.budgetRangeSource : "auto",
     });
   }
-  applyBudgetGuidanceToParsed(bestOutput.parsed, budgetGuidance ? "feasibility" : bestOutput.parsed.budgetRangeSource);
-
   const generatedPacking = dedupeStrings(
     Array.isArray(bestOutput.parsed && bestOutput.parsed.packingChecklist)
       ? bestOutput.parsed.packingChecklist.map((item) => String(item || "").trim())
