@@ -2,7 +2,7 @@ import express from "express";
 import { Pool } from "pg";
 import { Webhook } from "svix";
 import dotenv from "dotenv";
-import { createHmac, randomUUID, timingSafeEqual } from "crypto";
+import { createHash, createHmac, randomUUID, timingSafeEqual } from "crypto";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -25,6 +25,9 @@ const DB_CONNECTION_TIMEOUT_MS = Number(process.env.DB_CONNECTION_TIMEOUT_MS || 
 const DB_IDLE_TIMEOUT_MS = Number(process.env.DB_IDLE_TIMEOUT_MS || 10000);
 const DB_QUERY_TIMEOUT_MS = Number(process.env.DB_QUERY_TIMEOUT_MS || 12000);
 const CLERK_PROFILE_TIMEOUT_MS = Number(process.env.CLERK_PROFILE_TIMEOUT_MS || 8000);
+const GEMINI_CACHE_TTL_MS = Number(process.env.GEMINI_CACHE_TTL_MS || 30 * 60 * 1000);
+const geminiSectionCache = new Map();
+const geminiFeasibilityCache = new Map();
 
 // Vercel serverless functions can surface the request path without the "/api" prefix.
 // Normalize only in Vercel-like runtimes so the same Express routes work locally and in production.
@@ -803,6 +806,26 @@ function isLocalRequestHost(hostValue) {
     host.startsWith("0.0.0.0:") ||
     host.startsWith("[::1]:")
   );
+}
+
+function createCacheKey(parts) {
+  const serialized = JSON.stringify(Array.isArray(parts) ? parts : [parts]);
+  return createHash("sha256").update(serialized).digest("hex");
+}
+
+function getCachedGeminiValue(cache, key) {
+  const entry = cache.get(key);
+  if (!entry) return null;
+  if (Date.now() - entry.ts > GEMINI_CACHE_TTL_MS) {
+    cache.delete(key);
+    return null;
+  }
+  return entry.value;
+}
+
+function setCachedGeminiValue(cache, key, value) {
+  cache.set(key, { ts: Date.now(), value });
+  return value;
 }
 
 app.get("/api/public-config", (req, res) => {
@@ -3154,9 +3177,14 @@ async function requestGeminiSectionsWithFallback({ apiKey, model, promptText }) 
 app.post("/api/feasibility", express.json(), async (req, res) => {
   const payload = normalizeGeminiTripPayload(req.body || {});
   const startedAt = Date.now();
+  const cacheKey = createCacheKey(["feasibility", payload]);
+  const cached = getCachedGeminiValue(geminiFeasibilityCache, cacheKey);
+  if (cached) {
+    return res.json(cached);
+  }
   if (isMockAiEnabled()) {
     const mock = buildMockFeasibilityResult(payload);
-    return res.json({
+    const response = {
       ...mock,
       _meta: {
         source: "mock",
@@ -3164,13 +3192,15 @@ app.post("/api/feasibility", express.json(), async (req, res) => {
         usedGoogleSearch: false,
         elapsedMs: 0,
       },
-    });
+    };
+    setCachedGeminiValue(geminiFeasibilityCache, cacheKey, response);
+    return res.json(response);
   }
 
   const apiKey = String(process.env.GEMINI_API_KEY || "").trim();
   if (!apiKey) {
     const fallback = buildLocalFeasibilityResult(payload, "GEMINI_API_KEY not set");
-    return res.json({
+    const response = {
       ...fallback,
       _meta: {
         source: "local-fallback",
@@ -3179,7 +3209,9 @@ app.post("/api/feasibility", express.json(), async (req, res) => {
         elapsedMs: Date.now() - startedAt,
         fallbackReason: "GEMINI_API_KEY not set",
       },
-    });
+    };
+    setCachedGeminiValue(geminiFeasibilityCache, cacheKey, response);
+    return res.json(response);
   }
 
   const modelCandidates = dedupeStrings([
@@ -3206,7 +3238,7 @@ app.post("/api/feasibility", express.json(), async (req, res) => {
       }
       const anchored = anchorDestinationMentionsInValue(normalized, payload.destination);
 
-      return res.json({
+      const response = {
         ...anchored,
         _meta: {
           source: "gemini",
@@ -3214,11 +3246,13 @@ app.post("/api/feasibility", express.json(), async (req, res) => {
           usedGoogleSearch: !!attempt.result.useGoogleSearch,
           elapsedMs: Date.now() - startedAt,
         },
-      });
+      };
+      setCachedGeminiValue(geminiFeasibilityCache, cacheKey, response);
+      return res.json(response);
     }
 
     const fallback = buildLocalFeasibilityResult(payload, "Gemini response parsing failed");
-    return res.json({
+    const response = {
       ...fallback,
       _meta: {
         source: "local-fallback",
@@ -3227,13 +3261,15 @@ app.post("/api/feasibility", express.json(), async (req, res) => {
         elapsedMs: Date.now() - startedAt,
         fallbackReason: "Gemini response parsing failed",
       },
-    });
+    };
+    setCachedGeminiValue(geminiFeasibilityCache, cacheKey, response);
+    return res.json(response);
   } catch (error) {
     const fallback = buildLocalFeasibilityResult(
       payload,
       error && error.message ? `Gemini feasibility request failed: ${error.message}` : "Gemini feasibility request failed"
     );
-    return res.json({
+    const response = {
       ...fallback,
       _meta: {
         source: "local-fallback",
@@ -3245,7 +3281,9 @@ app.post("/api/feasibility", express.json(), async (req, res) => {
             ? `Gemini feasibility request failed: ${error.message}`
             : "Gemini feasibility request failed",
       },
-    });
+    };
+    setCachedGeminiValue(geminiFeasibilityCache, cacheKey, response);
+    return res.json(response);
   }
 });
 
@@ -3291,6 +3329,15 @@ async function generateGeminiSections(payload, options = {}) {
     }
     return fallback;
   };
+  const cacheKey = createCacheKey([
+    "plan-sections",
+    normalized,
+    seededBudgetRange,
+    budgetGuidance,
+    Boolean(isMockAiEnabled())
+  ]);
+  const cached = getCachedGeminiValue(geminiSectionCache, cacheKey);
+  if (cached) return cached;
   if (isMockAiEnabled()) {
     const mockResult = buildMockGeminiSections(normalized, { budgetGuidance });
     if (seededBudgetRange && mockResult && mockResult.parsed) {
@@ -3308,12 +3355,15 @@ async function generateGeminiSections(payload, options = {}) {
     if (mockResult && mockResult.meta) {
       mockResult.meta.budgetSeeded = !!seededBudgetRange;
     }
+    setCachedGeminiValue(geminiSectionCache, cacheKey, mockResult);
     return mockResult;
   }
 
   const apiKey = String(process.env.GEMINI_API_KEY || "").trim();
   if (!apiKey) {
-    return buildLocalFallback("GEMINI_API_KEY not set");
+    const fallback = buildLocalFallback("GEMINI_API_KEY not set");
+    setCachedGeminiValue(geminiSectionCache, cacheKey, fallback);
+    return fallback;
   }
 
   const startedAt = Date.now();
@@ -3328,7 +3378,9 @@ async function generateGeminiSections(payload, options = {}) {
   });
   if (!attempt.ok || !attempt.parsed) {
     const detail = `${modelName}:without_google_search:${attempt.status}${attempt.errorText ? `:${attempt.errorText}` : ""}`.slice(0, 900);
-    return buildLocalFallback(detail || "Gemini request failed");
+    const fallback = buildLocalFallback(detail || "Gemini request failed");
+    setCachedGeminiValue(geminiSectionCache, cacheKey, fallback);
+    return fallback;
   }
 
   const baseQuality = evaluateGeminiSectionsQuality(attempt.parsed, normalized);
@@ -3378,7 +3430,7 @@ async function generateGeminiSections(payload, options = {}) {
 
   bestOutput.parsed = anchorDestinationMentionsInValue(bestOutput.parsed, normalized.destination);
 
-  return {
+  const result = {
     parsed: bestOutput.parsed,
     meta: {
       source: "gemini",
@@ -3389,6 +3441,8 @@ async function generateGeminiSections(payload, options = {}) {
       budgetSeeded: !!seededBudgetRange,
     },
   };
+  setCachedGeminiValue(geminiSectionCache, cacheKey, result);
+  return result;
 }
 
 app.post("/api/gemini/plan-sections", express.json(), async (req, res) => {

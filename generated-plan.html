@@ -5746,7 +5746,7 @@
           hideInviteJoinOverlay();
           emitPageReady();
         });
-        if (!hasPersistedSections) {
+        if (!hasPersistedSections || looksLikeFallbackSections(planData.sections || {})) {
           await hydrateGeminiSections();
         }
       } catch (error) {
