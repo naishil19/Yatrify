@@ -87,6 +87,14 @@
       backdrop-filter: blur(14px);
     }
 
+    html.yatrify-invite-overlay-open .topbar {
+      display: none !important;
+    }
+
+    html.yatrify-invite-overlay-open .invite-join-overlay {
+      top: 0;
+    }
+
     html.dark .topbar {
       background: rgba(2, 8, 23, 0.6);
     }
@@ -5859,6 +5867,7 @@
       }
 
       if (isInviteJoinFlow) {
+        document.documentElement.classList.add("yatrify-invite-overlay-open");
         var headerSignInLink = document.getElementById("header-signin-link");
         if (headerSignInLink) headerSignInLink.setAttribute("href", buildAuthRedirectUrl("/sign-in/"));
       }
@@ -5896,6 +5905,7 @@
         var overlay = document.getElementById("invite-join-overlay");
         if (!overlay) return;
         overlay.classList.remove("open");
+        document.documentElement.classList.remove("yatrify-invite-overlay-open");
       }
 
       function getCurrentClerkEmail(clerk) {

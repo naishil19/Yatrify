@@ -1801,6 +1801,9 @@
           var badges = [
             '<span class="plan-card-badge" aria-label="Saved plan"><i data-lucide="map-pinned"></i></span>'
           ];
+          if (plan && String(plan.accessRole || "").toLowerCase() === "collaborator") {
+            badges.push('<span class="plan-card-badge" aria-label="Collaborator plan"><i data-lucide="users"></i></span>');
+          }
           if (plan && plan.isPublished) {
             badges.push('<span class="plan-card-badge" aria-label="Community plan"><i data-lucide="globe"></i></span>');
           }

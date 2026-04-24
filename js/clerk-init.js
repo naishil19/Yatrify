@@ -348,6 +348,7 @@ function initGlobalHeaderAuth() {
 
     function open(nextMode) {
       render(nextMode);
+      document.documentElement.classList.add('auth-modal-open');
       modal.style.display = 'flex';
       requestAnimationFrame(function () { modal.style.opacity = '1'; });
       document.body.style.overflow = 'hidden';
@@ -372,6 +373,7 @@ function initGlobalHeaderAuth() {
       modal.style.opacity = '0';
       setTimeout(function () { modal.style.display = 'none'; }, 200);
       document.body.style.overflow = '';
+      document.documentElement.classList.remove('auth-modal-open');
     }
 
     if (closeBtn) closeBtn.addEventListener('click', close);

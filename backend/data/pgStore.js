@@ -22,6 +22,7 @@ function mapPlanRow(row) {
   return {
     id: row.id,
     ownerUserId: row.owner_user_id,
+    accessRole: row.access_role || "",
     startCity: row.start_city || "",
     destination: row.destination || "",
     startDate: toDateValue(row.start_date),

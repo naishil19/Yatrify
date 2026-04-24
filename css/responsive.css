@@ -85,6 +85,12 @@ html.yatrify-header-auth-loading .header-auth-spinner {
   display: inline-flex;
 }
 
+html.auth-modal-open header,
+html.auth-modal-open .topbar,
+html.auth-modal-open .dashboard-topbar {
+  display: none !important;
+}
+
 html.yatrify-header-auth-loading .topbar-actions,
 html.yatrify-shell-loading .topbar-actions,
 html.yatrify-nav-loading .topbar-actions,
