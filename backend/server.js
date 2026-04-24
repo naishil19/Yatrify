@@ -281,7 +281,7 @@ function deriveNotFoundPageTitle(requestPath) {
   const knownTitles = {
     dashboard: "Dashboard - Yatrify",
     index: "Yatrify - Your Smart Travel Planner",
-    "plans-newplan": "Create Plan - Yatrify",
+    "newplan": "Create Plan - Yatrify",
     "generated-plan": "Generated Plan - Yatrify",
   };
 

@@ -36,7 +36,7 @@ function initGlobalHeaderAuth() {
   }
 
   var authRedirectTarget = getAuthRedirectTarget();
-  var defaultPostAuthUrl = "/plans-newplan.html";
+  var defaultPostAuthUrl = "/newplan.html";
 
   function getPostAuthUrl() {
     return authRedirectTarget || defaultPostAuthUrl;

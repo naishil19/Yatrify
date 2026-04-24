@@ -674,6 +674,26 @@
         0 18px 35px rgba(37, 99, 235, 0.10);
     }
 
+    .invite-join-visual-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      width: 100%;
+      height: 100%;
+      padding: 18px;
+    }
+
+    .invite-join-logo {
+      width: 104px;
+      max-width: 72%;
+      height: auto;
+      display: block;
+      opacity: 0.98;
+      filter: drop-shadow(0 10px 24px rgba(37, 99, 235, 0.14));
+    }
+
     html.dark .invite-join-visual {
       background:
         linear-gradient(145deg, rgba(37, 99, 235, 0.24), rgba(139, 92, 246, 0.10)),
@@ -813,6 +833,18 @@
 
     .invite-join-overlay[data-state="auth-required"] .invite-join-spinner {
       display: none;
+    }
+
+    .invite-join-overlay[data-state="auth-required"] .invite-join-visual {
+      background:
+        linear-gradient(145deg, rgba(59, 130, 246, 0.12), rgba(139, 92, 246, 0.08)),
+        var(--panel-soft);
+    }
+
+    html.dark .invite-join-overlay[data-state="auth-required"] .invite-join-visual {
+      background:
+        linear-gradient(145deg, rgba(37, 99, 235, 0.20), rgba(139, 92, 246, 0.12)),
+        var(--panel-soft);
     }
 
     .invite-join-overlay[data-state="auth-required"] .invite-join-badge {
@@ -5121,7 +5153,11 @@
   <div id="invite-join-overlay" class="invite-join-overlay" data-state="joining" aria-live="polite">
     <div class="invite-join-card">
       <div class="invite-join-visual">
-        <span class="invite-join-spinner" aria-hidden="true"></span>
+        <div class="invite-join-visual-stack" aria-hidden="true">
+          <span class="invite-join-spinner"></span>
+          <img class="invite-join-logo logo-light" src="/images/logo_light.svg" alt="" />
+          <img class="invite-join-logo logo-dark" src="/images/logo_dark.svg" alt="" />
+        </div>
       </div>
       <div class="invite-join-content">
         <div class="invite-join-badge">Shared Plan Invite</div>

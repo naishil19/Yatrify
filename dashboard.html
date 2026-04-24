@@ -1146,7 +1146,7 @@
               <img class="dashboard-empty-image" src="/images/loading-animation-dashboard.svg" loading="eager" decoding="async" alt="">
             </div>
             <h2 class="dashboard-empty-title">Your Plans List Is Empty. Ready To Add Your First One?!</h2>
-            <a class="dashboard-empty-cta" href="plans-newplan.html">
+            <a class="dashboard-empty-cta" href="newplan.html">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <rect x="3" y="7" width="18" height="13" rx="2"></rect>
                 <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -1889,7 +1889,7 @@
       if (createPlanBtn) {
         createPlanBtn.addEventListener('click', function () {
           if (window.Clerk && window.Clerk.user) {
-            window.location.href = 'plans-newplan.html';
+            window.location.href = 'newplan.html';
           }
         });
       }

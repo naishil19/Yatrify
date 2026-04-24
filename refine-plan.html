@@ -3378,7 +3378,7 @@ body > footer {
     worldCityLoaderState.completed = true;
   })();
 
-  /* â”€â”€ CSC API functions (exact copy from plans-newplan) â”€â”€ */
+  /* CSC API functions (exact copy from newplan) */
   async function fetchCSCJson(path) {
     var response = await fetch(RF_CSC_BASE + path, { method: 'GET' });
     if (!response.ok) throw new Error('CSC API request failed: ' + response.status);
@@ -3863,7 +3863,7 @@ body > footer {
 
   updateDateLabel();
 
-  /* â”€â”€ Currency catalog (full list, same as plans-newplan) â”€â”€â”€ */
+  /* Currency catalog (full list, same as newplan) */
   var CURRENCY_BACKUP_CODES = [
     "AED","AFN","ALL","AMD","ANG","AOA","ARS","AUD","AWG","AZN",
     "BAM","BBD","BDT","BGN","BHD","BIF","BMD","BND","BOB","BOV",
@@ -3941,7 +3941,7 @@ body > footer {
     });
   }
 
-  /* â”€â”€ Currency picker (full plans-newplan parity) â”€ */
+  /* Currency picker (full newplan parity) */
   var CURRENCIES = buildRfCurrencyCatalog();
 
   var rfCurPicker  = document.getElementById('rf-currency-picker');
