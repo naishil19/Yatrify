@@ -2963,6 +2963,7 @@
       var expenses = [];
       var selectedCat = "";
       var selectedWho = "you";
+      var currentUserDisplayName = "You";
       var openExpensePanel = null;
 
       /* ── Table state (must be before renderAll) ── */
@@ -3150,7 +3151,9 @@
         var source = raw || {};
         return {
           id: source.id || source.expense_id || source.ts || Date.now(),
-          ts: source.created_at ? new Date(source.created_at).getTime() : (source.ts || Date.now()),
+          ts: source.created_at || source.createdAt
+            ? new Date(source.created_at || source.createdAt).getTime()
+            : (source.ts || Date.now()),
           category: source.category || "others",
           who: source.who || "You",
           desc: source.description || source.desc || "",
@@ -3541,9 +3544,15 @@
           });
         }
 
-        // Try loading the current user name from Clerk, fallback to settings name
+        // Prefer the saved display name, then fall back to Clerk details
         (function () {
           function getUserName(user) {
+            var savedName = String(localStorage.getItem("Yatrify_user_name") || "").trim();
+            if (savedName) return savedName;
+            var savedFirst = String(localStorage.getItem("Yatrify_profile_first_name") || "").trim();
+            var savedLast = String(localStorage.getItem("Yatrify_profile_last_name") || "").trim();
+            var savedFullName = [savedFirst, savedLast].filter(Boolean).join(" ").trim();
+            if (savedFullName) return savedFullName;
             if (user) {
               var n = [user.firstName, user.lastName].filter(Boolean).join(" ").trim();
               if (n) return n;
@@ -3553,7 +3562,10 @@
             }
             return "You";
           }
-          function build(name) { buildWhoDropdown(name); }
+          function build(name) {
+            currentUserDisplayName = name || "You";
+            buildWhoDropdown(currentUserDisplayName);
+          }
           if (typeof window.__loadYatrifyClerk === "function") {
             window.__loadYatrifyClerk(false).then(function (clerk) {
               if (clerk && typeof clerk.load === "function") {

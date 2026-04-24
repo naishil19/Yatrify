@@ -1801,7 +1801,11 @@
           var badges = [
             '<span class="plan-card-badge" aria-label="Saved plan"><i data-lucide="map-pinned"></i></span>'
           ];
-          if (plan && String(plan.accessRole || "").toLowerCase() === "collaborator") {
+          var accessRole = String(plan && plan.accessRole || "").toLowerCase();
+          var collaboratorCount = Number(plan && plan.collaboratorCount || 0);
+          if (plan && accessRole === "owner" && collaboratorCount > 0) {
+            badges.push('<span class="plan-card-badge" aria-label="Owner with collaborators"><i data-lucide="user-star"></i></span>');
+          } else if (plan && accessRole === "collaborator") {
             badges.push('<span class="plan-card-badge" aria-label="Collaborator plan"><i data-lucide="users"></i></span>');
           }
           if (plan && plan.isPublished) {

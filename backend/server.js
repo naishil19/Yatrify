@@ -4401,7 +4401,9 @@ app.post("/api/plans/:id/expenses", requireAuth, requireDb, express.json(), asyn
     const access = await requirePlanAccess(user.id, req.params.id);
     if (!access) return res.status(403).json({ error: "Forbidden" });
     const expense = await store.createExpense(req.params.id, user.id, req.body || {});
-    return res.json({ expense });
+    return res.json({
+      expense,
+    });
   } catch (error) {
     return res.status(500).json({ error: "Unable to create expense" });
   }
@@ -4414,7 +4416,9 @@ app.patch("/api/plans/:id/expenses/:expenseId", requireAuth, requireDb, express.
     const access = await requirePlanAccess(user.id, req.params.id);
     if (!access) return res.status(403).json({ error: "Forbidden" });
     const expense = await store.updateExpense(req.params.id, user.id, req.params.expenseId, req.body || {});
-    return res.json({ expense });
+    return res.json({
+      expense,
+    });
   } catch (error) {
     return res.status(500).json({ error: "Unable to update expense" });
   }

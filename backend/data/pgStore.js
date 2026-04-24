@@ -23,6 +23,7 @@ function mapPlanRow(row) {
     id: row.id,
     ownerUserId: row.owner_user_id,
     accessRole: row.access_role || "",
+    collaboratorCount: Number(row.collaborator_count || 0),
     startCity: row.start_city || "",
     destination: row.destination || "",
     startDate: toDateValue(row.start_date),
@@ -63,6 +64,24 @@ function mapCommunityRow(row) {
     summary: row.summary || "",
     source: row.source || "user",
     publishedAt: row.published_at || null,
+  };
+}
+
+function mapExpenseRow(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    planId: row.plan_id,
+    userId: row.user_id,
+    description: row.description || "",
+    who: row.who || "",
+    category: row.category || "",
+    amount: Number(row.amount || 0),
+    date: toDateValue(row.date),
+    createdAt: row.created_at,
+    created_at: row.created_at,
+    updatedAt: row.updated_at,
+    updated_at: row.updated_at,
   };
 }
 
@@ -241,6 +260,11 @@ export function createPgStore(pool) {
   async function listPlansForUser(userId) {
     const result = await pool.query(
       `SELECT p.*,
+              COALESCE((
+                SELECT COUNT(*)
+                FROM plan_collaborators pc2
+                WHERE pc2.plan_id = p.id
+              ), 0) AS collaborator_count,
               CASE
                 WHEN p.owner_user_id = $1 THEN 'owner'
                 ELSE 'collaborator'
@@ -260,6 +284,11 @@ export function createPgStore(pool) {
   async function getPlanAccess(userId, planId) {
     const result = await pool.query(
       `SELECT p.*,
+              COALESCE((
+                SELECT COUNT(*)
+                FROM plan_collaborators pc2
+                WHERE pc2.plan_id = p.id
+              ), 0) AS collaborator_count,
               CASE
                 WHEN p.owner_user_id = $1 THEN 'owner'
                 WHEN pc.user_id = $1 AND pc.status = 'accepted' THEN 'collaborator'
@@ -653,10 +682,13 @@ export function createPgStore(pool) {
 
   async function listExpenses(planId) {
     const result = await pool.query(
-      `SELECT * FROM expenses WHERE plan_id = $1 ORDER BY date DESC NULLS LAST, created_at DESC`,
+      `SELECT e.*
+       FROM expenses e
+       WHERE e.plan_id = $1
+       ORDER BY e.date DESC NULLS LAST, e.created_at DESC`,
       [planId]
     );
-    return result.rows;
+    return result.rows.map(mapExpenseRow);
   }
 
   async function createExpense(planId, userId, expense) {
