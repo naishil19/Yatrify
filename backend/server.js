@@ -4122,7 +4122,7 @@ app.get("/api/plans/:id", requireAuth, requireDb, async (req, res) => {
       const inviteId = String(req.query.inviteId || "").trim();
       if (inviteId && typeof store.acceptInviteById === "function") {
         try {
-          await store.acceptInviteById(req.params.id, inviteId, user.id);
+          await store.acceptInviteById(req.params.id, inviteId, user.id, user.email || req.auth.email || "");
         } catch (_) {}
         access = await requirePlanAccess(user.id, req.params.id);
       }
@@ -4344,7 +4344,7 @@ app.post("/api/plans/:id/collaborators/accept", requireAuth, requireDb, express.
     const inviteId = String((req.body && req.body.inviteId) || "").trim();
     let invite = null;
     if (inviteId && typeof store.acceptInviteById === "function") {
-      invite = await store.acceptInviteById(req.params.id, inviteId, user.id);
+      invite = await store.acceptInviteById(req.params.id, inviteId, user.id, user.email || req.auth.email || "");
     }
     if (!invite) {
       const email = user.email || req.auth.email || "";

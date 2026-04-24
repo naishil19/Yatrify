@@ -598,8 +598,11 @@
       align-items: center;
       justify-content: center;
       padding: 24px;
-      background: color-mix(in oklab, var(--bg) 92%, transparent);
-      backdrop-filter: blur(3px);
+      background:
+        radial-gradient(circle at top left, rgba(59, 130, 246, 0.14), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(168, 85, 247, 0.10), transparent 35%),
+        color-mix(in oklab, var(--bg) 88%, white 12%);
+      backdrop-filter: blur(16px) saturate(135%);
     }
 
     .invite-join-overlay.open {
@@ -607,44 +610,129 @@
     }
 
     .invite-join-card {
-      width: min(520px, 94vw);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      background: var(--panel);
-      box-shadow: 0 16px 34px rgba(15, 23, 42, 0.14);
-      padding: 26px 26px 22px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
+      width: min(760px, 94vw);
+      border: 1px solid color-mix(in oklab, var(--line) 72%, white 28%);
+      border-radius: 28px;
+      background:
+        linear-gradient(180deg, color-mix(in oklab, var(--panel) 96%, white 4%), var(--panel));
+      box-shadow:
+        0 30px 80px rgba(15, 23, 42, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.55);
+      padding: 22px;
+      text-align: left;
+      display: grid;
+      grid-template-columns: 176px minmax(0, 1fr);
+      gap: 20px;
       align-items: center;
-      gap: 12px;
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .invite-join-card::before,
+    .invite-join-card::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      pointer-events: none;
+      filter: blur(6px);
+      opacity: 0.75;
+      z-index: -1;
+    }
+
+    .invite-join-card::before {
+      width: 180px;
+      height: 180px;
+      right: -56px;
+      top: -54px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.18), transparent 70%);
+    }
+
+    .invite-join-card::after {
+      width: 220px;
+      height: 220px;
+      left: -78px;
+      bottom: -94px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.12), transparent 72%);
     }
 
     .invite-join-visual {
-      width: 132px;
-      height: 132px;
-      border-radius: 999px;
-      background: #eef4ff;
-      border: 1px solid #d5e4ff;
-      display: inline-flex;
+      width: 176px;
+      height: 176px;
+      border-radius: 28px;
+      background:
+        linear-gradient(145deg, rgba(59, 130, 246, 0.16), rgba(99, 102, 241, 0.10)),
+        var(--panel-soft);
+      border: 1px solid color-mix(in oklab, var(--line) 85%, white 15%);
+      display: grid;
       align-items: center;
       justify-content: center;
       position: relative;
       overflow: hidden;
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.36),
+        0 18px 35px rgba(37, 99, 235, 0.10);
     }
 
     html.dark .invite-join-visual {
-      background: #12233f;
-      border-color: #27436f;
+      background:
+        linear-gradient(145deg, rgba(37, 99, 235, 0.24), rgba(139, 92, 246, 0.10)),
+        var(--panel-soft);
+      border-color: color-mix(in oklab, var(--line) 74%, white 26%);
     }
 
     .invite-join-spinner {
-      width: 42px;
-      height: 42px;
+      width: 48px;
+      height: 48px;
       border-radius: 999px;
-      border: 3px solid #bfdbfe;
+      border: 3px solid rgba(59, 130, 246, 0.18);
       border-top-color: #3b82f6;
+      border-right-color: rgba(59, 130, 246, 0.55);
       animation: inviteJoinSpin 0.9s linear infinite;
+      box-shadow:
+        0 0 0 12px rgba(59, 130, 246, 0.06),
+        0 0 0 22px rgba(59, 130, 246, 0.03);
+    }
+
+    .invite-join-content {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 8px 4px 8px 0;
+    }
+
+    .invite-join-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 30px;
+      padding: 0 12px;
+      border-radius: 999px;
+      border: 1px solid color-mix(in oklab, #bfdbfe 58%, var(--line) 42%);
+      background: color-mix(in oklab, #eff6ff 84%, white 16%);
+      color: #1d4ed8;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    html.dark .invite-join-badge {
+      background: color-mix(in oklab, #172554 82%, var(--panel) 18%);
+      color: #bfdbfe;
+      border-color: rgba(96, 165, 250, 0.28);
+    }
+
+    .invite-join-badge::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: currentColor;
+      box-shadow: 0 0 0 4px color-mix(in oklab, currentColor 18%, transparent);
     }
 
     @keyframes inviteJoinSpin {
@@ -655,26 +743,27 @@
 
     .invite-join-title {
       margin: 0;
-      font-size: 30px;
-      font-weight: 600;
-      letter-spacing: -0.02em;
+      font-size: clamp(28px, 3vw, 40px);
+      line-height: 1.02;
+      font-weight: 700;
+      letter-spacing: -0.04em;
       color: var(--text);
     }
 
     .invite-join-text {
       margin: 0;
-      max-width: 380px;
+      max-width: 520px;
       color: var(--muted);
-      line-height: 1.55;
-      font-size: 14px;
+      line-height: 1.65;
+      font-size: 15px;
     }
 
     .invite-auth-actions {
       display: none;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       gap: 12px;
-      margin-top: 4px;
+      margin-top: 2px;
       flex-wrap: wrap;
     }
 
@@ -682,35 +771,40 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-height: 42px;
-      padding: 0 18px;
-      border-radius: 10px;
+      min-height: 46px;
+      padding: 0 20px;
+      border-radius: 14px;
       border: 1px solid transparent;
       text-decoration: none;
       font-size: 14px;
       font-weight: 600;
-      transition: background-color .2s ease, border-color .2s ease, color .2s ease;
+      letter-spacing: -0.01em;
+      transition: transform .2s ease, background-color .2s ease, border-color .2s ease, color .2s ease, box-shadow .2s ease;
     }
 
     .invite-auth-btn.primary {
-      background: #2563eb;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
       color: #ffffff;
-      border-color: #2563eb;
+      border-color: rgba(37, 99, 235, 0.6);
+      box-shadow: 0 14px 24px rgba(37, 99, 235, 0.18);
     }
 
     .invite-auth-btn.primary:hover {
-      background: #1d4ed8;
-      border-color: #1d4ed8;
+      transform: translateY(-1px);
+      box-shadow: 0 16px 28px rgba(37, 99, 235, 0.24);
     }
 
     .invite-auth-btn.secondary {
       background: transparent;
       color: var(--text);
-      border-color: var(--line-strong);
+      border-color: color-mix(in oklab, var(--line-strong) 90%, white 10%);
+      background: color-mix(in oklab, var(--panel-soft) 90%, transparent);
     }
 
     .invite-auth-btn.secondary:hover {
-      background: color-mix(in oklab, var(--panel-soft) 85%, transparent);
+      transform: translateY(-1px);
+      background: color-mix(in oklab, var(--panel-soft) 78%, white 22%);
+      box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
     }
 
     .invite-join-overlay[data-state="auth-required"] .invite-auth-actions {
@@ -719,6 +813,61 @@
 
     .invite-join-overlay[data-state="auth-required"] .invite-join-spinner {
       display: none;
+    }
+
+    .invite-join-overlay[data-state="auth-required"] .invite-join-badge {
+      color: #7c3aed;
+      background: color-mix(in oklab, #f5f3ff 86%, white 14%);
+      border-color: rgba(167, 139, 250, 0.34);
+    }
+
+    html.dark .invite-join-overlay[data-state="auth-required"] .invite-join-badge {
+      color: #ddd6fe;
+      background: color-mix(in oklab, #2e1065 84%, var(--panel) 16%);
+      border-color: rgba(196, 181, 253, 0.22);
+    }
+
+    @media (max-width: 720px) {
+      .invite-join-overlay {
+        padding: 16px;
+        align-items: flex-end;
+      }
+
+      .invite-join-card {
+        grid-template-columns: 1fr;
+        width: min(560px, 100%);
+        padding: 18px;
+        border-radius: 24px;
+        gap: 16px;
+      }
+
+      .invite-join-visual {
+        width: 100%;
+        height: 140px;
+        border-radius: 22px;
+      }
+
+      .invite-join-content {
+        padding: 0;
+        gap: 12px;
+      }
+
+      .invite-join-title {
+        font-size: clamp(24px, 7vw, 32px);
+      }
+
+      .invite-join-text {
+        max-width: none;
+        font-size: 14px;
+      }
+
+      .invite-auth-actions {
+        width: 100%;
+      }
+
+      .invite-auth-btn {
+        width: 100%;
+      }
     }
 
     .sidebar {
@@ -4974,11 +5123,14 @@
       <div class="invite-join-visual">
         <span class="invite-join-spinner" aria-hidden="true"></span>
       </div>
-      <h2 id="invite-join-title" class="invite-join-title">Joining the Plan...</h2>
-      <p id="invite-join-text" class="invite-join-text">Please wait while we verify access and load the shared travel plan.</p>
-      <div class="invite-auth-actions">
-        <a id="invite-auth-signin" class="invite-auth-btn primary" href="/sign-in/">Sign in</a>
-        <a id="invite-auth-signup" class="invite-auth-btn secondary" href="/sign-up/">Sign up</a>
+      <div class="invite-join-content">
+        <div class="invite-join-badge">Shared Plan Invite</div>
+        <h2 id="invite-join-title" class="invite-join-title">Joining the Plan...</h2>
+        <p id="invite-join-text" class="invite-join-text">Please wait while we verify access and load the shared travel plan.</p>
+        <div class="invite-auth-actions">
+          <a id="invite-auth-signin" class="invite-auth-btn primary" href="/sign-in/">Sign in</a>
+          <a id="invite-auth-signup" class="invite-auth-btn secondary" href="/sign-up/">Sign up</a>
+        </div>
       </div>
     </div>
   </div>
@@ -5660,18 +5812,26 @@
         if (headerSignInLink) headerSignInLink.setAttribute("href", buildAuthRedirectUrl("/sign-in/"));
       }
 
-      function showInviteJoinOverlay(mode) {
+      function showInviteJoinOverlay(mode, message) {
         var overlay = document.getElementById("invite-join-overlay");
         if (!overlay || !isInviteJoinFlow) return;
         var state = mode === "auth-required" ? "auth-required" : "joining";
+        var badge = document.querySelector(".invite-join-badge");
         var title = document.getElementById("invite-join-title");
         var text = document.getElementById("invite-join-text");
         var signInLink = document.getElementById("invite-auth-signin");
         var signUpLink = document.getElementById("invite-auth-signup");
         overlay.setAttribute("data-state", state);
+        if (badge) {
+          badge.textContent = state === "auth-required" ? "Authentication Required" : "Verifying Access";
+        }
         if (state === "auth-required") {
           if (title) title.textContent = "Sign in to Join This Plan";
-          if (text) text.textContent = "Use your account to accept this invite and open the shared itinerary in edit mode.";
+          if (text) {
+            text.textContent =
+              message ||
+              "Use the invited account to accept this invite and open the shared itinerary in edit mode.";
+          }
         } else {
           if (title) title.textContent = "Joining the Plan...";
           if (text) text.textContent = "Please wait while we verify access and load the shared travel plan.";
@@ -5750,8 +5910,13 @@
           await hydrateGeminiSections();
         }
       } catch (error) {
-        if (isInviteJoinFlow && error && Number(error.status) === 401) {
-          showInviteJoinOverlay("auth-required");
+        if (isInviteJoinFlow && error && (Number(error.status) === 401 || Number(error.status) === 403)) {
+          showInviteJoinOverlay(
+            "auth-required",
+            Number(error.status) === 403
+              ? "This invite belongs to a different email address. Please sign in with the invited account to continue."
+              : undefined
+          );
           emitPageReady();
           return;
         }

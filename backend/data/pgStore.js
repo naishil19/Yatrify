@@ -578,18 +578,20 @@ export function createPgStore(pool) {
 
   async function acceptInvite(planId, userId, email) {
     const cleanEmail = String(email || "").trim().toLowerCase();
+    if (!cleanEmail) return null;
     const result = await pool.query(
       `UPDATE plan_collaborators
        SET user_id = $2,
            status = 'accepted'
-       WHERE plan_id = $1 AND (user_id = $2 OR invited_email = $3)
+       WHERE plan_id = $1
+         AND lower(invited_email) = lower($3)
        RETURNING *`,
       [planId, userId, cleanEmail]
     );
     return result.rows[0] || null;
   }
 
-  async function acceptInviteById(planId, inviteId, userId) {
+  async function acceptInviteById(planId, inviteId, userId, email) {
     const target = await pool.query(
       `SELECT invited_email
        FROM plan_collaborators
@@ -601,18 +603,19 @@ export function createPgStore(pool) {
     if (!target.rows[0]) return null;
 
     const invitedEmail = String(target.rows[0].invited_email || "").trim().toLowerCase();
+    const cleanEmail = String(email || "").trim().toLowerCase();
+    if (cleanEmail && invitedEmail && cleanEmail !== invitedEmail) return null;
     const result = await pool.query(
       `UPDATE plan_collaborators
        SET user_id = $3,
            status = 'accepted'
        WHERE plan_id = $1
          AND (
-           id = $2
-           OR user_id = $3
-           OR ($4 <> '' AND lower(invited_email) = lower($4))
-         )
+            id = $2
+            OR lower(invited_email) = lower($4)
+          )
        RETURNING *`,
-      [planId, inviteId, userId, invitedEmail]
+      [planId, inviteId, userId, cleanEmail || invitedEmail]
     );
     const exact = result.rows.find((row) => row.id === inviteId);
     return exact || result.rows[0] || null;
