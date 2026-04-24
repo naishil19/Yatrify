@@ -282,8 +282,8 @@ function initGlobalHeaderAuth() {
     modal.innerHTML = [
       '<div style="max-width:500px;width:100%;background:#fff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.28);padding:26px 34px 22px;position:relative;">',
       '<button id="global-auth-close" style="position:absolute;top:14px;right:16px;border:0;background:none;color:#6b7280;cursor:pointer;font-size:38px;line-height:1;" title="Close">&times;</button>',
-      '<img src="/images/image.png" alt="Yatrify logo" style="width:94px;margin-bottom:12px;" class="dark:hidden" />',
-      '<img src="/images/image_2.png" alt="Yatrify logo" style="width:94px;margin-bottom:12px;" class="hidden dark:block" />',
+      '<img src="/images/logo_light.svg" alt="Yatrify logo" style="width:94px;margin-bottom:12px;" class="dark:hidden" />',
+      '<img src="/images/logo_dark.svg" alt="Yatrify logo" style="width:94px;margin-bottom:12px;" class="hidden dark:block" />',
       '<h2 id="global-auth-title" style="font-size:35px;line-height:1.02;font-weight:700;color:#0f172a;margin:0 0 6px;letter-spacing:-0.02em;">Sign in</h2>',
       '<p id="global-auth-subtitle" style="font-size:15px;color:#64748b;margin:0 0 16px;letter-spacing:-0.01em;">to continue to Yatrify</p>',
       '<div id="global-clerk-signin"></div>',
