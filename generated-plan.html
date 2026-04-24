@@ -4950,7 +4950,7 @@
           </svg>
         </button>
         <span class="header-auth-spinner" aria-hidden="true"></span>
-        <a id="header-signin-link" class="header-signin" href="/sign-in.html">Sign in</a>
+        <a id="header-signin-link" class="header-signin" href="/sign-in/">Sign in</a>
         <div id="user-profile" class="profile-pill" aria-label="User profile">
           <button id="profile-btn" type="button" aria-label="Profile">
             <img id="user-avatar" alt="User avatar" />
@@ -4977,8 +4977,8 @@
       <h2 id="invite-join-title" class="invite-join-title">Joining the Plan...</h2>
       <p id="invite-join-text" class="invite-join-text">Please wait while we verify access and load the shared travel plan.</p>
       <div class="invite-auth-actions">
-        <a id="invite-auth-signin" class="invite-auth-btn primary" href="/sign-in.html">Sign in</a>
-        <a id="invite-auth-signup" class="invite-auth-btn secondary" href="/sign-up.html">Sign up</a>
+        <a id="invite-auth-signin" class="invite-auth-btn primary" href="/sign-in/">Sign in</a>
+        <a id="invite-auth-signup" class="invite-auth-btn secondary" href="/sign-up/">Sign up</a>
       </div>
     </div>
   </div>
@@ -5650,14 +5650,14 @@
       }
 
       function buildAuthRedirectUrl(path) {
-        var targetPath = String(path || "").trim() || "/sign-in.html";
+        var targetPath = String(path || "").trim() || "/sign-in/";
         var current = window.location.pathname + window.location.search + window.location.hash;
         return targetPath + (targetPath.indexOf("?") === -1 ? "?" : "&") + "redirect_url=" + encodeURIComponent(current);
       }
 
       if (isInviteJoinFlow) {
         var headerSignInLink = document.getElementById("header-signin-link");
-        if (headerSignInLink) headerSignInLink.setAttribute("href", buildAuthRedirectUrl("/sign-in.html"));
+        if (headerSignInLink) headerSignInLink.setAttribute("href", buildAuthRedirectUrl("/sign-in/"));
       }
 
       function showInviteJoinOverlay(mode) {
@@ -5676,8 +5676,8 @@
           if (title) title.textContent = "Joining the Plan...";
           if (text) text.textContent = "Please wait while we verify access and load the shared travel plan.";
         }
-        if (signInLink) signInLink.setAttribute("href", buildAuthRedirectUrl("/sign-in.html"));
-        if (signUpLink) signUpLink.setAttribute("href", buildAuthRedirectUrl("/sign-up.html"));
+        if (signInLink) signInLink.setAttribute("href", buildAuthRedirectUrl("/sign-in/"));
+        if (signUpLink) signUpLink.setAttribute("href", buildAuthRedirectUrl("/sign-up/"));
         overlay.classList.add("open");
       }
 
@@ -6527,7 +6527,7 @@
             return;
           }
           if (signInLink) {
-            window.location.href = signInLink.getAttribute("href") || "/sign-in.html";
+            window.location.href = signInLink.getAttribute("href") || "/sign-in/";
           }
         });
 
@@ -6553,7 +6553,7 @@
             if (window.Clerk && typeof window.Clerk.openUserProfile === "function" && window.Clerk.user) {
               window.Clerk.openUserProfile();
             } else if (signInLink) {
-              window.location.href = signInLink.getAttribute("href") || "/sign-in.html";
+              window.location.href = signInLink.getAttribute("href") || "/sign-in/";
             }
           });
         }
