@@ -618,7 +618,7 @@
     }
 
     .invite-join-card {
-      width: min(760px, 94vw);
+      width: min(980px, 94vw);
       border: 1px solid color-mix(in oklab, var(--line) 72%, white 28%);
       border-radius: 28px;
       background:
@@ -629,8 +629,8 @@
       padding: 22px;
       text-align: left;
       display: grid;
-      grid-template-columns: auto minmax(0, 1fr);
-      gap: 20px;
+      grid-template-columns: minmax(230px, 280px) minmax(0, 1fr);
+      gap: 28px;
       align-items: center;
       position: relative;
       overflow: hidden;
@@ -684,8 +684,9 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      width: min(100%, 320px);
-      aspect-ratio: 360 / 390;
+      width: 100%;
+      max-width: 280px;
+      aspect-ratio: 1 / 1;
       position: relative;
     }
 
@@ -711,7 +712,7 @@
     .invite-join-art {
       width: 100%;
       max-width: 100%;
-      height: auto;
+      height: 100%;
       max-height: 100%;
       object-fit: contain;
       display: block;
@@ -906,6 +907,7 @@
 
       .invite-join-mark {
         width: min(100%, 290px);
+        max-width: 290px;
       }
 
       .invite-join-content {
@@ -5183,7 +5185,7 @@
     <div class="invite-join-card">
       <div class="invite-join-visual">
         <div class="invite-join-mark" aria-hidden="true">
-          <img class="invite-join-art" src="/images/Collaborate%20loading.svg" alt="" />
+          <img class="invite-join-art" src="/images/Collaborate%20loading.svg?v=20260424" alt="" />
         </div>
       </div>
       <div class="invite-join-content">
