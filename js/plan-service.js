@@ -28,6 +28,7 @@
     var opts = options && typeof options === "object" ? options : {};
     var query = [];
     if (opts.inviteId) query.push("inviteId=" + encodeURIComponent(String(opts.inviteId)));
+    if (opts.inviteEmail) query.push("inviteEmail=" + encodeURIComponent(String(opts.inviteEmail)));
     var suffix = query.length ? "?" + query.join("&") : "";
     return api
       .authFetch("/api/plans/" + encodeURIComponent(planId) + suffix)

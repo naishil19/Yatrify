@@ -5685,6 +5685,7 @@
       var requestedMode = String(params.get("mode") || "").trim();
       var requestedPlanId = String(params.get("planId") || "").trim();
       var requestedInviteId = String(params.get("inviteId") || "").trim();
+      var requestedInviteEmail = String(params.get("inviteEmail") || "").trim().toLowerCase();
       var isCommunityReadOnly = requestedMode === COMMUNITY_READONLY_MODE && !!requestedPlanId;
       var isInviteJoinFlow = !isCommunityReadOnly && !!requestedPlanId && !!requestedInviteId;
       var PLAN_LINKS = [
@@ -5883,6 +5884,18 @@
         overlay.classList.remove("open");
       }
 
+      function getCurrentClerkEmail(clerk) {
+        if (!clerk || !clerk.user) return "";
+        var user = clerk.user;
+        var directEmail = String(user.primaryEmailAddress && user.primaryEmailAddress.emailAddress || "").trim();
+        if (directEmail) return directEmail.toLowerCase();
+        if (Array.isArray(user.emailAddresses) && user.emailAddresses.length) {
+          var firstEmail = user.emailAddresses[0] && user.emailAddresses[0].emailAddress;
+          if (firstEmail) return String(firstEmail).trim().toLowerCase();
+        }
+        return "";
+      }
+
       async function shouldContinueInviteJoin() {
         if (!isInviteJoinFlow) return true;
         if (!window.YatrifyApiClient || typeof window.YatrifyApiClient.ensureClerkLoaded !== "function") {
@@ -5890,7 +5903,18 @@
         }
         try {
           var clerk = await window.YatrifyApiClient.ensureClerkLoaded(false);
-          if (clerk && clerk.user) return true;
+          var currentEmail = getCurrentClerkEmail(clerk);
+          if (clerk && clerk.user) {
+            if (requestedInviteEmail && currentEmail && currentEmail !== requestedInviteEmail) {
+              showInviteJoinOverlay(
+                "auth-required",
+                "This invite was sent to " + requestedInviteEmail + ". Please sign in with that account to continue."
+              );
+              emitPageReady();
+              return false;
+            }
+            return true;
+          }
         } catch (_) {}
         showInviteJoinOverlay("auth-required");
         emitPageReady();
@@ -6026,7 +6050,8 @@
         if (!planId) return empty;
 
         var payload = await window.YatrifyPlanService.getPlan(planId, {
-          inviteId: requestedInviteId || ""
+          inviteId: requestedInviteId || "",
+          inviteEmail: requestedInviteEmail || ""
         });
         if (payload && payload.plan) {
           return {

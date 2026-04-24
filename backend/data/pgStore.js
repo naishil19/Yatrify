@@ -604,7 +604,8 @@ export function createPgStore(pool) {
 
     const invitedEmail = String(target.rows[0].invited_email || "").trim().toLowerCase();
     const cleanEmail = String(email || "").trim().toLowerCase();
-    if (cleanEmail && invitedEmail && cleanEmail !== invitedEmail) return null;
+    if (!cleanEmail) return null;
+    if (invitedEmail && cleanEmail !== invitedEmail) return null;
     const result = await pool.query(
       `UPDATE plan_collaborators
        SET user_id = $3,
