@@ -271,7 +271,7 @@ function isLikelyAssetPath(requestPath) {
 function deriveNotFoundPageTitle(requestPath) {
   const pathname = String(requestPath || "").trim();
   if (!pathname || pathname === "/") {
-    return "Yatrify - Your Smart Travel Planner";
+    return "Your Smart Travel Planner";
   }
 
   const cleanPath = pathname.split("?")[0].split("#")[0];
@@ -279,14 +279,14 @@ function deriveNotFoundPageTitle(requestPath) {
   const slug = path.basename(normalized).replace(/\.html$/i, "");
 
   const knownTitles = {
-    dashboard: "Dashboard - Yatrify",
-    index: "Yatrify - Your Smart Travel Planner",
-    "newplan": "Create Plan - Yatrify",
-    "generated-plan": "Generated Plan - Yatrify",
+    dashboard: "Dashboard",
+    index: "Your Smart Travel Planner",
+    "newplan": "Create Plan",
+    "generated-plan": "Generated Plan",
   };
 
   if (knownTitles[slug]) return knownTitles[slug];
-  if (!slug) return "Yatrify - Your Smart Travel Planner";
+  if (!slug) return "Your Smart Travel Planner";
 
   const prettyTitle = slug
     .split(/[-_]+/)
@@ -294,7 +294,7 @@ function deriveNotFoundPageTitle(requestPath) {
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
     .join(" ");
 
-  return prettyTitle ? `${prettyTitle} - Yatrify` : "Yatrify - Your Smart Travel Planner";
+  return prettyTitle || "Your Smart Travel Planner";
 }
 
 function sendFrontendNotFoundPage(res, options) {
@@ -317,7 +317,7 @@ function sendFrontendNotFoundPage(res, options) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${escapeHtml(pageTitle || "Yatrify")}</title>
+  <title>${escapeHtml(pageTitle || "404")}</title>
   <link rel="icon" href="/images/favicon.ico?v=20260408" type="image/x-icon">
 </head>
 <body>

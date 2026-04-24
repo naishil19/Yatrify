@@ -8,7 +8,7 @@
   <script>
     document.documentElement.classList.add("yatrify-page-transition-modern", "yatrify-shell-loading", "yatrify-header-auth-loading");
   </script>
-  <title>Generated Plan - Yatrify</title>
+  <title>Generated Plan</title>
   <link rel="icon" href="/images/favicon.ico?v=20260408" type="image/x-icon" />
   <link rel="shortcut icon" href="/images/favicon.ico?v=20260408" type="image/x-icon" />
   <style>
@@ -712,10 +712,13 @@
       width: 100%;
       max-width: 100%;
       height: auto;
+      max-height: 100%;
+      object-fit: contain;
       display: block;
       position: relative;
       z-index: 1;
       filter: drop-shadow(0 16px 28px rgba(37, 99, 235, 0.14));
+      animation: inviteJoinSceneFloat 4s ease-in-out infinite;
     }
 
     html.dark .invite-join-visual {
@@ -764,113 +767,12 @@
       box-shadow: 0 0 0 4px color-mix(in oklab, currentColor 18%, transparent);
     }
 
-    .invite-join-art .scene-float {
-      animation: inviteJoinSceneFloat 4s ease-in-out infinite;
-      transform-box: fill-box;
-      transform-origin: center;
-    }
-
-    .invite-join-art .orbit-ring {
-      animation: inviteJoinOrbit 5.5s ease-in-out infinite;
-      transform-box: fill-box;
-      transform-origin: center;
-    }
-
-    .invite-join-art .pin-left {
-      animation: inviteJoinPin 2.7s ease-in-out infinite;
-      transform-box: fill-box;
-      transform-origin: center bottom;
-    }
-
-    .invite-join-art .pin-center {
-      animation: inviteJoinPin 3s ease-in-out infinite 0.12s;
-      transform-box: fill-box;
-      transform-origin: center bottom;
-    }
-
-    .invite-join-art .pin-right {
-      animation: inviteJoinPin 2.9s ease-in-out infinite 0.18s;
-      transform-box: fill-box;
-      transform-origin: center bottom;
-    }
-
-    .invite-join-art .figure-left {
-      animation: inviteJoinFigure 3.8s ease-in-out infinite;
-      transform-box: fill-box;
-      transform-origin: center bottom;
-    }
-
-    .invite-join-art .figure-right {
-      animation: inviteJoinFigure 4.1s ease-in-out infinite 0.15s;
-      transform-box: fill-box;
-      transform-origin: center bottom;
-    }
-
-    .invite-join-art .hand-link {
-      animation: inviteJoinHandshake 2.8s ease-in-out infinite;
-      transform-box: fill-box;
-      transform-origin: center;
-    }
-
-    .invite-join-art .dot-cloud {
-      animation: inviteJoinDots 3.8s ease-in-out infinite;
-    }
-
     @keyframes inviteJoinSceneFloat {
       0%, 100% {
         transform: translateY(0) scale(1);
       }
       50% {
         transform: translateY(-5px) scale(1.01);
-      }
-    }
-
-    @keyframes inviteJoinOrbit {
-      0%, 100% {
-        transform: rotate(0deg) scale(1);
-        opacity: 0.7;
-      }
-      50% {
-        transform: rotate(4deg) scale(1.02);
-        opacity: 0.95;
-      }
-    }
-
-    @keyframes inviteJoinPin {
-      0%, 100% {
-        transform: translateY(0);
-      }
-      50% {
-        transform: translateY(-5px);
-      }
-    }
-
-    @keyframes inviteJoinFigure {
-      0%, 100% {
-        transform: translateY(0) rotate(0deg);
-      }
-      50% {
-        transform: translateY(-3px) rotate(-0.8deg);
-      }
-    }
-
-    @keyframes inviteJoinHandshake {
-      0%, 100% {
-        opacity: 0.82;
-        transform: scale(1);
-      }
-      50% {
-        opacity: 1;
-        transform: scale(1.03);
-      }
-    }
-
-    @keyframes inviteJoinDots {
-      0%, 100% {
-        opacity: 0.38;
-      }
-      50% {
-        opacity: 0.58;
       }
     }
 
@@ -5281,138 +5183,7 @@
     <div class="invite-join-card">
       <div class="invite-join-visual">
         <div class="invite-join-mark" aria-hidden="true">
-          <svg class="invite-join-art" viewBox="0 0 360 390" aria-hidden="true" focusable="false" role="img">
-            <defs>
-              <radialGradient id="joinSceneGlow" cx="50%" cy="38%" r="72%">
-                <stop offset="0%" stop-color="#eff6ff" />
-                <stop offset="60%" stop-color="#eef4ff" />
-                <stop offset="100%" stop-color="#e9effa" />
-              </radialGradient>
-              <radialGradient id="joinOrbGlow" cx="50%" cy="46%" r="62%">
-                <stop offset="0%" stop-color="#ffffff" />
-                <stop offset="100%" stop-color="#f7faff" />
-              </radialGradient>
-              <linearGradient id="joinPinBlue" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#4f46e5" />
-                <stop offset="100%" stop-color="#312e81" />
-              </linearGradient>
-              <linearGradient id="joinPinPink" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#ff6b8b" />
-                <stop offset="100%" stop-color="#ef476f" />
-              </linearGradient>
-              <pattern id="joinDots" width="8" height="8" patternUnits="userSpaceOnUse">
-                <circle cx="2" cy="2" r="1" fill="#c7cfde" opacity="0.72"></circle>
-              </pattern>
-              <clipPath id="joinGlobeClip">
-                <circle cx="180" cy="138" r="86"></circle>
-              </clipPath>
-              <filter id="joinSoftBlur" x="-30%" y="-30%" width="160%" height="160%">
-                <feGaussianBlur stdDeviation="10" />
-              </filter>
-            </defs>
-
-            <g class="scene-float">
-              <ellipse cx="180" cy="192" rx="138" ry="180" fill="url(#joinSceneGlow)" filter="url(#joinSoftBlur)" opacity="0.65"></ellipse>
-              <ellipse cx="180" cy="194" rx="124" ry="168" fill="#eef4ff"></ellipse>
-
-              <g class="orbit-ring">
-                <circle cx="180" cy="138" r="96" fill="url(#joinOrbGlow)" stroke="#ccd6e4" stroke-width="1.1"></circle>
-                <circle cx="180" cy="138" r="86" fill="url(#joinDots)" opacity="0.55" clip-path="url(#joinGlobeClip)"></circle>
-                <circle cx="180" cy="138" r="86" fill="none" stroke="#d7deea" stroke-dasharray="2 6" stroke-width="1.1" opacity="0.9"></circle>
-              </g>
-
-              <g class="dot-cloud" clip-path="url(#joinGlobeClip)">
-                <circle cx="128" cy="110" r="2.2" fill="#c0c8d9" opacity="0.9"></circle>
-                <circle cx="132" cy="116" r="1.8" fill="#c0c8d9"></circle>
-                <circle cx="138" cy="108" r="1.7" fill="#c0c8d9"></circle>
-                <circle cx="145" cy="112" r="2.1" fill="#c0c8d9"></circle>
-                <circle cx="150" cy="104" r="1.6" fill="#c0c8d9"></circle>
-                <circle cx="154" cy="117" r="2.0" fill="#c0c8d9"></circle>
-                <circle cx="160" cy="110" r="1.6" fill="#c0c8d9"></circle>
-                <circle cx="167" cy="106" r="1.8" fill="#c0c8d9"></circle>
-                <circle cx="184" cy="98" r="1.6" fill="#c0c8d9"></circle>
-                <circle cx="191" cy="102" r="2.0" fill="#c0c8d9"></circle>
-                <circle cx="198" cy="108" r="1.6" fill="#c0c8d9"></circle>
-                <circle cx="205" cy="100" r="1.8" fill="#c0c8d9"></circle>
-                <circle cx="212" cy="108" r="2.0" fill="#c0c8d9"></circle>
-                <circle cx="220" cy="114" r="1.7" fill="#c0c8d9"></circle>
-                <circle cx="228" cy="110" r="1.6" fill="#c0c8d9"></circle>
-                <circle cx="233" cy="120" r="1.8" fill="#c0c8d9"></circle>
-                <circle cx="104" cy="130" r="1.6" fill="#c0c8d9"></circle>
-                <circle cx="110" cy="139" r="1.7" fill="#c0c8d9"></circle>
-                <circle cx="116" cy="148" r="1.6" fill="#c0c8d9"></circle>
-                <circle cx="122" cy="156" r="2.0" fill="#c0c8d9"></circle>
-                <circle cx="134" cy="153" r="1.6" fill="#c0c8d9"></circle>
-                <circle cx="146" cy="160" r="1.8" fill="#c0c8d9"></circle>
-                <circle cx="154" cy="148" r="1.6" fill="#c0c8d9"></circle>
-                <circle cx="164" cy="154" r="2.0" fill="#c0c8d9"></circle>
-                <circle cx="170" cy="166" r="1.6" fill="#c0c8d9"></circle>
-                <circle cx="180" cy="158" r="1.8" fill="#c0c8d9"></circle>
-                <circle cx="194" cy="150" r="1.7" fill="#c0c8d9"></circle>
-                <circle cx="210" cy="160" r="2.0" fill="#c0c8d9"></circle>
-                <circle cx="222" cy="150" r="1.6" fill="#c0c8d9"></circle>
-                <circle cx="235" cy="154" r="1.7" fill="#c0c8d9"></circle>
-                <circle cx="244" cy="146" r="1.6" fill="#c0c8d9"></circle>
-                <circle cx="104" cy="176" r="1.7" fill="#c0c8d9"></circle>
-                <circle cx="114" cy="182" r="1.6" fill="#c0c8d9"></circle>
-                <circle cx="125" cy="190" r="2.0" fill="#c0c8d9"></circle>
-                <circle cx="138" cy="184" r="1.6" fill="#c0c8d9"></circle>
-                <circle cx="146" cy="192" r="1.8" fill="#c0c8d9"></circle>
-                <circle cx="160" cy="186" r="1.6" fill="#c0c8d9"></circle>
-                <circle cx="170" cy="195" r="2.0" fill="#c0c8d9"></circle>
-                <circle cx="182" cy="188" r="1.6" fill="#c0c8d9"></circle>
-                <circle cx="194" cy="196" r="1.8" fill="#c0c8d9"></circle>
-                <circle cx="206" cy="188" r="1.6" fill="#c0c8d9"></circle>
-                <circle cx="217" cy="194" r="2.0" fill="#c0c8d9"></circle>
-                <circle cx="228" cy="186" r="1.6" fill="#c0c8d9"></circle>
-                <circle cx="240" cy="192" r="1.7" fill="#c0c8d9"></circle>
-              </g>
-
-              <g class="pin-left">
-                <path d="M111 120c0-7.7 6.3-14 14-14s14 6.3 14 14c0 9.9-14 25.4-14 25.4S111 129.9 111 120Z" fill="url(#joinPinPink)"></path>
-                <circle cx="125" cy="120" r="4.8" fill="#fff"></circle>
-              </g>
-
-              <g class="pin-center">
-                <path d="M162 146c0-8.8 7.2-16 16-16s16 7.2 16 16c0 11.2-16 28.7-16 28.7S162 157.2 162 146Z" fill="url(#joinPinBlue)"></path>
-                <circle cx="178" cy="146" r="5.7" fill="#fff"></circle>
-              </g>
-
-              <g class="pin-right">
-                <path d="M220 88c0-8.8 7.2-16 16-16s16 7.2 16 16c0 11.2-16 28.7-16 28.7S220 99.2 220 88Z" fill="#2f2d5a"></path>
-                <circle cx="236" cy="88" r="5.6" fill="#fff"></circle>
-              </g>
-
-              <g class="figure-left">
-                <circle cx="136" cy="268" r="22" fill="#5b6cff"></circle>
-                <path d="M118 268c0-13.9 10.1-26 23.8-26 6.5 0 12.5 2.8 16.9 7.3-2.1-8.6-9.9-15.4-19.2-15.4-10.9 0-19.8 8.9-19.8 19.8 0 5.4 2.2 10.2 5.7 13.7 1.7-1 3.7-1.4 5.7-1.4 3.1 0 5.9 1.1 8.1 2.9-1.8 2.8-4.9 4.7-8.4 4.7-2.7 0-5.3-1.2-7.1-3.1-.1 1-.1 2-.1 3.1Z" fill="#2f2d5a" opacity="0.96"></path>
-                <path d="M106 283c0-10.4 7.8-19 18.2-20.2 3.6 2.6 5.6 6.7 5.6 11.1 0 6.7-4.6 12.4-10.9 14.1-2.7.7-5.7.8-8.6.1-2.2-.5-4.3-1.3-6.1-2.4.1-1 .1-2 .1-2.7Z" fill="#2b2944"></path>
-                <rect x="129.5" y="289" width="8" height="34" rx="4" fill="#6d63ff"></rect>
-                <rect x="141" y="289" width="8" height="34" rx="4" fill="#6d63ff"></rect>
-                <path d="M120 297c1.2-13.4 2.3-20.8 3.2-22.1 3.6-5.1 12.4-7.8 19.6-6.2l9.2 5.9c2.5 1.6 3.2 4.9 1.6 7.4l-5.8 9.2c-2.1 3.4-6.1 5.5-10.3 5.5h-17.5Z" fill="#2f2d5a"></path>
-                <path d="M110 302l6-43c1-3.2 4.4-5 7.5-4l1 .3c3.2 1 5.1 4.4 4.1 7.5l-6 39.2c-.7 2.7-3.1 4.6-5.9 4.6h-1.2c-3.3 0-5.9-2.7-5.9-5.9Z" fill="#5b6cff"></path>
-                <path d="M136 245c6.4 0 11.6 5.2 11.6 11.6 0 .7-.1 1.5-.2 2.2-1.3 8-12.5 9.8-17.7 4.6-2.2-2.3-3.6-5.4-3.6-8.9 0-6.4 5.2-11.5 11.5-11.5Z" fill="none" stroke="#2f2d5a" stroke-width="2"></path>
-                <path d="M125 260c4.8-10.4 16.2-13.5 25.1-7.7" fill="none" stroke="#2f2d5a" stroke-width="2" stroke-linecap="round"></path>
-              </g>
-
-              <g class="figure-right">
-                <circle cx="229" cy="268" r="22" fill="#5b6cff"></circle>
-                <path d="M211 268c0-13.9 10.1-26 23.8-26 6.5 0 12.5 2.8 16.9 7.3-2.1-8.6-9.9-15.4-19.2-15.4-10.9 0-19.8 8.9-19.8 19.8 0 5.4 2.2 10.2 5.7 13.7 1.7-1 3.7-1.4 5.7-1.4 3.1 0 5.9 1.1 8.1 2.9-1.8 2.8-4.9 4.7-8.4 4.7-2.7 0-5.3-1.2-7.1-3.1-.1 1-.1 2-.1 3.1Z" fill="#2f2d5a" opacity="0.96"></path>
-                <path d="M197 283c0-10.4 7.8-19 18.2-20.2 3.6 2.6 5.6 6.7 5.6 11.1 0 6.7-4.6 12.4-10.9 14.1-2.7.7-5.7.8-8.6.1-2.2-.5-4.3-1.3-6.1-2.4.1-1 .1-2 .1-2.7Z" fill="#2b2944"></path>
-                <rect x="222.5" y="289" width="8" height="34" rx="4" fill="#6d63ff"></rect>
-                <rect x="234" y="289" width="8" height="34" rx="4" fill="#6d63ff"></rect>
-                <path d="M212 298c1.1-13.1 2.2-20.6 3.2-22.2 3.6-5.1 12.4-7.8 19.6-6.2l9.2 5.9c2.5 1.6 3.2 4.9 1.6 7.4l-5.8 9.2c-2.1 3.4-6.1 5.5-10.3 5.5H212Z" fill="#2f2d5a"></path>
-                <path d="M204 302l6-43c1-3.2 4.4-5 7.5-4l1 .3c3.2 1 5.1 4.4 4.1 7.5l-6 39.2c-.7 2.7-3.1 4.6-5.9 4.6h-1.2c-3.3 0-5.9-2.7-5.9-5.9Z" fill="#5b6cff"></path>
-                <path d="M229 245c6.4 0 11.6 5.2 11.6 11.6 0 .7-.1 1.5-.2 2.2-1.3 8-12.5 9.8-17.7 4.6-2.2-2.3-3.6-5.4-3.6-8.9 0-6.4 5.2-11.5 11.5-11.5Z" fill="none" stroke="#2f2d5a" stroke-width="2"></path>
-                <path d="M218 260c4.8-10.4 16.2-13.5 25.1-7.7" fill="none" stroke="#2f2d5a" stroke-width="2" stroke-linecap="round"></path>
-              </g>
-
-              <path class="hand-link" d="M160 289c13 6 26 6 40 0" fill="none" stroke="#6d63ff" stroke-width="13" stroke-linecap="round"></path>
-              <path d="M92 333h176" stroke="#2f2d5a" stroke-width="1.2" opacity="0.82"></path>
-              <path d="M70 314c8-12 18-22 28-22 13 0 18 12 22 22" fill="#f6f7fb" opacity="0.85"></path>
-              <path d="M288 314c8-12 18-22 28-22 13 0 18 12 22 22" fill="#f6f7fb" opacity="0.85"></path>
-            </g>
-          </svg>
+          <img class="invite-join-art" src="/images/Collaborate%20loading.svg" alt="" />
         </div>
       </div>
       <div class="invite-join-content">
@@ -6201,6 +5972,7 @@
           Object.keys(planData.sections).length > 0;
         aiGeneratedSections = anchorDestinationMentionsInSections(normalizeGeminiSectionsPayload(planData.sections || {}));
         applyAiBudgetRangeIfPresent();
+        syncPageTitle();
 
         applyThemeMode();
         await renderTopbar();
@@ -6398,6 +6170,16 @@
           return String(derived.destination.full || derived.destination.city || "").trim();
         }
         return "";
+      }
+
+      function syncPageTitle() {
+        var exactDestination = String(planData && planData.destination ? planData.destination : "").trim();
+        if (!exactDestination && derived && derived.destination) {
+          exactDestination = String(derived.destination.full || derived.destination.city || "").trim();
+        }
+        if (exactDestination) {
+          document.title = exactDestination;
+        }
       }
 
       function escapeRegExp(value) {
@@ -7121,6 +6903,7 @@
         hydratePublishState();
         aiGeneratedSections = anchorDestinationMentionsInSections(normalizeGeminiSectionsPayload(planData.sections || {}));
         applyAiBudgetRangeIfPresent();
+        syncPageTitle();
       }
 
       function hydratePublishState() {

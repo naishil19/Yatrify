@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Settings - Yatrify</title>
+  <title>Settings</title>
   <link rel="icon" href="/images/favicon.ico?v=20260408" type="image/x-icon" />
   <link rel="shortcut icon" href="/images/favicon.ico?v=20260408" type="image/x-icon" />
   <link rel="stylesheet" href="css/2a2e7898d4f6aad7.css?v=20260324a" />
@@ -1487,6 +1487,7 @@ body > footer {
 
   var activePlanContext = await syncActivePlanContext();
   var activePlanId = activePlanContext && activePlanContext.id ? activePlanContext.id : "";
+  syncPageTitle();
 
   applyThemeMode();
   renderSidebarLinks("desktop-plan-links", "desktop-control-links");
@@ -1537,6 +1538,18 @@ body > footer {
       return [destination.city || "", destination.country || ""].filter(Boolean).join(", ");
     }
     return String(destination || "Plan " + ((Number(index) || 0) + 1)).trim();
+  }
+
+  function syncPageTitle() {
+    var destination = "";
+    if (activePlanContext && activePlanContext.planData) {
+      destination = getPlanDestinationLabel(activePlanContext.planData, 0);
+    }
+    if (!destination && activePlanContext && activePlanContext.label) {
+      destination = activePlanContext.label;
+    }
+    destination = String(destination || "").trim();
+    if (destination) document.title = destination;
   }
 
   function readPlanLibraryRecords() {
@@ -2073,6 +2086,7 @@ body > footer {
         var payload = await window.YatrifyPlanService.updatePlan(activePlanId, updates || {});
         if (payload && payload.plan) {
           activePlanContext.planData = payload.plan;
+          syncPageTitle();
           return payload.plan;
         }
       } catch (_) {}
