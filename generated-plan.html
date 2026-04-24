@@ -691,32 +691,53 @@
       transform-origin: center;
     }
 
-    .invite-join-mark::before {
-      content: "";
+    .invite-join-ring {
       position: absolute;
       inset: -30px;
       border-radius: 999px;
       background:
-        radial-gradient(circle, rgba(59, 130, 246, 0.16) 0 45%, transparent 46%),
-        radial-gradient(circle, transparent 56%, rgba(59, 130, 246, 0.86) 57% 58%, transparent 59%),
-        radial-gradient(circle, transparent 69%, rgba(59, 130, 246, 0.34) 70% 71%, transparent 72%);
-      opacity: 0.95;
-      transform: scale(0.72);
-      filter: blur(0.2px);
-      animation: inviteJoinRingExpand 4.2s ease-out infinite;
+        radial-gradient(circle at center,
+          rgba(59, 130, 246, 0.16) 0 58%,
+          rgba(59, 130, 246, 0.10) 59% 74%,
+          rgba(59, 130, 246, 0.04) 75% 85%,
+          transparent 86%);
+      box-shadow:
+        0 0 0 10px rgba(59, 130, 246, 0.03),
+        0 0 28px rgba(59, 130, 246, 0.07);
+      opacity: 0;
+      transform: scale(0.62);
+      filter: saturate(1.08);
+      pointer-events: none;
+      z-index: 0;
     }
 
-    .invite-join-mark::after {
-      content: "";
-      position: absolute;
+    .invite-join-ring-one {
+      animation: inviteJoinRingWave 4.8s ease-out infinite;
+    }
+
+    .invite-join-ring-two {
       inset: -44px;
-      border-radius: 999px;
       background:
-        radial-gradient(circle, transparent 65%, rgba(59, 130, 246, 0.62) 66% 67%, transparent 68%),
-        radial-gradient(circle, transparent 77%, rgba(59, 130, 246, 0.26) 78% 79%, transparent 80%);
-      opacity: 0;
-      transform: scale(0.58);
-      animation: inviteJoinRingExpandAlt 4.2s ease-out 1.05s infinite;
+        radial-gradient(circle at center,
+          rgba(59, 130, 246, 0.12) 0 58%,
+          rgba(59, 130, 246, 0.08) 59% 74%,
+          rgba(59, 130, 246, 0.03) 75% 85%,
+          transparent 86%);
+      animation: inviteJoinRingWave 4.8s ease-out 1.25s infinite;
+    }
+
+    .invite-join-ring-three {
+      inset: -58px;
+      background:
+        radial-gradient(circle at center,
+          rgba(59, 130, 246, 0.08) 0 58%,
+          rgba(59, 130, 246, 0.05) 59% 74%,
+          rgba(59, 130, 246, 0.02) 75% 85%,
+          transparent 86%);
+      box-shadow:
+        0 0 0 12px rgba(59, 130, 246, 0.02),
+        0 0 34px rgba(59, 130, 246, 0.05);
+      animation: inviteJoinRingWave 4.8s ease-out 2.5s infinite;
     }
 
     .invite-join-art {
@@ -782,17 +803,17 @@
       box-shadow: 0 0 0 4px color-mix(in oklab, currentColor 18%, transparent);
     }
 
-    @keyframes inviteJoinRingExpand {
+    @keyframes inviteJoinRingWave {
       from {
         opacity: 0;
-        transform: scale(0.72);
+        transform: scale(0.62);
       }
       18% {
-        opacity: 0.95;
+        opacity: 0.9;
       }
-      58% {
-        opacity: 0.26;
-        transform: scale(1.03);
+      50% {
+        opacity: 0.34;
+        transform: scale(1.04);
       }
       100% {
         opacity: 0;
@@ -800,27 +821,9 @@
       }
     }
 
-    @keyframes inviteJoinRingExpandAlt {
-      0% {
-        opacity: 0;
-        transform: scale(0.58);
-      }
-      24% {
-        opacity: 0.88;
-      }
-      60% {
-        opacity: 0.24;
-        transform: scale(1.12);
-      }
-      100% {
-        opacity: 0;
-        transform: scale(1.3);
-      }
-    }
-
     .invite-join-title {
       margin: 0;
-      font-size: clamp(30px, 3.2vw, 46px);
+      font-size: 24px;
       line-height: 1.02;
       font-weight: 700;
       letter-spacing: -0.04em;
@@ -948,7 +951,7 @@
       }
 
       .invite-join-title {
-        font-size: clamp(24px, 7vw, 32px);
+        font-size: clamp(20px, 6vw, 24px);
       }
 
       .invite-join-text {
@@ -970,8 +973,7 @@
         animation: none !important;
       }
 
-      .invite-join-mark::before,
-      .invite-join-mark::after {
+      .invite-join-ring {
         animation: none !important;
       }
     }
@@ -5228,6 +5230,9 @@
     <div class="invite-join-card">
       <div class="invite-join-visual">
         <div class="invite-join-mark" aria-hidden="true">
+          <span class="invite-join-ring invite-join-ring-one" aria-hidden="true"></span>
+          <span class="invite-join-ring invite-join-ring-two" aria-hidden="true"></span>
+          <span class="invite-join-ring invite-join-ring-three" aria-hidden="true"></span>
           <img class="invite-join-art" src="/images/Collaborate%20loading.svg?v=20260424" alt="" />
         </div>
       </div>
