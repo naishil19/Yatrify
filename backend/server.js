@@ -4342,6 +4342,13 @@ app.post("/api/plans/:id/collaborators/accept", requireAuth, requireDb, express.
   try {
     const user = await getAuthedUser(req);
     if (!user) return res.status(401).json({ error: "Unauthorized" });
+    const access = await requirePlanAccess(user.id, req.params.id);
+    if (access && access.role === "owner") {
+      return res.status(409).json({
+        error: "Already owner",
+        detail: "You can't join the plan you already own.",
+      });
+    }
     const inviteId = String((req.body && req.body.inviteId) || "").trim();
     let invite = null;
     if (inviteId && typeof store.acceptInviteById === "function") {

@@ -2624,16 +2624,33 @@ body > footer {
       }).join("");
       list.querySelectorAll(".pending-accept").forEach(function (btn) {
         btn.addEventListener("click", async function () {
+          var keepDisabled = false;
           try {
             btn.disabled = true;
             var inviteId = btn.getAttribute("data-invite-id") || "";
             await window.YatrifyPlanService.acceptInvite(activePlanId, inviteId);
             showToast("The traveler can access this plan now.", { title: "Collaborator added" });
             await renderCollaborators();
-          } catch (_) {
-            showToast("Couldn't accept the invite. Try again.", { title: "Invite not accepted" });
+          } catch (error) {
+            var detail = "Couldn't accept the invite. Try again.";
+            try {
+              if (error && error.response && typeof error.response.json === "function") {
+                var payload = await error.response.json();
+                if (payload && (payload.detail || payload.error)) {
+                  detail = String(payload.detail || payload.error || detail);
+                }
+              }
+            } catch (_) {}
+            if (error && Number(error.status) === 409) {
+              keepDisabled = true;
+              btn.textContent = "Already joined";
+              btn.disabled = true;
+              showToast(detail || "You can't join the plan you already own.", { title: "Already in this plan" });
+            } else {
+              showToast(detail, { title: "Invite not accepted" });
+            }
           } finally {
-            btn.disabled = false;
+            if (!keepDisabled) btn.disabled = false;
           }
         });
       });
