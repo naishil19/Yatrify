@@ -653,6 +653,7 @@
       right: -96px;
       top: -96px;
       background: radial-gradient(circle, rgba(59, 130, 246, 0.12), transparent 72%);
+      animation: inviteJoinBlobOne 12s ease-in-out infinite;
     }
 
     .invite-join-card::after {
@@ -661,6 +662,7 @@
       left: -104px;
       bottom: -116px;
       background: radial-gradient(circle, rgba(16, 185, 129, 0.09), transparent 74%);
+      animation: inviteJoinBlobTwo 14s ease-in-out infinite;
     }
 
     .invite-join-visual {
@@ -786,6 +788,24 @@
       }
     }
 
+    @keyframes inviteJoinBlobOne {
+      0%, 100% {
+        transform: translate3d(0, 0, 0) scale(1);
+      }
+      50% {
+        transform: translate3d(-10px, 10px, 0) scale(1.08);
+      }
+    }
+
+    @keyframes inviteJoinBlobTwo {
+      0%, 100% {
+        transform: translate3d(0, 0, 0) scale(1);
+      }
+      50% {
+        transform: translate3d(10px, -8px, 0) scale(1.06);
+      }
+    }
+
     @keyframes inviteJoinOrbital {
       0%, 100% {
         transform: translateY(0) rotate(0deg);
@@ -804,6 +824,28 @@
       }
       50% {
         filter: drop-shadow(0 20px 34px rgba(37, 99, 235, 0.20)) brightness(1.06) saturate(1.08);
+      }
+    }
+
+    @keyframes inviteJoinRail {
+      0% {
+        background-position: 0% 50%;
+      }
+      100% {
+        background-position: 220% 50%;
+      }
+    }
+
+    @keyframes inviteJoinDot {
+      0%, 100% {
+        transform: translateY(0) scale(0.92);
+        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.34);
+        opacity: 0.74;
+      }
+      50% {
+        transform: translateY(-2px) scale(1);
+        box-shadow: 0 0 0 10px rgba(37, 99, 235, 0);
+        opacity: 1;
       }
     }
 
@@ -844,6 +886,59 @@
       color: var(--muted);
       line-height: 1.65;
       font-size: 16px;
+    }
+
+    .invite-join-progress {
+      width: min(100%, 280px);
+      height: 10px;
+      border-radius: 999px;
+      background: color-mix(in oklab, var(--line) 55%, white 45%);
+      box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.08);
+      overflow: hidden;
+      position: relative;
+      margin-top: 4px;
+    }
+
+    .invite-join-progress::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(90deg,
+        rgba(37, 99, 235, 0) 0%,
+        rgba(37, 99, 235, 0.22) 18%,
+        rgba(37, 99, 235, 0.70) 50%,
+        rgba(37, 99, 235, 0.22) 82%,
+        rgba(37, 99, 235, 0) 100%);
+      background-size: 220% 100%;
+      animation: inviteJoinRail 1.9s linear infinite;
+    }
+
+    .invite-join-progress span {
+      position: absolute;
+      top: 50%;
+      width: 12px;
+      height: 12px;
+      margin-top: -6px;
+      border-radius: 999px;
+      background: #2563eb;
+      box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.34);
+      animation: inviteJoinDot 1.6s ease-in-out infinite;
+    }
+
+    .invite-join-progress span:nth-child(1) {
+      left: 10%;
+      animation-delay: 0s;
+    }
+
+    .invite-join-progress span:nth-child(2) {
+      left: 46%;
+      animation-delay: 0.18s;
+    }
+
+    .invite-join-progress span:nth-child(3) {
+      left: 82%;
+      animation-delay: 0.36s;
     }
 
     .invite-auth-actions {
@@ -967,12 +1062,29 @@
         font-size: 14px;
       }
 
+      .invite-join-progress {
+        width: min(100%, 240px);
+      }
+
       .invite-auth-actions {
         width: 100%;
       }
 
       .invite-auth-btn {
         width: 100%;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .invite-join-mark,
+      .invite-join-mark::before,
+      .invite-join-mark::after,
+      .invite-join-art,
+      .invite-join-card::before,
+      .invite-join-card::after,
+      .invite-join-progress::before,
+      .invite-join-progress span {
+        animation: none !important;
       }
     }
 
@@ -5235,6 +5347,7 @@
         <div class="invite-join-badge">Shared Plan Invite</div>
         <h2 id="invite-join-title" class="invite-join-title">Joining the Plan...</h2>
         <p id="invite-join-text" class="invite-join-text">Please wait while we verify access and load the shared travel plan.</p>
+        <div class="invite-join-progress" aria-hidden="true"><span></span><span></span><span></span></div>
         <div class="invite-auth-actions">
           <a id="invite-auth-signin" class="invite-auth-btn primary" href="/sign-in/">Sign in</a>
           <a id="invite-auth-signup" class="invite-auth-btn secondary" href="/sign-up/">Sign up</a>
