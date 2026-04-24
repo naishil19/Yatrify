@@ -688,6 +688,8 @@
       max-width: 360px;
       aspect-ratio: 1 / 1;
       position: relative;
+      transform-origin: center;
+      animation: inviteJoinOrbital 7.5s ease-in-out infinite;
     }
 
     .invite-join-mark::before {
@@ -719,7 +721,11 @@
       position: relative;
       z-index: 1;
       filter: drop-shadow(0 16px 28px rgba(37, 99, 235, 0.14));
-      animation: inviteJoinSceneFloat 4s ease-in-out infinite;
+      transform-origin: center;
+      will-change: transform, filter;
+      animation:
+        inviteJoinSceneFloat 4s ease-in-out infinite,
+        inviteJoinSheen 5.8s ease-in-out infinite;
     }
 
     html.dark .invite-join-visual {
@@ -777,6 +783,27 @@
       }
       50% {
         transform: translateY(-5px) scale(1.01);
+      }
+    }
+
+    @keyframes inviteJoinOrbital {
+      0%, 100% {
+        transform: translateY(0) rotate(0deg);
+      }
+      33% {
+        transform: translateY(-3px) rotate(-0.8deg);
+      }
+      66% {
+        transform: translateY(2px) rotate(0.8deg);
+      }
+    }
+
+    @keyframes inviteJoinSheen {
+      0%, 100% {
+        filter: drop-shadow(0 16px 28px rgba(37, 99, 235, 0.14)) brightness(1) saturate(1);
+      }
+      50% {
+        filter: drop-shadow(0 20px 34px rgba(37, 99, 235, 0.20)) brightness(1.06) saturate(1.08);
       }
     }
 
@@ -887,6 +914,18 @@
       color: #ddd6fe;
       background: color-mix(in oklab, #2e1065 84%, var(--panel) 16%);
       border-color: rgba(196, 181, 253, 0.22);
+    }
+
+    .invite-join-overlay[data-state="already-joined"] .invite-join-badge {
+      color: #b45309;
+      background: color-mix(in oklab, #fff7ed 86%, white 14%);
+      border-color: rgba(251, 146, 60, 0.34);
+    }
+
+    html.dark .invite-join-overlay[data-state="already-joined"] .invite-join-badge {
+      color: #fed7aa;
+      background: color-mix(in oklab, #431407 84%, var(--panel) 16%);
+      border-color: rgba(251, 146, 60, 0.24);
     }
 
     @media (max-width: 720px) {
@@ -5886,7 +5925,12 @@
       function showInviteJoinOverlay(mode, message) {
         var overlay = document.getElementById("invite-join-overlay");
         if (!overlay || !isInviteJoinFlow) return;
-        var state = mode === "auth-required" ? "auth-required" : "joining";
+        var state =
+          mode === "auth-required"
+            ? "auth-required"
+            : mode === "already-joined"
+              ? "already-joined"
+              : "joining";
         var badge = document.querySelector(".invite-join-badge");
         var title = document.getElementById("invite-join-title");
         var text = document.getElementById("invite-join-text");
@@ -5894,7 +5938,12 @@
         var signUpLink = document.getElementById("invite-auth-signup");
         overlay.setAttribute("data-state", state);
         if (badge) {
-          badge.textContent = state === "auth-required" ? "Authentication Required" : "Verifying Access";
+          badge.textContent =
+            state === "auth-required"
+              ? "Authentication Required"
+              : state === "already-joined"
+                ? "Already Joined"
+                : "Verifying Access";
         }
         if (state === "auth-required") {
           if (title) title.textContent = "Sign in to Join This Plan";
@@ -5902,6 +5951,12 @@
             text.textContent =
               message ||
               "Use the invited account to accept this invite and open the shared itinerary in edit mode.";
+          }
+        } else if (state === "already-joined") {
+          if (title) title.textContent = "Already in this plan";
+          if (text) {
+            text.textContent =
+              message || "You can't join the plan you already own.";
           }
         } else {
           if (title) title.textContent = "Joining the Plan...";
@@ -5969,6 +6024,9 @@
             title: "Already in this plan",
             duration: 4200
           });
+          showInviteJoinOverlay("already-joined", "You can't join the plan you already own.");
+          emitPageReady();
+          return;
         }
         derived = derivePlanData(planData);
         hydratePublishState();
@@ -6020,7 +6078,7 @@
               duration: 4200
             }
           );
-          hideInviteJoinOverlay();
+          showInviteJoinOverlay("already-joined", (error && error.detail) || "You can't join the plan you already own.");
           emitPageReady();
           return;
         }
