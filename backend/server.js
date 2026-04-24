@@ -1031,8 +1031,10 @@ function normalizePlanTier(planTier) {
 
 function derivePlanTierFromUser(user) {
   if (!user || typeof user !== "object") return "free";
-  const explicitPlanTier = normalizePlanTier(user.plan_tier);
-  if (explicitPlanTier !== "free") return explicitPlanTier;
+  const rawPlanTier = String(user.plan_tier || "").trim();
+  if (rawPlanTier) {
+    return normalizePlanTier(rawPlanTier);
+  }
   const credits = Number(user.credits || 0);
   return Number.isFinite(credits) && credits > FREE_PLAN_INCLUDED_CREDITS ? "paid" : "free";
 }

@@ -2769,11 +2769,12 @@ html.dark .theme-toggle:hover {
         var CSC_API_BASE = API_BASE_URL + "/api/csc";
         var FEASIBILITY_API_ENDPOINT = API_BASE_URL + "/api/feasibility";
         var ENABLE_STEP4_AI = true;
-        var REQUIRE_STEP1_FIELDS = false;
+        var REQUIRE_STEP1_FIELDS = true;
         var AUTOCOMPLETE_MIN_CHARS = 1;
         var CITY_RENDER_BATCH_SIZE = 20;
         var DEFAULT_MAX_TRIP_DAYS = 7;
         var MAX_TRIP_DAYS = DEFAULT_MAX_TRIP_DAYS;
+        var CURRENT_PLAN_TIER = "free";
         var CALENDAR_MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         var CALENDAR_WEEKDAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
         var countriesCache = null;
@@ -5296,28 +5297,32 @@ html.dark .theme-toggle:hover {
 
         function updateTripLimitCopy() {
           var calendarHint = document.getElementById("date-calendar-hint");
+          var planLabel = CURRENT_PLAN_TIER === "paid" || CURRENT_PLAN_TIER === "business"
+            ? "paid plan"
+            : "free plan";
           if (calendarHint) {
-            calendarHint.textContent = "Select trip dates (max " + MAX_TRIP_DAYS + " days).";
+            calendarHint.textContent = "Select trip dates (max " + MAX_TRIP_DAYS + " days for the " + planLabel + ").";
           }
           var datesErr = document.getElementById("dates-error");
           if (datesErr) {
             if (datesErr.textContent.indexOf("maximum trip length") !== -1) {
-              datesErr.textContent = "Select valid start/end dates with a maximum trip length of " + MAX_TRIP_DAYS + " days.";
+              datesErr.textContent = "Select valid start/end dates with a maximum trip length of " + MAX_TRIP_DAYS + " days for the " + planLabel + ".";
             } else if (datesErr.textContent.indexOf("End date must be within") !== -1) {
-              datesErr.textContent = "End date must be within " + MAX_TRIP_DAYS + " days from start date.";
+              datesErr.textContent = "End date must be within " + MAX_TRIP_DAYS + " days from start date for the " + planLabel + ".";
             }
           }
         }
 
         function applyPlanTier(planTier) {
           var tier = String(planTier || "free").toLowerCase();
-          var newLimit = tier === "paid" ? 30 : DEFAULT_MAX_TRIP_DAYS;
+          CURRENT_PLAN_TIER = tier;
+          var newLimit = (tier === "paid" || tier === "business") ? 30 : DEFAULT_MAX_TRIP_DAYS;
           if (MAX_TRIP_DAYS !== newLimit) {
             MAX_TRIP_DAYS = newLimit;
-            updateTripLimitCopy();
-            if (datePickerState && datePickerState.isOpen) {
-              renderDateCalendar();
-            }
+          }
+          updateTripLimitCopy();
+          if (datePickerState && datePickerState.isOpen) {
+            renderDateCalendar();
           }
         }
 
